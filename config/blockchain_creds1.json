@@ -1,0 +1,74 @@
+{
+    "name": "swvm-blockchain",
+    "x-type": "hlfv1",
+    "description": "Connection Profile for an IBM Blockchain Network",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Org1"
+    },
+    "channels": {
+        "channel1": {
+            "orderers": [
+                "fabric-orderer"
+            ],
+            "peers": {
+                "fabric-peer-org1": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
+                    "eventSource": true
+                }
+            },
+            "chaincodes": {
+                "postal-scm-v7": "1.0"
+            }
+        }
+    },
+    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "fabric-peer-org1"
+            ],
+            "certificateAuthorities": [
+                "fabric-ca-Org1"
+            ]
+        }
+
+    },
+    "orderers": {
+        "fabric-orderer": {
+            "url": "grpc://173.193.106.68:31010",
+            "grpcOptions": {
+                "ssl-target-name-override": null,
+                "grpc.http2.keepalive_time": 15
+            }
+        }
+    },
+    "peers": {
+        "fabric-peer-org1": {
+            "url": "grpc://173.193.106.68:30110",
+            "eventUrl": "grpc://173.193.106.68:30111",
+            "grpcOptions": {
+                "ssl-target-name-override": null,
+                "grpc.http2.keepalive_time": 15
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "fabric-ca-Org1": {
+            "url": "http://173.193.106.68:30054",
+            "httpOptions": {
+                "verify": true
+            },
+            "registrar": [
+                {
+                    "affiliation": "org1",
+                    "enrollId": "admin",
+                    "enrollSecret": "adminpw"
+                }
+            ],
+            "caName": "CA1"
+        }
+    }
+}

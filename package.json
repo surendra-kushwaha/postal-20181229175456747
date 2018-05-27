@@ -1,0 +1,25 @@
+{
+	"name": "NodejsStarterApp",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node app.js"
+	},
+	"dependencies": {
+		"express": "4.13.x",
+		"body-parser": "1.17.x",
+		"ws": "1.1.x",
+		"winston": "2.2.x",
+		"jade": "1.1.x",
+		"dateformat": "2.0.x",
+		"querystring": "0.2.x",
+		"fabric-ca-client": "1.0.5",
+		"fabric-client": "1.0.5",
+		"grpc": "1.10.1",
+		"cfenv": "1.0.x"
+	},
+	"repository": {},
+	"engines": {
+		"node": "6.x"
+	}
+}

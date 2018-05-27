@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Claim Submit</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="stylesheets/style.css">
+	<script type='text/javascript'>
+		function init() {
+			var pageURL = window.location.search.substring(1);
+			var parameter = pageURL.split('=');
+			if(parameter[0] === 'status' && parameter[1] === 'retry'){
+				alert('Blockchain is not ready, please try after some time.');
+			}
+		}
+		window.onload = init;
+	</script>
+</head>
+
+<body>
+	<table>
+		<tr>
+			<td style= "width:30%;display: none;">
+				<img class = "newappIcon" src="images/newapp-icon.png"/>
+			</td>
+			<td>
+				<h1>Claim Submit</h1>
+				<span>Disclaimer:</span>
+				<br/>
+				<span>This screen is for illustrative purposes only, it is</span>
+				<br/>
+				<span>to simulate claims submission for the application.</span>
+				<br/>
+				<p>
+					<form action="/AddClaim" method="post" id="form_register">
+						<label for="subscriberId">Subscriber ID:</label>
+						<input type="text" id="subscriberId" name="subscriberId" style="float: right;"/>
+						<br/>
+						<br/>
+						<label for="memberId">Member ID:</label>
+						<input type="text" id="memberId" name="memberId" style="float: right;"/>
+						<br/>
+						<br/>
+						<label for="policyNo">Policy No:</label>
+						<input type="text" id="policyNo" name="policyNo" style="float: right;"/>
+						<br/>
+						<br/>
+						<label for="claimId">Claim ID:</label>
+						<input type="text" id="claimId" name="claimId" style="float: right;"/>
+						<br/>
+						<br/>
+						<select id="DedType" name="DedType" style="min-width: 170px;">
+							<option value="Individual Deductible">Individual Deductible</option>
+							<option value="Family Deductible">Family Deductible</option>
+						</select>
+						<input type="text" id="DedAmount" name="DedAmount" style="float: right;" placeholder="Deductible Amount"/>
+						<br/>
+						<br/>
+						<select id="OopType" name="OopType" style="min-width: 170px;">
+							<option value="Individual Out of Pocket">Individual Out of Pocket</option>
+							<option value="Family Out of Pocket">Family Out of Pocket</option>
+						</select>
+						<input type="text" id="OopAmount" name="OopAmount" style="float: right;" placeholder="Out of Pocket Amount"/>
+						<br/>
+						<br/>
+						<select id="Network" name="Network" style="min-width: 170px;">
+							<option value="IN">In Network</option>
+							<option value="OUT">Out of Network</option>
+						</select>
+						<select id="PlanName" name="PlanName" style="min-width: 170px;">
+							<option value="Medical">Medical</option>
+							<option value="Pharmacy">Pharmacy</option>
+							<option value="Dental">Dental</option>
+						</select>
+						<br/>
+						<br/>
+						<label for="transactionId">Transaction ID:</label>
+						<input type="text" id="transactionId" name="transactionId" style="float: right;" placeholder="Optional"/>
+						<br/>
+						<br/>
+						<label for="SubmitType">Submission Type:</label>
+						<select id="SubmitType" name="SubmitType" style="min-width: 170px;margin-left: 44px;">
+							<option value="StageClaim">Stage Claim</option>
+							<option value="SubmitClaim">Submit Claim</option>
+						</select>
+						<br/>
+						<br/>
+						<br/>
+						<input type="hidden" var="appId" id="appId" value="app01"/>
+						<input type="submit" value="Submit" onClick="javascript:form.submit();" style="margin-left: 41%;"/>
+					</form>
+				</p>
+				<br/>
+				<span Style="padding-left:165px">OR</span>
+				<br/><br/><br/>
+				<span style="padding-left:25px;">
+					Wish to submit claims in bulk? 
+					<a href="http://accumsharebatch.mybluemix.net/">Try This</a>
+				</span>
+			</td>
+		</tr>
+	</table>
+</body>
+
+</html>

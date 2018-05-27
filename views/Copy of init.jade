@@ -1,0 +1,30 @@
+//- -----------------------------------------------------------------
+//- Licensed Materials - Property of IBM
+//- 
+//- WebSphere Commerce
+//-
+//- (C) Copyright IBM Corp. 2014 All Rights Reserved.
+//-
+//- US Government Users Restricted Rights - Use, duplication or
+//- disclosure restricted by GSA ADP Schedule Contract with
+//- IBM Corp.
+//- -----------------------------------------------------------------
+doctype html
+html
+    include head
+
+div(class="stock-widget")
+    if (success)
+        h1 Claim Submission Successful
+        div(style="text-align: center;")
+            span The claim has been successfully submitted
+            br
+            br
+            button(type="button" onclick="javascript:window.history.back();") Back
+    else
+        h1 Claim Submission Failed
+        div(style="text-align: center;")
+            span The claim submission has failed
+            br
+            br
+            button(type="button" onclick="javascript:window.history.back();") Back
