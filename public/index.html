@@ -1,107 +1,136 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-	<title>Claim Submit</title>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="stylesheets/style.css">
-	<script type='text/javascript'>
-		function init() {
-			var pageURL = window.location.search.substring(1);
-			var parameter = pageURL.split('=');
-			if(parameter[0] === 'status' && parameter[1] === 'retry'){
-				alert('Blockchain is not ready, please try after some time.');
-			}
+    <head>
+        <link href="./img/favicon.png" rel="shortcut icon"/>
+        <meta charset="utf-8"/>
+        <meta content="width=1440px, maximum-scale=1.0" name="viewport"/>
+        <link href="./css/loginDesktop.css" rel="stylesheet" type="text/css"/>
+        <meta content="Launchpad by Anima" name="author">
+        </meta>
+    </head>
+    <body style="margin: 0;
+ background: rgba(255, 255, 255, 1.0);">
+        <input id="anPageName" name="page" type="hidden" value="logindesktop"/>
+        <div class="login-desktop">
+            <div style="width: 1440px; height: 100%; position:relative; margin:auto;">
+                <img anima-src="./img/login desktoprectangle.png" class="rectangle" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
+                <div class="page1">
+                    <img anima-src="./img/login desktopfill 1.png" class="fill1" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
+                    <img anima-src="./img/login desktopfill 3.png" class="fill3" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
+                    <img anima-src="./img/login desktopfill 5.png" class="fill5" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
+                </div>
+                <div class="group2">
+                    <div class="settlement-demo">
+                        SETTLEMENT DEMO
+                    </div>
+                    <div class="group">
+                        <div class="rectangle7">
+                        </div>
+                        <div class="page11">
+                            <img anima-src="./img/login desktopfill 1  1.png" class="fill11" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
+                            <img anima-src="./img/login desktopfill 3  1.png" class="fill31" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
+                            <img anima-src="./img/login desktopfill 5  1.png" class="fill51" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
+                        </div>
+                    </div>
+                    <div class="ui-input">
+                        <div class="rectangle2">
+                        </div>
+                        <input class="text-username" name="textUsername" placeholder="Username"/>
+                    </div>
+                    <div class="ui-input1">
+                        <div class="rectangle21">
+                        </div>
+                        <input class="text-password" name="textPassword" placeholder="Password"/>
+                    </div>
+                    <div class="button-primary-blue" onclick="abc()">
+                        <div class="rectangle2-copy2">
+                        </div>
+                        <div class="l-ogin" >
+                            LOGIN
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Scripts -->
+        <script>
+		function abc(){
+		window.location.href="homepagedesktop.html";
 		}
-		window.onload = init;
-	</script>
-</head>
-
-<body>
-	<table>
-		<tr>
-			<td style= "width:30%;display: none;">
-				<img class = "newappIcon" src="images/newapp-icon.png"/>
-			</td>
-			<td>
-				<h1>Claim Submit</h1>
-				<span>Disclaimer:</span>
-				<br/>
-				<span>This screen is for illustrative purposes only, it is</span>
-				<br/>
-				<span>to simulate claims submission for the application.</span>
-				<br/>
-				<p>
-					<form action="/AddClaim" method="post" id="form_register">
-						<label for="subscriberId">Subscriber ID:</label>
-						<input type="text" id="subscriberId" name="subscriberId" style="float: right;"/>
-						<br/>
-						<br/>
-						<label for="memberId">Member ID:</label>
-						<input type="text" id="memberId" name="memberId" style="float: right;"/>
-						<br/>
-						<br/>
-						<label for="policyNo">Policy No:</label>
-						<input type="text" id="policyNo" name="policyNo" style="float: right;"/>
-						<br/>
-						<br/>
-						<label for="claimId">Claim ID:</label>
-						<input type="text" id="claimId" name="claimId" style="float: right;"/>
-						<br/>
-						<br/>
-						<select id="DedType" name="DedType" style="min-width: 170px;">
-							<option value="Individual Deductible">Individual Deductible</option>
-							<option value="Family Deductible">Family Deductible</option>
-						</select>
-						<input type="text" id="DedAmount" name="DedAmount" style="float: right;" placeholder="Deductible Amount"/>
-						<br/>
-						<br/>
-						<select id="OopType" name="OopType" style="min-width: 170px;">
-							<option value="Individual Out of Pocket">Individual Out of Pocket</option>
-							<option value="Family Out of Pocket">Family Out of Pocket</option>
-						</select>
-						<input type="text" id="OopAmount" name="OopAmount" style="float: right;" placeholder="Out of Pocket Amount"/>
-						<br/>
-						<br/>
-						<select id="Network" name="Network" style="min-width: 170px;">
-							<option value="IN">In Network</option>
-							<option value="OUT">Out of Network</option>
-						</select>
-						<select id="PlanName" name="PlanName" style="min-width: 170px;">
-							<option value="Medical">Medical</option>
-							<option value="Pharmacy">Pharmacy</option>
-							<option value="Dental">Dental</option>
-						</select>
-						<br/>
-						<br/>
-						<label for="transactionId">Transaction ID:</label>
-						<input type="text" id="transactionId" name="transactionId" style="float: right;" placeholder="Optional"/>
-						<br/>
-						<br/>
-						<label for="SubmitType">Submission Type:</label>
-						<select id="SubmitType" name="SubmitType" style="min-width: 170px;margin-left: 44px;">
-							<option value="StageClaim">Stage Claim</option>
-							<option value="SubmitClaim">Submit Claim</option>
-						</select>
-						<br/>
-						<br/>
-						<br/>
-						<input type="hidden" var="appId" id="appId" value="app01"/>
-						<input type="submit" value="Submit" onClick="javascript:form.submit();" style="margin-left: 41%;"/>
-					</form>
-				</p>
-				<br/>
-				<span Style="padding-left:165px">OR</span>
-				<br/><br/><br/>
-				<span style="padding-left:25px;">
-					Wish to submit claims in bulk? 
-					<a href="http://accumsharebatch.mybluemix.net/">Try This</a>
-				</span>
-			</td>
-		</tr>
-	</table>
-</body>
-
+            anima_isHidden = function(e) {
+                if (!(e instanceof HTMLElement)) return !1;
+                if (getComputedStyle(e).display == "none") return !0; else if (e.parentNode && anima_isHidden(e.parentNode)) return !0;
+                return !1;
+            };
+            anima_loadAsyncSrcForTag = function(tag) {
+                var elements = document.getElementsByTagName(tag);
+                var toLoad = [];
+                for (var i = 0; i < elements.length; i++) {
+                    var e = elements[i];
+                    var src = e.getAttribute("src");
+                    var loaded = (src != undefined && src.length > 0 && src != 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+                    if (loaded) continue;
+                    var asyncSrc = e.getAttribute("anima-src");
+                    if (asyncSrc == undefined || asyncSrc.length == 0) continue;
+                    if (anima_isHidden(e)) continue;
+                    toLoad.push(e);
+                }
+                toLoad.sort(function(a, b) {
+                    return anima_getTop(a) - anima_getTop(b);
+                });
+                for (var i = 0; i < toLoad.length; i++) {
+                    var e = toLoad[i];
+                    var asyncSrc = e.getAttribute("anima-src");
+                    e.setAttribute("src", asyncSrc);
+                }
+            };
+            anima_pauseHiddenVideos = function(tag) {
+                var elements = document.getElementsByTagName("video");
+                for (var i = 0; i < elements.length; i++) {
+                    var e = elements[i];
+                    var isPlaying = !!(e.currentTime > 0 && !e.paused && !e.ended && e.readyState > 2);
+                    var isHidden = anima_isHidden(e);
+                    if (!isPlaying && !isHidden && e.getAttribute("autoplay") == "autoplay") {
+                        e.play();
+                    } else if (isPlaying && isHidden) {
+                        e.pause();
+                    }
+                }
+            };
+            anima_loadAsyncSrc = function(tag) {
+                anima_loadAsyncSrcForTag("img");
+                anima_loadAsyncSrcForTag("iframe");
+                anima_loadAsyncSrcForTag("video");
+                anima_pauseHiddenVideos();
+            };
+            var anima_getTop = function(e) {
+                var top = 0;
+                do {
+                    top += e.offsetTop || 0;
+                    e = e.offsetParent;
+                } while (e);
+                return top;
+            };
+            anima_loadAsyncSrc();
+            anima_old_onResize = window.onresize;
+            anima_new_onResize = undefined;
+            anima_updateOnResize = function() {
+                if (anima_new_onResize == undefined || window.onresize != anima_new_onResize) {
+                    anima_new_onResize = function(x) {
+                        if (anima_old_onResize != undefined) anima_old_onResize(x);
+                        anima_loadAsyncSrc();
+                    };
+                    window.onresize = anima_new_onResize;
+                    setTimeout(function() {
+                        anima_updateOnResize();
+                    }, 3000);
+                }
+            };
+            anima_updateOnResize();
+            setTimeout(function() {
+                anima_loadAsyncSrc();
+            }, 200);
+        </script>
+        <!-- End of Scripts -->
+    </body>
 </html>

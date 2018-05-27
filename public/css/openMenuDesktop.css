@@ -1,0 +1,323 @@
+
+@font-face {
+  font-family: "IBMPlexSans";
+  src: url('../fonts/IBMPlexSans-Regular.otf') format("opentype");
+}
+@font-face {
+  font-family: "IBMPlexSans-SemiBold";
+  src: url('../fonts/IBMPlexSans-SemiBold.otf') format("opentype");
+}
+@font-face {
+  font-family: "IBMPlexSans-Medium";
+  src: url('../fonts/IBMPlexSans-Medium.otf') format("opentype");
+}
+@font-face {
+  font-family: "IBMPlexSans-Light";
+  src: url('../fonts/IBMPlexSans-Light.otf') format("opentype");
+}
+@font-face {
+  font-family: "IBMPlexSans-Bold";
+  src: url('../fonts/IBMPlexSans-Bold.otf') format("opentype");
+}
+
+.open-menu-desktop {
+  width               : 100%;
+  min-width           : 1440px;
+  height              : 100vh;
+  min-height          : 1030px;
+  position            : relative;
+  overflow            : hidden;
+  margin              : 0px;
+  background-color    : rgba(255, 255, 255, 1.0);
+}
+a {
+  text-decoration     : none;
+}
+div {
+  -webkit-text-size-adjust: none;
+}
+.open-menu-desktop .rectangle {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 1036px;
+  width               : 1440px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.open-menu-desktop .postal-app-logo {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 58px;
+  height              : 15px;
+  width               : 146px;
+  position            : absolute;
+  margin              : 0;
+  left                : 648px;
+}
+.open-menu-desktop .postal-app-logo .settlement-simulator {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : auto;
+  width               : auto;
+  position            : absolute;
+  margin              : 0;
+  left                : -1px;
+  font-family         : "IBMPlexSans-SemiBold", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(255, 255, 255, 1.0);
+  text-align          : center;
+  line-height         : 15.0px;
+}
+.open-menu-desktop .molecules-menu-list-desktop {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 267px;
+  height              : 70px;
+  width               : 683px;
+  position            : absolute;
+  margin              : 0;
+  left                : 380px;
+}
+.open-menu-desktop .molecules-menu-list-desktop .simulate-dispatch {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : auto;
+  width               : 284px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 28.0px;
+  color               : rgba(255, 255, 255, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.6px;
+  line-height         : 37.0px;
+}
+.open-menu-desktop .molecules-menu-list-desktop .ui-chevron-blue {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 8px;
+  height              : 22px;
+  width               : 14px;
+  position            : absolute;
+  margin              : 0;
+  left                : 665px;
+}
+.open-menu-desktop .molecules-menu-list-desktop .ui-chevron-blue .path4 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 22px;
+  width               : 14px;
+  position            : relative;
+  margin              : 0;
+  left                : 0px;
+}
+.open-menu-desktop .molecules-menu-list-desktop .line {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 69px;
+  height              : 1px;
+  width               : 683px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  opacity             : 0.2;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 370px;
+  height              : 70px;
+  width               : 683px;
+  position            : absolute;
+  margin              : 0;
+  left                : 380px;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy .simulate-dispatch1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : auto;
+  width               : 284px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 28.0px;
+  color               : rgba(255, 255, 255, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.6px;
+  line-height         : 37.0px;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy .ui-chevron-blue1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 8px;
+  height              : 22px;
+  width               : 14px;
+  position            : absolute;
+  margin              : 0;
+  left                : 665px;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy .ui-chevron-blue1 .path41 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 22px;
+  width               : 14px;
+  position            : relative;
+  margin              : 0;
+  left                : 0px;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy .line1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 69px;
+  height              : 1px;
+  width               : 683px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  opacity             : 0.2;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 473px;
+  height              : 70px;
+  width               : 683px;
+  position            : absolute;
+  margin              : 0;
+  left                : 380px;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy2 .simulate-dispatch2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : auto;
+  width               : 284px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 28.0px;
+  color               : rgba(255, 255, 255, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.6px;
+  line-height         : 37.0px;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy2 .ui-chevron-blue2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 8px;
+  height              : 22px;
+  width               : 14px;
+  position            : absolute;
+  margin              : 0;
+  left                : 665px;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy2 .ui-chevron-blue2 .path42 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 22px;
+  width               : 14px;
+  position            : relative;
+  margin              : 0;
+  left                : 0px;
+}
+.open-menu-desktop .molecules-menu-list-desktop-copy2 .line2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 69px;
+  height              : 1px;
+  width               : 683px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  opacity             : 0.2;
+}
+.open-menu-desktop .atom-close-blue-big {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 57px;
+  height              : 17px;
+  width               : 17px;
+  position            : absolute;
+  margin              : 0;
+  left                : 1359px;
+}
+.open-menu-desktop .atom-close-blue-big .combined-shape {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 17px;
+  width               : 17px;
+  position            : relative;
+  margin              : 0;
+  left                : 0px;
+}
+/* .anima-animate-appear prefix for appear animations */
+.anima-animate-appear {
+  opacity             : 0;
+  display             : block;
+  -webkit-animation   : anima-reveal 0.3s ease-in-out 1 normal forwards;
+  -moz-animation      : anima-reveal 0.3s ease-in 1 normal forwards;
+  -o-animation        : anima-reveal 0.3s ease-in-out 1 normal forwards;
+  animation           : anima-reveal 0.3s ease-in-out 1 normal forwards;
+}
+.anima-animate-disappear {
+  opacity             : 1;
+  display             : block;
+  -webkit-animation   : anima-reveal 0.3s ease-in-out 1 reverse forwards;
+  -moz-animation      : anima-reveal 0.3s ease-in 1 normal forwards;
+  -o-animation        : anima-reveal 0.3s ease-in-out 1 reverse forwards;
+  animation           : anima-reveal 0.3s ease-in-out 1 reverse forwards;
+}
+.anima-animate-nodelay {
+  -webkit-animation-delay: 0;
+  -moz-animation-delay: 0;
+  -o-animation-delay  : 0;
+  animation-delay     : 0;
+}
+@-webkit-keyframes anima-reveal {
+  0%
+   
+  {
+      opacity: 0;
+    }
+  
+    
+  100%
+   
+  {
+      opacity: 1;
+    }
+}
+@-moz-keyframes anima-reveal {
+  0%
+   
+  {
+      opacity: 0;
+    }
+  
+    
+  100%
+   
+  {
+      opacity: 1;
+    }
+}
+@-o-keyframes anima-reveal {
+  0%
+   
+  {
+      opacity: 0;
+    }
+  
+    
+  100%
+   
+  {
+      opacity: 1;
+    }
+}
+@keyframes anima-reveal {
+  0%
+   
+  {
+      opacity: 0;
+    }
+  
+    
+  100%
+   
+  {
+      opacity: 1;
+    }
+}

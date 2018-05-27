@@ -1,0 +1,762 @@
+
+@font-face {
+  font-family: "IBMPlexSans";
+  src: url('../fonts/IBMPlexSans-Regular.otf') format("opentype");
+}
+@font-face {
+  font-family: "IBMPlexSans-SemiBold";
+  src: url('../fonts/IBMPlexSans-SemiBold.otf') format("opentype");
+}
+@font-face {
+  font-family: "IBMPlexSans-Medium";
+  src: url('../fonts/IBMPlexSans-Medium.otf') format("opentype");
+}
+@font-face {
+  font-family: "IBMPlexSans-Light";
+  src: url('../fonts/IBMPlexSans-Light.otf') format("opentype");
+}
+@font-face {
+  font-family: "IBMPlexSans-Bold";
+  src: url('../fonts/IBMPlexSans-Bold.otf') format("opentype");
+}
+
+.package-details-tile-screen-desktop {
+  width               : 100%;
+  min-width           : 1440px;
+  height              : 100vh;
+  min-height          : 1016px;
+  position            : relative;
+  overflow            : hidden;
+  margin              : 0px;
+  background-color    : rgba(255, 255, 255, 1.0);
+}
+a {
+  text-decoration     : none;
+}
+div {
+  -webkit-text-size-adjust: none;
+}
+.package-details-tile-screen-desktop .nav-footer-ipad {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 837px;
+  height              : 179px;
+  width               : 1440px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-footer-ipad .rectangle11 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 2px;
+  height              : 177px;
+  width               : 1440px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-footer-ipad .page1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 178px;
+  width               : 158px;
+  position            : absolute;
+  margin              : 0;
+  left                : 342px;
+}
+.package-details-tile-screen-desktop .nav-footer-ipad .page1 .fill1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 96px;
+  width               : 158px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-footer-ipad .page1 .fill3 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 94px;
+  height              : 84px;
+  width               : 96px;
+  position            : absolute;
+  margin              : 0;
+  left                : 32px;
+}
+.package-details-tile-screen-desktop .nav-footer-ipad .page1 .fill5 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 156px;
+  height              : 13px;
+  width               : 23px;
+  position            : absolute;
+  margin              : 0;
+  left                : 41px;
+}
+.package-details-tile-screen-desktop .nav-footer-ipad .copyright2018-acc {
+  background-color    : rgba(255, 255, 255, 0.0);
+  width               : auto;
+  height              : auto;
+  pointer-events      : auto;
+  position            : relative;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(51, 51, 102, 0.67);
+  text-align          : center;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .nav-footer-ipad .copyright2018-acc-layout-container {
+  pointer-events      : none;
+  flex-direction      : column;
+  top                 : 85px;
+  align-items         : center;
+  height              : auto;
+  width               : 100%;
+  position            : absolute;
+  margin              : 0;
+  display             : flex;
+  left                : 0;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 280px;
+  width               : 1440px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 280px;
+  width               : 1440px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .rectangle {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 280px;
+  width               : 1440px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 38px;
+  height              : 16px;
+  width               : 1319px;
+  position            : absolute;
+  margin              : 0;
+  left                : 54px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .icon-menu {
+  background-color    : rgba(255, 255, 255, 0.0);
+  width               : 100%;
+  height              : 13px;
+  pointer-events      : auto;
+  position            : relative;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .icon-menu-layout-container {
+  pointer-events      : none;
+  flex-direction      : column;
+  top                 : 0;
+  height              : 100%;
+  width               : 19px;
+  justify-content     : center;
+  position            : absolute;
+  margin              : 0;
+  display             : flex;
+  left                : 1300px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .icon-menu .shape {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 13px;
+  width               : 19px;
+  position            : relative;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .postal-app-logo {
+  background-color    : rgba(255, 255, 255, 0.0);
+  width               : 146px;
+  height              : 100%;
+  pointer-events      : auto;
+  position            : relative;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .postal-app-logo-layout-container {
+  pointer-events      : none;
+  flex-direction      : column;
+  top                 : 0px;
+  align-items         : center;
+  height              : 16px;
+  width               : 100%;
+  position            : absolute;
+  margin              : 0;
+  display             : flex;
+  left                : 0;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .postal-app-logo .settlement-simulator {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : auto;
+  width               : auto;
+  position            : absolute;
+  margin              : 0;
+  left                : -1px;
+  font-family         : "IBMPlexSans-SemiBold", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(255, 255, 255, 1.0);
+  text-align          : center;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .back {
+  background-color    : rgba(255, 255, 255, 0.0);
+  width               : 100%;
+  height              : 16px;
+  pointer-events      : auto;
+  position            : relative;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .back-layout-container {
+  pointer-events      : none;
+  flex-direction      : column;
+  top                 : 0;
+  height              : 100%;
+  width               : 37px;
+  justify-content     : center;
+  position            : absolute;
+  margin              : 0;
+  display             : flex;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .back .back1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : auto;
+  width               : auto;
+  position            : absolute;
+  margin              : 0;
+  left                : 9px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(255, 255, 255, 1.0);
+  text-align          : center;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .nav-header-v2 .back .path4 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 4px;
+  height              : 9px;
+  width               : 5px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header {
+  background-color    : rgba(255, 255, 255, 0.0);
+  width               : 382px;
+  margin-right        : 199px;
+  height              : 100%;
+  pointer-events      : auto;
+  margin-left         : -199px;
+  position            : relative;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header-layout-container {
+  pointer-events      : none;
+  flex-direction      : column;
+  top                 : 177px;
+  align-items         : center;
+  height              : 64px;
+  width               : 100%;
+  position            : absolute;
+  margin              : 0;
+  display             : flex;
+  left                : 0;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header .rectangle2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 63px;
+  width               : 382px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header .a546-g {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 27px;
+  height              : auto;
+  width               : 382px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  font-family         : "IBMPlexSans-Medium", Helvetica, Arial, serif;
+  font-size           : 28.0px;
+  color               : rgba(255, 255, 255, 1.0);
+  text-align          : center;
+  letter-spacing      : -0.47px;
+  line-height         : 37.0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header .dispatch-id {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 1px;
+  height              : auto;
+  width               : 382px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 16.0px;
+  color               : rgba(18, 189, 235, 1.0);
+  text-align          : center;
+  line-height         : 20.0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header-copy {
+  background-color    : rgba(255, 255, 255, 0.0);
+  width               : 382px;
+  margin-right        : -200px;
+  height              : 100%;
+  pointer-events      : auto;
+  margin-left         : 200px;
+  position            : relative;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header-copy-layout-container {
+  pointer-events      : none;
+  flex-direction      : column;
+  top                 : 177px;
+  align-items         : center;
+  height              : 64px;
+  width               : 100%;
+  position            : absolute;
+  margin              : 0;
+  display             : flex;
+  left                : 0;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header-copy .rectangle21 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 63px;
+  width               : 382px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header-copy .a546-g1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 27px;
+  height              : auto;
+  width               : 382px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  font-family         : "IBMPlexSans-Medium", Helvetica, Arial, serif;
+  font-size           : 28.0px;
+  color               : rgba(255, 255, 255, 1.0);
+  text-align          : center;
+  letter-spacing      : -0.47px;
+  line-height         : 37.0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .nav-top-header .molecules1-column-top-header-copy .dispatch-id1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 1px;
+  height              : auto;
+  width               : 382px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 16.0px;
+  color               : rgba(18, 189, 235, 1.0);
+  text-align          : center;
+  line-height         : 20.0px;
+}
+.package-details-tile-screen-desktop .nav-header-reconciled-desktop .reconciled-items-rep {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 98px;
+  height              : auto;
+  width               : 526px;
+  position            : absolute;
+  margin              : 0;
+  left                : 457px;
+  font-family         : "IBMPlexSans-Medium", Helvetica, Arial, serif;
+  font-size           : 28.0px;
+  color               : rgba(255, 255, 255, 1.0);
+  text-align          : center;
+  letter-spacing      : -0.47px;
+  line-height         : 37.0px;
+}
+.package-details-tile-screen-desktop .line {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 384px;
+  height              : 3px;
+  width               : 882px;
+  position            : absolute;
+  margin              : 0;
+  left                : 170px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 378px;
+  height              : 123px;
+  width               : 232px;
+  position            : absolute;
+  margin              : 0;
+  left                : 162px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active .package-created {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 22px;
+  height              : auto;
+  width               : 138px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans-Medium", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(18, 189, 235, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active .a041220180415-p {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 40px;
+  height              : auto;
+  width               : 138px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(143, 143, 143, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active .april162018 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 56px;
+  height              : auto;
+  width               : 234px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans-Light", Helvetica, Arial, serif;
+  font-size           : 19.0px;
+  color               : rgba(51, 51, 102, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.31px;
+  line-height         : 24.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active .oval {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 15px;
+  width               : 15px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 378px;
+  height              : 123px;
+  width               : 232px;
+  position            : absolute;
+  margin              : 0;
+  left                : 445px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy .package-created1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 22px;
+  height              : auto;
+  width               : 138px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans-Medium", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(18, 189, 235, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy .a041220180415-p1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 40px;
+  height              : auto;
+  width               : 138px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(143, 143, 143, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy .april1620181 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 56px;
+  height              : auto;
+  width               : 234px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans-Light", Helvetica, Arial, serif;
+  font-size           : 19.0px;
+  color               : rgba(51, 51, 102, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.31px;
+  line-height         : 24.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy .oval1 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 15px;
+  width               : 15px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 378px;
+  height              : 123px;
+  width               : 232px;
+  position            : absolute;
+  margin              : 0;
+  left                : 749px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy2 .package-created2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 22px;
+  height              : auto;
+  width               : 138px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans-Medium", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(18, 189, 235, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy2 .a041220180415-p2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 40px;
+  height              : auto;
+  width               : 138px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(143, 143, 143, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy2 .april1620182 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 56px;
+  height              : auto;
+  width               : 234px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans-Light", Helvetica, Arial, serif;
+  font-size           : 19.0px;
+  color               : rgba(51, 51, 102, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.31px;
+  line-height         : 24.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy2 .oval2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 15px;
+  width               : 15px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy7 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 378px;
+  height              : 123px;
+  width               : 232px;
+  position            : absolute;
+  margin              : 0;
+  left                : 1041px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy7 .package-created3 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 22px;
+  height              : auto;
+  width               : 138px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans-Medium", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(18, 189, 235, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy7 .a041220180415-p3 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 40px;
+  height              : auto;
+  width               : 138px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(143, 143, 143, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy7 .april1620183 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 56px;
+  height              : auto;
+  width               : 234px;
+  position            : absolute;
+  margin              : 0;
+  left                : 3px;
+  font-family         : "IBMPlexSans-Light", Helvetica, Arial, serif;
+  font-size           : 19.0px;
+  color               : rgba(51, 51, 102, 1.0);
+  text-align          : left;
+  letter-spacing      : -0.31px;
+  line-height         : 24.0px;
+}
+.package-details-tile-screen-desktop .molecules-timeline-active-copy7 .oval3 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : 15px;
+  width               : 15px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+.package-details-tile-screen-desktop .ui-back-dark {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 777px;
+  height              : 16px;
+  width               : 40px;
+  position            : absolute;
+  margin              : 0;
+  left                : 698px;
+}
+.package-details-tile-screen-desktop .ui-back-dark .back2 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 0px;
+  height              : auto;
+  width               : auto;
+  position            : absolute;
+  margin              : 0;
+  left                : 12px;
+  font-family         : "IBMPlexSans", Helvetica, Arial, serif;
+  font-size           : 12.0px;
+  color               : rgba(51, 51, 102, 1.0);
+  text-align          : center;
+  letter-spacing      : -0.2px;
+  line-height         : 15.0px;
+}
+.package-details-tile-screen-desktop .ui-back-dark .path41 {
+  background-color    : rgba(255, 255, 255, 0.0);
+  top                 : 4px;
+  height              : 9px;
+  width               : 6px;
+  position            : absolute;
+  margin              : 0;
+  left                : 0px;
+}
+/* .anima-animate-appear prefix for appear animations */
+.anima-animate-appear {
+  opacity             : 0;
+  display             : block;
+  -webkit-animation   : anima-reveal 0.3s ease-in-out 1 normal forwards;
+  -moz-animation      : anima-reveal 0.3s ease-in 1 normal forwards;
+  -o-animation        : anima-reveal 0.3s ease-in-out 1 normal forwards;
+  animation           : anima-reveal 0.3s ease-in-out 1 normal forwards;
+}
+.anima-animate-disappear {
+  opacity             : 1;
+  display             : block;
+  -webkit-animation   : anima-reveal 0.3s ease-in-out 1 reverse forwards;
+  -moz-animation      : anima-reveal 0.3s ease-in 1 normal forwards;
+  -o-animation        : anima-reveal 0.3s ease-in-out 1 reverse forwards;
+  animation           : anima-reveal 0.3s ease-in-out 1 reverse forwards;
+}
+.anima-animate-nodelay {
+  -webkit-animation-delay: 0;
+  -moz-animation-delay: 0;
+  -o-animation-delay  : 0;
+  animation-delay     : 0;
+}
+@-webkit-keyframes anima-reveal {
+  0%
+   
+  {
+      opacity: 0;
+    }
+  
+    
+  100%
+   
+  {
+      opacity: 1;
+    }
+}
+@-moz-keyframes anima-reveal {
+  0%
+   
+  {
+      opacity: 0;
+    }
+  
+    
+  100%
+   
+  {
+      opacity: 1;
+    }
+}
+@-o-keyframes anima-reveal {
+  0%
+   
+  {
+      opacity: 0;
+    }
+  
+    
+  100%
+   
+  {
+      opacity: 1;
+    }
+}
+@keyframes anima-reveal {
+  0%
+   
+  {
+      opacity: 0;
+    }
+  
+    
+  100%
+   
+  {
+      opacity: 1;
+    }
+}

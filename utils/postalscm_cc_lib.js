@@ -1,13 +1,13 @@
 //-------------------------------------------------------------------
-// SharedAccums Chaincode Library
+// postalscm Chaincode Library
 //-------------------------------------------------------------------
 
 module.exports = function (enrollObj, g_options, fcw, logger) {
-	var sharedaccums_chaincode = {};
-	//var sharedaccums_chaincode = {};
+	var postalscm_chaincode = {};
+	//var postalscm_chaincode = {};
 
 	// Chaincode -------------------------------------------------------------------------------
-	sharedaccums_chaincode.call_chaincode = function (options, cb) {
+	postalscm_chaincode.call_chaincode = function (options, cb) {
 		console.log('');
 		logger.info('Adding User...');
 
@@ -39,7 +39,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 		 }
 	};
 
-	sharedaccums_chaincode.channel_stats = function (options, cb) {
+	postalscm_chaincode.channel_stats = function (options, cb) {
 		logger.info('Fetching block height...');
 		fcw.query_channel(enrollObj, null, cb);
 	};
@@ -58,6 +58,6 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 	}
 	
 
-	return sharedaccums_chaincode;
+	return postalscm_chaincode;
 };
 

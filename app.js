@@ -15,10 +15,6 @@ var querystring = require('querystring');
 // cfenv provides access to your Cloud Foundry environment.
 // for more info, see: https://www.npmjs.com/package/cfenv
 var cfenv = require('cfenv');
-
-var chaincodeid = process.env.CHAINCODE_ID;
-var blockchainHost = process.env.BLOCKCHAIN_HOST;
-var blockchainPort = process.env.BLOCKCHAIN_PORT;
 // create a new express server
 var app = express();
 var bodyParser= require("body-parser");
@@ -51,13 +47,13 @@ var opts = helper.makeSharedAccumsLibOptions();
 enroll_admin(1, function (e) {console.log("hiaaaa");
 						if (e == null) {
 							console.log("hiaaaa###");
-							setup_sharedaccums_lib();
+							setup_postalscm_lib();
 						}
 					});
 
 
 
-sharedaccums_lib = require('./utils/sharedaccums_cc_lib.js')(enrollObj, opts, fcw, logger);
+postalscm_lib = require('./utils/postalscm_cc_lib.js')(enrollObj, opts, fcw, logger);
 ws_server.setup(wss.broadcast);
 
 logger.debug('Checking if chaincode is already deployed or not');
@@ -76,11 +72,11 @@ args: {
 }
 };
 
-function setup_sharedaccums_lib() {
+function setup_postalscm_lib() {
 	logger.debug('Setup SharedAccums Lib...');
 
 	var opts = helper.makeSharedAccumsLibOptions();
-	sharedaccums_lib = require('./utils/sharedaccums_cc_lib.js')(enrollObj, opts, fcw, logger);
+	postalscm_lib = require('./utils/postalscm_cc_lib.js')(enrollObj, opts, fcw, logger);
 	ws_server.setup(wss.broadcast);
 
 	logger.debug('Checking if chaincode is already deployed or not');
@@ -129,15 +125,19 @@ function enroll_admin(attempt, cb) {
 //Rest Api for postal scm
 app.post('/addPostal', function(req, res) {
 	console.log("app.js - Process claim is calling");
-	var postalId="China";
+	/*var postalId="China";
 	var name="ChinaPost"
-	var country="China";
+	var country="China";*/
+  var postalId=req.body.postalId;
+  var name=req.body.name;
+  var country=req.body.country;
 
 		var argsValue = ['{\"PostalId\":\"' + postalId + '\", \"Name\":\"' + name + '\" , \"Country\":\"' + country + '\"}'];
+    console.log("argsValue:::"+argsValue)
 		options.method_type="invoke";
       options.func="addPostal";
       options.args=argsValue;
-      sharedaccums_lib.call_chaincode(options,function (err, response) {
+      postalscm_lib.call_chaincode(options,function (err, response) {
         if (err) {
           res.send({ "status": "error", "data": [err,response] });
         } else if (!err) {
@@ -149,7 +149,7 @@ app.post('/addPostal', function(req, res) {
     	//options.args=argsValue;
 
 		/*options.args=["China","ChinaPost","China"];
-		sharedaccums_lib.process_claim(options, function (err,resp) {
+		postalscm_lib.process_claim(options, function (err,resp) {
 
 		console.log("Add Postal ::@@@::"+JSON.stringify(resp));
 		});*/
@@ -157,51 +157,16 @@ app.post('/addPostal', function(req, res) {
 })
 
 app.get('/getPostal', function(req, res) {
-	options.method_type="query";
+      var postalId=req.query.postalId;
+	    options.method_type="query";
       options.func="queryPostal";
       //options.args=[query.userid + "_" + query.userType];
-      options.args=["China"];
-      sharedaccums_lib.call_chaincode(options,function (err, response) {
+      options.args=[postalId];
+      postalscm_lib.call_chaincode(options,function (err, response) {
         if (err) {
           res.send({ "status": "error", "data": [err,response] });
-        } else if (!err && response.statusCode == 200 ) {
-          res.send({ "status": "success", "data": response.body });
         } else {
-          res.send({ "status": "fail", "data": { "msg": response.parsed } });
-        }
-      }
-    );
-})
-
-app.post('/addUser', function(req, res) {
-	var argsValue = ['{\"UserID\":\"user1\", \"FirstName\":\"fname\" , \"LastName\":\"lname\" , \"SmartMeterID\":\"123\", \"UserType\":\"Prosumer\"}'];
-    options.method_type="invoke";
-      options.func="AddUser";
-      options.args=argsValue;
-      sharedaccums_lib.call_chaincode(options,function (err, response) {
-        if (err) {
-          res.send({ "status": "error", "data": [err,response] });
-        } else if (!err) {
-          res.send({ "status": "success", "data": response.parsed });
-        } else {
-          res.send({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
-        }
-      }
-    );
-})
-
-app.get('/getUser', function(req, res) {
-	options.method_type="query";
-      options.func="GetUser";
-      //options.args=[query.userid + "_" + query.userType];
-      options.args=["user1_Prosumer"];
-      sharedaccums_lib.call_chaincode(options,function (err, response) {
-        if (err) {
-          res.send({ "status": "error", "data": [err,response] });
-        } else if (!err && response.statusCode == 200 ) {
-          res.send({ "status": "success", "data": response.body });
-        } else {
-          res.send({ "status": "fail", "data": { "msg": response.parsed } });
+          res.send({ "status": "success", "data": { "msg": response.parsed } });
         }
       }
     );
@@ -209,7 +174,7 @@ app.get('/getUser', function(req, res) {
 
 app.post('/createPostalPackage', function(req, res) {
 	console.log("app.js - Process claim is calling");
-	var packageId="EX103456792US";
+	/*var packageId="EX103456792US";
 	var weight="57"
 	var originCountry="China";
 	var destinationCountry="USA";
@@ -218,14 +183,24 @@ app.post('/createPostalPackage', function(req, res) {
 	var packageType="Express";
 	var originReceptacleId="REC123456791US"
 	var dispatchId="CNBJSAUSJFKAAUN81254";
-	var lastUpdated="05/25/2018";
+	var lastUpdated="05/25/2018";*/
+  var packageId=req.body.packageId;
+  var weight=req.body.weight;
+  var originCountry=req.body.originCountry;
+  var destinationCountry=req.body.destinationCountry;
+  var settlementStatus=req.body.settlementStatus;
+  var shipmentStatus=req.body.shipmentStatus;
+  var packageType=req.body.packageType;
+  var originReceptacleId=req.body.originReceptacleId;
+  var dispatchId=req.body.dispatchId;
+  var lastUpdated=req.body.lastUpdated;
 	//var subscriberId = req.body.subscriberID;
 		//var argsValue=['{\"postalId\":\"China1\"}'];
 	  var argsValue = ['{\"PackageID\":\"' + packageId + '\", \"Weight\":\"' + weight + '\" , \"OriginCountry\":\"' + originCountry + '\" , \"DestinationCountry\":\"' + destinationCountry + '\", \"SettlementStatus\":\"' + settlementStatus + '\" , \"ShipmentStatus\":\"' + shipmentStatus + '\", \"OriginReceptacleID\":\"' + originReceptacleId + '\", \"DispatchID\":\"' + dispatchId + '\" , \"LastUpdated\":\"' + lastUpdated + '\"}'];
 	  options.method_type="invoke";
       options.func="createPostalPackage";
       options.args=argsValue;
-      sharedaccums_lib.call_chaincode(options,function (err, response) {
+      postalscm_lib.call_chaincode(options,function (err, response) {
         if (err) {
           res.send({ "status": "error", "data": [err,response] });
         } else if (!err) {
@@ -240,17 +215,17 @@ app.post('/createPostalPackage', function(req, res) {
 
 app.get('/getPostalPackage', function(req, res) {
 	console.log("app.js - package details is calling");
-	options.method_type="query";
+     var packageId=req.query.packageId;
+	   options.method_type="query";
       options.func="queryPackage";
       //options.args=[query.userid + "_" + query.userType];
-      options.args=["EX103456792US"];
-      sharedaccums_lib.call_chaincode(options,function (err, response) {
+      //options.args=["EX103456792US"];
+      options.args=[packageId];
+      postalscm_lib.call_chaincode(options,function (err, response) {
         if (err) {
           res.send({ "status": "error", "data": [err,response] });
-        } else if (!err && response.statusCode == 200 ) {
-          res.send({ "status": "success", "data": response.body });
         } else {
-          res.send({ "status": "fail", "data": { "msg": response.parsed } });
+          res.send({ "status": "success", "data": { "msg": response.parsed } });
         }
       }
     );
@@ -260,15 +235,17 @@ app.get('/getPostalPackage', function(req, res) {
 //Rest Api for postal scm
 app.post('/updateSettlementStatus', function(req, res) {
 	console.log("app.js - Process claim is calling");
-	var packageId="EX103456792US";
-	var settlementStatus="Reconciled1"
+	/*var packageId="EX103456792US";
+	var settlementStatus="Reconciled1"*/
+  var packageId=req.body.packageId;
+  var settlementStatus=req.body.settlementStatus;
 	//var country="China";
 	  //var argsValue = ['{\"PostalId\":\"' + postalId + '\", \"Name\":\"' + name + '\" , \"Country\":\"' + country + '\"}'];
 	  var argsValue = [packageId,settlementStatus];
 	  options.method_type="invoke";
       options.func="updateSettlementStatus";
       options.args=argsValue;
-      sharedaccums_lib.call_chaincode(options,function (err, response) {
+      postalscm_lib.call_chaincode(options,function (err, response) {
         if (err) {
           res.send({ "status": "error", "data": [err,response] });
         } else if (!err) {
@@ -282,15 +259,20 @@ app.post('/updateSettlementStatus', function(req, res) {
 //Rest Api for postal scm
 app.post('/updateShipmentStatus', function(req, res) {
 	console.log("app.js - Process claim is calling");
-	var packageId="EX103456792US";
+	/*var packageId="EX103456792US";
 	var shipmentStatus="Reconciled1";
 	var originReceptacleId="REC123456791US";
-	var dispatchId="CNBJSAUSJFKAAUN81254";
+	var dispatchId="CNBJSAUSJFKAAUN81254";*/
+  var packageId=req.body.packageId;
+  var shipmentStatus=req.body.shipmentStatus;
+  var originReceptacleId=req.body.originReceptacleId;
+  var dispatchId=req.body.dispatchId;
+
 	var argsValue = [packageId,shipmentStatus,originReceptacleId,dispatchId];
 	  options.method_type="invoke";
       options.func="updateShipmentStatus";
       options.args=argsValue;
-      sharedaccums_lib.call_chaincode(options,function (err, response) {
+      postalscm_lib.call_chaincode(options,function (err, response) {
         if (err) {
           res.send({ "status": "error", "data": [err,response] });
         } else if (!err) {
@@ -300,6 +282,43 @@ app.post('/updateShipmentStatus', function(req, res) {
         }
       });
 })
+
+/*
+app.post('/addUser', function(req, res) {
+  var argsValue = ['{\"UserID\":\"user1\", \"FirstName\":\"fname\" , \"LastName\":\"lname\" , \"SmartMeterID\":\"123\", \"UserType\":\"Prosumer\"}'];
+    options.method_type="invoke";
+      options.func="AddUser";
+      options.args=argsValue;
+      postalscm_lib.call_chaincode(options,function (err, response) {
+        if (err) {
+          res.send({ "status": "error", "data": [err,response] });
+        } else if (!err) {
+          res.send({ "status": "success", "data": response.parsed });
+        } else {
+          res.send({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
+        }
+      }
+    );
+})
+
+app.get('/getUser', function(req, res) {
+  options.method_type="query";
+      options.func="GetUser";
+      //options.args=[query.userid + "_" + query.userType];
+      options.args=["user1_Prosumer"];
+      postalscm_lib.call_chaincode(options,function (err, response) {
+        if (err) {
+          res.send({ "status": "error", "data": [err,response] });
+        } else if (!err && response.statusCode == 200 ) {
+          res.send({ "status": "success", "data": response.body });
+        } else {
+          res.send({ "status": "fail", "data": { "msg": response.parsed } });
+        }
+      }
+    );
+})
+
+*/
 
 // get the app environment from Cloud Foundry
 var appEnv = cfenv.getAppEnv();
