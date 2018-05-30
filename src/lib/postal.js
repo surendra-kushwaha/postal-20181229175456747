@@ -107,8 +107,8 @@ class Postal {
    */
   
   async createPackage(payload) {
-    winston.info('Postal:<createPackage> test');
-    winston.debug('Payload received test2121:', payload);
+    winston.info('Postal:<createPackage>');
+    winston.debug('Payload received', payload);
     /*const factory = this.businessNetworkDefinition.getFactory();
 
     const packageConcept = factory.newConcept(workspace, 'Package');
@@ -121,33 +121,60 @@ class Postal {
     packageConcept.lastUpdated = payload.lastUpdated;
     packageConcept.settlementStatus = payload.settlementStatus;
 */
-    winston.info('Postal:<createPackage> test1');
   var packageId=payload.packageId;
-  winston.info('Postal:<createPackage> test11'+packageId);
   var weight=payload.weight;
   var originCountry=payload.originCountry;
   var destinationCountry=payload.destinationCountry;
   var settlementStatus=payload.settlementStatus;
-  winston.info('Postal:<createPackage> test1$1');
   var shipmentStatus=payload.shipmentStatus;
   var packageType=payload.packageType;
   var originReceptacleId=payload.receptacleId;
   var dispatchId=payload.dispatchId;
   var lastUpdated=payload.lastUpdated;
-  winston.info('Postal:<createPackage> test1##1');
 	//var subscriberId = req.body.subscriberID;
 		//var argsValue=['{\"postalId\":\"China1\"}'];
   var argsValue = ['{\"PackageID\":\"' + packageId + '\", \"Weight\":\"' + weight + '\" , \"OriginCountry\":\"' + originCountry + '\" , \"DestinationCountry\":\"' + destinationCountry + '\", \"SettlementStatus\":\"' + settlementStatus + '\" , \"ShipmentStatus\":\"' + shipmentStatus + '\", \"OriginReceptacleID\":\"' + originReceptacleId + '\",  \"PackageType\":\"' + packageType + '\", \"DispatchID\":\"' + dispatchId + '\" , \"LastUpdated\":\"' + lastUpdated + '\"}'];
   options.method_type="invoke";
       options.func="createPostalPackage";
       options.args=argsValue;
-      winston.info("before callback from blockchain"+argsValue);
       postalscm_lib.call_chaincode(options,function (err, response) {
     	  winston.info("callback from blockchain");
         if (err) {
         	winston.info({ "status": "error", "data": [err,response] });
         } else if (!err) {
         	winston.info({ "status": "success", "data": response });
+        	var blockchainPackage=JSON.parse(response.data);
+            //console.log("response data111:::"+blockchainPackage.PackageID);
+            //Save the data to DB start
+            const postalData = {
+            dispatchId: blockchainPackage.DispatchID,
+            packageId: blockchainPackage.PackageID,
+            receptacleId: blockchainPackage.OriginReceptacleID,
+            uniqueId: "",
+            originPost: blockchainPackage.OriginCountry,
+            destinationPost: blockchainPackage.DestinationCountry,
+            packageType: blockchainPackage.PackageType,
+            weight: blockchainPackage.Weight,
+            currentStatus: "",
+            settlementStatus: blockchainPackage.SettlementStatus,
+            shipmentStatus: blockchainPackage.ShipmentStatus,
+            startDate: "",
+            endDate: "",
+            //dateCreated: blockchainPackage.LastUpdated,
+            dateCreated: "",
+           };
+            winston.info("PostalData to save in DB::"+JSON.stringify(postalData));
+           const postal = new PostalPackage(postalData);
+            postal.save((err, result) => {
+              if (err) {
+                console.log({ status: 'fails', data: err });
+              } else {
+            	  winston.info("package data saved successfully to mongodb");
+            	  winston.info({ status: 'success', data: result });
+              }
+            });
+          //Save the data to DB end
+        	
         } else {
         	winston.info({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
         }

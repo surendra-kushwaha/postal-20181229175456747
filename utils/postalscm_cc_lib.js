@@ -18,10 +18,6 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 			event_url: g_options.event_url,
 			endorsed_hook: options.endorsed_hook,
 			ordered_hook: options.ordered_hook,
-			/*cc_function: 'AddUser',
-			cc_args: [
-				"{\"UserID\": \"0\", \"Date\":\"20170722110112\", \"Price\":\"6\"}"
-			],*/
 			cc_function:options.func,
 			cc_args:options.args,
 			peer_tls_opts: g_options.peer_tls_opts,
@@ -30,7 +26,7 @@ module.exports = function (enrollObj, g_options, fcw, logger) {
 				fcw.invoke_chaincode(enrollObj, opts, function (err, resp) {
 					if (cb) {
 						if(!resp) resp = {};
-						resp.id = opts.cc_args[0];			//pass marble id back
+						resp.data = opts.cc_args[0];			//pass marble id back
 						cb(err, resp);
 					}
 				});
