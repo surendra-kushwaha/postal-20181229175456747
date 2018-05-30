@@ -1,25 +1,91 @@
 {
-	"name": "NodejsStarterApp",
-	"version": "0.0.1",
-	"private": true,
-	"scripts": {
-		"start": "node app.js"
-	},
-	"dependencies": {
-		"express": "4.13.x",
-		"body-parser": "1.17.x",
-		"ws": "1.1.x",
-		"winston": "2.2.x",
-		"jade": "1.1.x",
-		"dateformat": "2.0.x",
-		"querystring": "0.2.x",
-		"fabric-ca-client": "1.0.5",
-		"fabric-client": "1.0.5",
-		"grpc": "1.10.1",
-		"cfenv": "1.0.x"
-	},
-	"repository": {},
-	"engines": {
-		"node": "6.x"
-	}
+    "name": "api",
+    "version": "0.0.0",
+    "private": true,
+    "engines": {
+        "node": "^8.9.4"
+    },
+    "dependencies": {
+        "body-parser": "^1.18.2",
+        "composer-client": "^0.19.5",
+        "compression": "^1.7.2",
+        "cookie-parser": "^1.4.3",
+        "cors": "^2.8.4",
+        "ejs": "^2.6.1",
+        "express": "^4.15.5",
+        "mongodb": "^3.1.0-beta4",
+        "mongoose": "^5.1.1",
+        "morgan": "^1.9.0",
+        "pretty-error": "^2.1.1",
+        "source-map-support": "^0.5.3",
+        "swagger-ui-express": "^3.0.8",
+        "validator": "^10.2.0",
+        "winston": "^2.4.0",
+        "winston-daily-rotate-file": "^1.7.2",
+        "yamljs": "^0.3.0",
+        "ws": "1.1.x",
+        "jade": "1.1.x",
+        "dateformat": "2.0.x",
+        "querystring": "0.2.x",
+        "fabric-ca-client": "1.0.5",
+        "fabric-client": "1.0.5",
+        "grpc": "1.10.1",
+        "cfenv": "1.0.x",
+        "yamljs": "^0.3.0"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-core": "^6.26.0",
+        "babel-eslint": "^8.2.2",
+        "babel-jest": "^22.4.1",
+        "babel-plugin-transform-class-properties": "^6.24.1",
+        "babel-plugin-transform-export-extensions": "^6.22.0",
+        "babel-plugin-transform-flow-strip-types": "^6.22.0",
+        "babel-plugin-transform-object-rest-spread": "^6.26.0",
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "babel-preset-env": "^1.6.0",
+        "babel-preset-minify": "^0.3.0",
+        "babel-register": "^6.26.0",
+        "chokidar": "^2.0.2",
+        "del": "3.0.0",
+        "eslint": "^4.18.1",
+        "eslint-config-airbnb-base": "^12.0.1",
+        "eslint-config-prettier": "^2.6.0",
+        "eslint-plugin-flowtype": "^2.46.1",
+        "eslint-plugin-import": "^2.9.0",
+        "eslint-plugin-prettier": "^2.3.1",
+        "flow-bin": "^0.66.0",
+        "husky": "^0.14.3",
+        "jest": "^22.4.2",
+        "jest-cli": "^22.4.2",
+        "jest-tobetype": "^1.1.0",
+        "lint-staged": "^7.0.0",
+        "prettier": "^1.7.1"
+    },
+    "jest": {
+        "setupTestFrameworkScriptFile": "<rootDir>/tools/jest.setup.js"
+    },
+    "lint-staged": {
+        "*.js": [
+            "eslint --fix",
+            "git add --force"
+        ],
+        "*.{json}": [
+            "prettier --parser json --write",
+            "git add --force"
+        ]
+    },
+    "scripts": {
+        "precommit": "lint-staged",
+        "lint": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" .",
+        "fix": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" --fix .",
+        "check": "flow check",
+        "test": "jest",
+        "test-watch": "jest --watch",
+        "build": "node tools/build.js",
+        "build-watch": "node tools/build.js --watch",
+        "debug": "node --inspect=0.0.0.0:9229  tools/run.js",
+        "dev": "node tools/run.js",
+        "start": "node build/server.js"
+    }
 }

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>View Reports</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="css/font.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+</head>
+
+<body ng-app="mainApp" ng-controller="ViewReportsController" class="ng-cloak">
+  <nav class="full-screen-menu">
+    <ul>
+      <img src="Icon/Close Blue@2x.png" class="close-button" alt="Close">
+      <li>
+        <a href="/home.html">Simulate Package Events
+          <img src="Icon/Chevron Blue@2x.png" class="float-right">
+        </a>
+      </li>
+      <li>
+        <a href="/viewReports.html">View Reports
+          <img src="Icon/Chevron Blue@2x.png" class="float-right">
+        </a>
+      </li>
+      <li>
+        <a href="/index.html">Log Out
+          <img src="Icon/Chevron Blue@2x.png" class="float-right">
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <header>
+    <a href="/home.html">
+      < Back</a>
+        <div class="title">
+          POSTAL SETTLEMENT APPLICATION
+          <button class="menu-button">
+            <img src="Icon/Menu.png" alt="Menu">
+          </button>
+        </div>
+        <div class="user mt-5">View Reports</div>
+  </header>
+  <div class="container" ng-if="tableData.length>0">
+    <div class="search">
+      <img src="Icon/serach.png" alt="search">
+      <input type="text" placeholder="Search by Package ID or Status" ng-model="searchText" />
+    </div>
+    <div class="table-responsive-sm">
+      <table class="table" style="font-family:IBMPlexSans-Bold;">
+        <thead>
+          <tr>
+            <th scope="col">DATE RANGE</i>
+            </th>
+            <th scope="col">DATE CREATED</i>
+            </th>
+            <th scope="col">ORIGIN COUNTRY</i>
+            </th>
+            <th scope="col">DESTINATION COUNTRY</i>
+            </th>
+            <th scope="col">LINK TO REPORT</i>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="data in tableData | filter:searchText" style="font-family:IBMPlexSans-Regular;">
+            <td> {{data.startDate | date : "MM/dd/y" }} – {{data.endDate | date : "MM/dd/y" }}</td>
+            <td>{{data.dateCreated | date : "MM/dd/y" }}</td>
+            <td>{{data.originPost}}</td>
+            <td>{{data.destinationPost}}</td>
+            <td>
+              <a href="#" ng-click="moveToDispatchReportScreen(data)">View report ></a>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+    <!-- <div class="pagecount">
+    <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+    <li class="page-item disabled">
+    <a class="page-link" href="#" tabindex="-1"><img src="Icon/Chevron Dark.png" alt="previous"/></a>
+    </li>
+    <li class="page-item"><a class="page-link" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+    <li class="page-item"><a class="page-link" href="#">...</a></li>
+    <li class="page-item"><a class="page-link" href="#">10</a></li>
+    <li class="page-item">
+    <a class="page-link" href="#"><img src="Icon/Chevron Dark.png" alt="next" style="transform: rotate(180deg);"/></a>
+    </li>
+    </ul>
+    </nav>
+    </div> -->
+    <a href="/home.html">
+      <div class="back" style="font-family:IBMPlexSans-Regular;">
+
+        < Back </div>
+    </a>
+    </div>
+    <div class="back" ng-if="tableData.length==0" style="font-family:'IBMPlexSans-Bold';margin-top:10%;">
+
+      NO DATA
+    </div>
+    <footer class="footer pt-3">
+      <img src="Icon/Package footer.png" alt="">
+      <div class="copyright">
+        <p>Copyright © 2018 Accenture.</p>
+        <p>All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/controllers/main.js"></script>
+    <script src="js/controllers/viewReportsController.js"></script>
+
+    </script>
+</body>
+
+</html>

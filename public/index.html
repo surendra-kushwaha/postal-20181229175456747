@@ -1,136 +1,42 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <link href="./img/favicon.png" rel="shortcut icon"/>
-        <meta charset="utf-8"/>
-        <meta content="width=1440px, maximum-scale=1.0" name="viewport"/>
-        <link href="./css/loginDesktop.css" rel="stylesheet" type="text/css"/>
-        <meta content="Launchpad by Anima" name="author">
-        </meta>
-    </head>
-    <body style="margin: 0;
- background: rgba(255, 255, 255, 1.0);">
-        <input id="anPageName" name="page" type="hidden" value="logindesktop"/>
-        <div class="login-desktop">
-            <div style="width: 1440px; height: 100%; position:relative; margin:auto;">
-                <img anima-src="./img/login desktoprectangle.png" class="rectangle" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
-                <div class="page1">
-                    <img anima-src="./img/login desktopfill 1.png" class="fill1" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
-                    <img anima-src="./img/login desktopfill 3.png" class="fill3" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
-                    <img anima-src="./img/login desktopfill 5.png" class="fill5" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
-                </div>
-                <div class="group2">
-                    <div class="settlement-demo">
-                        SETTLEMENT DEMO
-                    </div>
-                    <div class="group">
-                        <div class="rectangle7">
-                        </div>
-                        <div class="page11">
-                            <img anima-src="./img/login desktopfill 1  1.png" class="fill11" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
-                            <img anima-src="./img/login desktopfill 3  1.png" class="fill31" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
-                            <img anima-src="./img/login desktopfill 5  1.png" class="fill51" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
-                        </div>
-                    </div>
-                    <div class="ui-input">
-                        <div class="rectangle2">
-                        </div>
-                        <input class="text-username" name="textUsername" placeholder="Username"/>
-                    </div>
-                    <div class="ui-input1">
-                        <div class="rectangle21">
-                        </div>
-                        <input class="text-password" name="textPassword" placeholder="Password"/>
-                    </div>
-                    <div class="button-primary-blue" onclick="abc()">
-                        <div class="rectangle2-copy2">
-                        </div>
-                        <div class="l-ogin" >
-                            LOGIN
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="css/font.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <title>Login Desktop</title>
+</head>
+
+<body class="login-body" ng-app="mainApp" ng-controller="LoginController" class="ng-cloak">
+  <div class="container-fluid">
+    <img src="Icon/Package login.png" class="login-png">
+    <div class="login">
+      <img src="Icon/Package Icon.png" class="package-icon-png" />
+      <div class="package-title">SETTLEMENT DEMO</div>
+      <form name="login-form" class="mx-auto">
+        <div class="form-group">
+          <input type="text" class="form-control" id="username" ng-model="username" placeholder="Username" />
         </div>
-        <!-- Scripts -->
-        <script>
-		function abc(){
-		window.location.href="homepagedesktop.html";
-		}
-            anima_isHidden = function(e) {
-                if (!(e instanceof HTMLElement)) return !1;
-                if (getComputedStyle(e).display == "none") return !0; else if (e.parentNode && anima_isHidden(e.parentNode)) return !0;
-                return !1;
-            };
-            anima_loadAsyncSrcForTag = function(tag) {
-                var elements = document.getElementsByTagName(tag);
-                var toLoad = [];
-                for (var i = 0; i < elements.length; i++) {
-                    var e = elements[i];
-                    var src = e.getAttribute("src");
-                    var loaded = (src != undefined && src.length > 0 && src != 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
-                    if (loaded) continue;
-                    var asyncSrc = e.getAttribute("anima-src");
-                    if (asyncSrc == undefined || asyncSrc.length == 0) continue;
-                    if (anima_isHidden(e)) continue;
-                    toLoad.push(e);
-                }
-                toLoad.sort(function(a, b) {
-                    return anima_getTop(a) - anima_getTop(b);
-                });
-                for (var i = 0; i < toLoad.length; i++) {
-                    var e = toLoad[i];
-                    var asyncSrc = e.getAttribute("anima-src");
-                    e.setAttribute("src", asyncSrc);
-                }
-            };
-            anima_pauseHiddenVideos = function(tag) {
-                var elements = document.getElementsByTagName("video");
-                for (var i = 0; i < elements.length; i++) {
-                    var e = elements[i];
-                    var isPlaying = !!(e.currentTime > 0 && !e.paused && !e.ended && e.readyState > 2);
-                    var isHidden = anima_isHidden(e);
-                    if (!isPlaying && !isHidden && e.getAttribute("autoplay") == "autoplay") {
-                        e.play();
-                    } else if (isPlaying && isHidden) {
-                        e.pause();
-                    }
-                }
-            };
-            anima_loadAsyncSrc = function(tag) {
-                anima_loadAsyncSrcForTag("img");
-                anima_loadAsyncSrcForTag("iframe");
-                anima_loadAsyncSrcForTag("video");
-                anima_pauseHiddenVideos();
-            };
-            var anima_getTop = function(e) {
-                var top = 0;
-                do {
-                    top += e.offsetTop || 0;
-                    e = e.offsetParent;
-                } while (e);
-                return top;
-            };
-            anima_loadAsyncSrc();
-            anima_old_onResize = window.onresize;
-            anima_new_onResize = undefined;
-            anima_updateOnResize = function() {
-                if (anima_new_onResize == undefined || window.onresize != anima_new_onResize) {
-                    anima_new_onResize = function(x) {
-                        if (anima_old_onResize != undefined) anima_old_onResize(x);
-                        anima_loadAsyncSrc();
-                    };
-                    window.onresize = anima_new_onResize;
-                    setTimeout(function() {
-                        anima_updateOnResize();
-                    }, 3000);
-                }
-            };
-            anima_updateOnResize();
-            setTimeout(function() {
-                anima_loadAsyncSrc();
-            }, 200);
-        </script>
-        <!-- End of Scripts -->
-    </body>
+        <div class="form-group">
+          <input type="password" class="form-control" id="password" ng-model="password" placeholder="Password" />
+        </div>
+        <input type="submit" class="btn btn-primary" name="Submit" ng-click="validateUser(username,password)" value="LOGIN" />
+      </form>
+    </div>
+  </div>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/angular.min.js"></script>
+  <script src="js/controllers/main.js"></script>
+  <script src="js/controllers/loginController.js"></script>
+</body>
+
 </html>

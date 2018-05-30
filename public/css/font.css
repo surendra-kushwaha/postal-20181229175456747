@@ -1,0 +1,20 @@
+@font-face {
+    font-family: IBMPlexSans-Bold;
+    src: url(../fonts/IBMPlexSans-Bold.otf);
+}
+@font-face {
+    font-family: IBMPlexSans-Light;
+    src: url(../fonts/IBMPlexSans-Light.otf);
+}
+@font-face {
+    font-family: IBMPlexSans-Medium;
+    src: url(../fonts/IBMPlexSans-Medium.otf);
+}
+@font-face {
+    font-family: IBMPlexSans-Regular;
+    src: url(../fonts/IBMPlexSans-Regular.otf);
+}
+@font-face {
+    font-family: IBMPlexSans-SemiBold;
+    src: url(../fonts/IBMPlexSans-SemiBold.otf);
+}

@@ -1,0 +1,335 @@
+swagger: '2.0'
+info:
+  description: >-
+    This is the API for the backend server (orchestrator) of the US Post prototype for the ACIT Cloud Studio
+  version: 1.0.0
+  title: Swagger USPS
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: thomas.i.jacobs@accenture.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+host: postal.mybluemix.net
+basePath: /
+tags:
+  - name: Login
+    description: login to application
+  - name: Mongo Database
+    description: Access data stored in local Mongo database
+  - name: Blockchain
+    description: Access data stored in blockchain
+  - name: Generate Data
+    description: Create data and submit the data into the environment.
+schemes:
+  - http
+paths:
+  /login:
+    post:
+      tags:
+        - Login
+      summary: Validate user's login
+      description: >-
+        This endpoint will validate the user_name/password from a local database
+        and route the user to the home screen
+      operationId: login
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: credentials
+          description: Login details for user
+          required: true
+          schema:
+            $ref: '#/definitions/Login'
+      responses:
+        '200':
+          description: User logged on successfully
+          schema: 
+            name: country
+            type: string
+        '405':
+          description: User name not found
+  /view-reports:
+    get:
+      tags:
+        - Mongo Database
+      summary: Finds all despatches details
+      description: >-
+        This endpoint will query the database to return
+        all dispatches details
+      operationId: findAllDispatches
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Got Dispatch History.
+          schema: 
+            type: array
+            items:
+                $ref: '#/definitions/Report'
+        '400':
+          description: Invalid status value
+  /report:
+    post:
+      tags:
+        - Mongo Database
+      summary: Gets all packages associated with a dispatchID
+      description: >-
+        This endpoint will take the Report Parameters to get all packages associated with it
+      operationId: dispatchPackages
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: report_paramters
+          description: report parameters to send to db for query
+          required: true
+          schema:
+            $ref: '#/definitions/Report'
+      responses:
+        '200':
+          description: Got Report.
+          schema: 
+            type: array
+            items:
+                $ref: '#/definitions/Dispatch'
+        '405':
+          description: Was not able to get history 
+  /package-report:
+    get:
+      tags:
+        - Mongo Database
+      summary: Gets all packages associated with a dispatchID
+      description: >-
+        This endpoint will take the dispatchID to get all packages associated with it
+      operationId: dispatchPackages
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: dispatchId
+          description: The dispatchId that we want the package view of
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Got Packages.
+          schema: 
+            type: array
+            items:
+                $ref: '#/definitions/Package'
+        '405':
+          description: Was not able to get history
+  /simulate:
+    post:
+      tags:
+        - Generate Data
+      summary: Gets all simulated data
+      description: >-
+        This endpoint will take the size of simulation and get all simulated data
+      operationId: simulatedData
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: simulateQuery
+          description: size of the simulation
+          required: true
+          schema:
+            $ref: '#/definitions/simulateQuery'
+      responses:
+        '200':
+          description: Simulation complete.
+        '405':
+          description: Was not able to get simulated data  
+  
+  /update-dispatch-settlement:
+    post:
+      tags:
+        - Blockchain
+      summary: Updates settlement status for packages
+      description: >-
+        This endpoint will take the dispatchId to update the settlement status. Fill in the type variable of the updateSettlement object as 'dispatch'
+      operationId: updateSettlementStatus
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: updateSettlementObject
+          description: parameters to update settlement status
+          required: true
+          schema:
+            $ref: '#/definitions/updateSettlement'
+      responses:
+        '200':
+          description: Updated Dispatch settlement type. Returning updated dispatch object
+          schema: 
+            $ref: '#/definitions/Dispatch'
+        '405':
+          description: Was not able to get simulated data
+
+  /update-package-settlement:
+    post:
+      tags:
+        - Blockchain
+      summary: Updates settlement status for packages
+      description: >-
+        This endpoint will take the packageId to update the settlement status
+      operationId: updateSettlementStatus
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: updateSettlementObject
+          description: parameters to update settlement status. Fill in the type variable of the updateSettlement object as 'package'
+          required: true
+          schema:
+            $ref: '#/definitions/updateSettlement'
+      responses:
+        '200':
+          description: Updated package settlement status. Returning updated package object
+          schema: 
+            $ref: '#/definitions/Package'
+        '405':
+          description: Was not able to get simulated data
+ 
+  /package-history:
+    get:
+      tags:
+        - Blockchain
+      summary: Gets a package's transaction history
+      description: >-
+        This endpoint will take a packageId and return the transaction history from the blockchain
+      operationId: PackageHistory
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: packageId
+          description: size of the simulation
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Got package history.
+          schema: 
+            type: array
+            items:
+                $ref: '#/definitions/PackageHistory'
+        '405':
+          description: Was not able to get package history data  
+
+ 
+definitions:
+  PackageHistory:
+    type: object
+    properties:
+      date:
+        type: string
+      status:
+        type: string
+      statusType:
+        type: string
+        description: 'Either Settlement Status or Shipment Status'
+      statusDescription:
+        type: string
+        required: false
+      performedBy:
+        type: string
+        required: false
+        description: 'Postal Org that initiated Settlement Status'
+      
+          
+  Package:
+    type: object
+    properties:
+      packageId:
+        type: string
+      weight:
+        type: number
+      type:
+        type: string
+      dispatchId:
+        type: string
+      receptacleId:
+        type: string
+      settlementStatus:
+        type: string
+      shipmentStatus:
+        type: string
+
+  Dispatch:
+    type: object
+    properties:
+      dispatchId:
+        type: string
+      totalReconciledWeight:
+        type: number
+      totalReconciledPackages:
+        type: number
+      totalUnreconciledPackages:
+        type: number
+      totalUnreconciledWeight:
+        type: number
+      settlementStatus:
+        type: string 
+      packageType:
+        type: string
+     
+  Report:
+    type: object
+    properties: 
+      startDate:
+        type: date
+      endDate:
+        type: date
+      originPost: 
+        type: string
+      destinationPost:
+        type: string
+      dateCreated:
+        type: date
+
+  UpdateSettlement:
+    type: object
+    properties:
+      type: # dispatch or package
+        type: string
+      id:
+        type: string
+      newStatus:
+        type: string
+      post:
+        type: string # origin or destination
+      country:
+        type: string
+
+  Login:
+    type: object
+    required:
+      - user_name
+      - password
+    properties:
+      user_name:
+        type: string
+        format: Joe Patient
+      password:
+        type: string
+        format: password
+        
+  simulateQuery:
+    type: object
+    properties:
+      size:
+        type: string
+      originPost:
+        type: string
+      destinationPost:
+        type: string
+      startDate:
+        type: date
+      endDate:
+        type: date

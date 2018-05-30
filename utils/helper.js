@@ -11,7 +11,7 @@ module.exports = function (config_filename, logger) {
 
 	// default config file name
 	if (!config_filename) {
-		config_filename = 'sharedaccums.json';
+		config_filename = 'postalscm.json';
 	}
 
 	helper.config_path = path.join(__dirname, '../config/' + config_filename);

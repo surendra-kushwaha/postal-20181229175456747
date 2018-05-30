@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Package Timeline</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="css/font.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+</head>
+
+<body ng-app="mainApp" ng-controller="PackageTimelineController" class="ng-cloak">
+  <nav class="full-screen-menu">
+    <ul>
+      <img src="icon/Close Blue@2x.png" class="close-button" alt="Close">
+      <li>
+        <a ng-href="/home.html">Simulate Package Events
+          <img src="Icon/Chevron Blue@2x.png" class="float-right">
+        </a>
+      </li>
+      <li>
+        <a ng-href="/viewReport.html">View Reports
+          <img src="Icon/Chevron Blue@2x.png" class="float-right">
+        </a>
+      </li>
+      <li>
+        <a ng-href="/">Log Out
+          <img src="Icon/Chevron Blue@2x.png" class="float-right">
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <header>
+    <a href="/dispatchReport.html">
+      < Back</a>
+        <div class="title" ng-app="mainApp" ng-controller="PackageTimelineController" class="ng-cloak">
+          POSTAL SETTLEMENT APPLICATION
+          <button class="menu-button">
+            <img src="icon/Menu.png" alt="Menu">
+          </button>
+        </div>
+        <div class="user mt-3">Package Detail</div>
+  </header>
+  <div class="table-responsive dispatch-options-block mb-5" style="margin: -3.5em auto 0 auto;">
+    <table class="table">
+      <tbody>
+        <tr class="package-detail-block">
+          <td class="pt-4">
+            <p class="blue-text">WEIGHT</p>
+            <p class="normal-text mt-3">{{packageWeight}}Kg</p>
+          </td>
+          <td class="pt-4">
+            <p class="blue-text">SHIPMENT STATUS</p>
+            <p class="normal-text mt-3">{{finalShipmentStatus}}</p>
+          </td>
+          <td class="pt-4 border-0">
+            <p class="blue-text">SETTLEMENT STATUS</p>
+            <p class="normal-text mt-3">{{finalSettlementStatus}}</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p class="blue-text">RECEPTACLE ID</p>
+            <p class="normal-text mt-3">{{receptacleId}} </p>
+          </td>
+          <td>
+            <p class="blue-text">DISPATCH ID</p>
+            <p class="normal-text mt-3">{{dispatchId}}</p>
+            <a href="#" class="back">
+              < Back to All Dispatches</a>
+          </td>
+          <td>
+            <p class="blue-text">PACKAGE ID</p>
+            <p class="normal-text mt-3">{{packagId}}</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+  <div class="container">
+    <div class="track-line-title">Package Timeline</div>
+    <div class="table-responsive-sm">
+      <table class="table package-details">
+        <thead>
+          <tr>
+            <th scope="col" style="color:#12BDEB;">
+              <img src="Icon/Oval.png" alt="" class="mb-1">&nbsp;&nbsp;SHIPMENT STATUS</th>
+            <th scope="col">
+              <img src="Icon/Oval2.png" alt="" class="mb-1">&nbsp;&nbsp;SETTLEMENT STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="td in packageHistory track by $index" ng-bind-html="td">
+
+            {{td}}
+
+          </tr>
+          <!-- <tr class="first-status">
+            <td class="shipment-status-entry">
+              <p>
+                <span class="EMA mb-2">EMA</span>
+                Posting / Collection</p>
+            </td>
+            <td class="timestamp pt-0">03/23/2018 — 04:15 pm</td>
+          </tr>
+          <tr>
+            <td class="timestamp pt-2">03/23/2018 — 04:15 pm</td>
+            <td class="settlment-status-entry">
+              <p>Unreconciled</p>
+            </td>
+          </tr>
+          <tr>
+            <td class="shipment-status-entry">
+              <p>
+                <span class="EMA mb-2">EMA</span>
+                Posting / Collection</p>
+            </td>
+            <td class="timestamp pt-0">03/23/2018 — 04:15 pm</td>
+          </tr>
+          <tr>
+            <td class="timestamp pt-2">03/23/2018 — 04:15 pm</td>
+            <td class="settlment-status-entry">
+              <p>Unreconciled</p>
+            </td>
+          </tr> -->
+        </tbody>
+      </table>
+    </div>
+    <div class="back mt-5">
+      <a href="/dispatchReport.html">
+        < Back</a>
+    </div>
+  </div>
+  <footer class="footer pt-3">
+    <img src="icon/Package footer.png" alt="">
+    <div class="copyright">
+      <p>Copyright © 2018 Accenture.</p>
+      <p>All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/angular.min.js"></script>
+
+  <script src="js/dummyData.js"></script>
+
+
+
+  <script src="js/controllers/main.js"></script>
+
+  <script src="js/controllers/packageTimelineController.js"></script>
+  <script src="js/nav.js"></script>
+
+
+  </script>
+</body>
+
+</html>

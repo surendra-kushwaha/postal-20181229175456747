@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>View Reports</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="css/font.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+</head>
+
+<body ng-app="mainApp" ng-controller="DispatchReportController" class="ng-cloak" id="body-main">
+  <nav class="full-screen-menu">
+    <ul>
+      <img src="Icon/Close Blue@2x.png" class="close-button" alt="Close">
+      <li>
+        <a href="/home.html">Simulate Package Events
+          <img src="Icon/Chevron Blue@2x.png" class="float-right">
+        </a>
+      </li>
+      <li>
+        <a href="/viewReports.html">View Reports
+          <img src="Icon/Chevron Blue@2x.png" class="float-right">
+        </a>
+      </li>
+      <li>
+        <a href="/index.html">Log Out
+          <img src="Icon/Chevron Blue@2x.png" class="float-right">
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <header>
+    <a href="/home.html">
+      < Back</a>
+        <div class="title">
+          POSTAL SETTLEMENT APPLICATION
+          <button class="menu-button">
+            <img src="Icon/Menu.png" alt="Menu">
+          </button>
+        </div>
+        <div class="user" style="display:none">View Reports</div>
+  </header>
+
+  <div class="table-responsive dispatch-options-block">
+    <table class="table">
+      <thead>
+        <tr class="border-0">
+          <th scope="col" class="p-0">
+            <a href="#" class="active" id="summary-link" ng-click="callback('summary-link')">Summary View</a>
+            </i>
+          </th>
+          <th scope="col" class="p-0">
+            <a href="#" id="reconcile-link" ng-click="callback('reconcile-link')">Reconciled Dispatch</a>
+            </i>
+          </th>
+          <th scope="col" class="p-0">
+            <a href="#" id="unreconcile-link" ng-click="callback('unreconcile-link')">Unreconciled Dispatch</a>
+            </i>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="p-0">
+            <div class="mt-3 summary-view">
+              <img src="Icon/Active.png" alt="origin" id="origin-img" style="cursor: pointer;" ng-click="originDispatches()">
+              <span class="OD-line"></span>
+              <img src="Icon/Unactive.png" id="destination-img" style="cursor: pointer;" ng-click="destinationDispatches()" alt="destonation">
+              <div class="OD-countries">
+                <div>
+                  <p class="blue-text">ORIGIN</p>
+                  <p class="normal-text mt-1">{{originPost}}</p>
+                </div>
+                <div>
+                  <p class="blue-text">DESTINATION</p>
+                  <p class="normal-text mt-1">{{destinationPost}}</p>
+                </div>
+              </div>
+          </td>
+          <td>
+            <p class="blue-text mt-4">PACKAGE TYPE</p>
+            <div class="pakage-options">
+              <!-- <select ng-if="false" ng-model="parcelType" ng-options="x for x in parcelRegistry">
+
+              </select> -->
+
+              <select>
+
+               <option value="Package Type">Package Type</option>
+                <option value="Tracked Packet">Tracked Packet</option>
+                <option value="Express">Express</option>
+                <option value="Untracked Packet">Untracked Packet</option>
+                <option value="Parcel">Parcel</option>
+                <option value="Registered">Registered</option>
+                <!-- <option ng-repeat="item in parcelRegistry" ng-value="item">{{item}}</option>-->
+              </select>
+            </div>
+          </td>
+          <td class="border-0">
+            <p class="blue-text mt-4">DATA RANGE</p>
+            <p class="normal-text mt-4">{{startDate}}
+              <img src="Icon/line.png" class="mb-1 px-2" />{{endDate}}</p>
+          </td>
+        </tr>
+        <tr ng-if="!dispatchView" id="package-id-container">
+          <td colspan="3">
+            <p class="blue-text">DISPATCH ID</p>
+            <p class="normal-text mt-3">{{dispatchId}}</p>
+            <a href="#" ng-click="backToAllDispatch()" class="back">
+              < Back to All Dispatches</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+    <div class="container" id="table-container" style="display: none;">
+      <div class="search" ng-if="dispatches.length>0">
+        <img src="Icon/serach.png" alt="search">
+        <input type="text" placeholder="Search by {{searchBy}} or Settlement Status" ng-model="searchText" />
+      </div>
+      <div class="table-responsive-sm">
+        <table class="table" ng-if="dispatches.length>0">
+          <thead>
+            <tr>
+              <th scope="col" ng-repeat="column in tableColumns">{{column}}</th>
+            </tr>
+          </thead>
+          <tbody ng-if="dispatchView" id="dispatch-table">
+            <tr ng-repeat="dispatch in dispatches | filter:  parcelType">
+              <td>
+                <a href="#" ng-click="moveToPackageScreen(dispatch.dispatchId)">{{dispatch.dispatchId}}</a>
+              </td>
+              <td>{{dispatch.totalReconciledWeight}}</td>
+              <td>{{dispatch.totalReconciledPackages}}</td>
+              <td>{{dispatch.settlementStatus}}</td>
+              <!-- <td ng-if="displayAction">
+Action
+</td> -->
+            </tr>
+          </tbody>
+          <tbody ng-if="!dispatchView" id="package-table">
+            <tr ng-repeat="package in packages | filter:  parcelType ">
+              <td>
+                <a href="#" ng-click="moveToPackageTimeLineScreen(package)">{{package.packageId}}</a>
+              </td>
+              <td>{{package.weight}}</td>
+              <td>{{package.shipmentStatus}}</td>
+              <td>{{package.settlementStatus}}</td>
+              <td ng-if="displayAction">
+                <div ng-if="package.displayPackageActionDropdown">
+                  <select ng-model="selectedAction" ng-change="updateAction(selectedAction,package.packageId)" ng-options="x for x in package.actionRegistry">
+                    <option value="">Action</option>
+
+                  </select>
+                  <!-- <select>
+                    <option value="">Action</option>
+                    <option value="actionRegistry[0]">{{actionRegistry[0]}}</option>
+                    <option value="actionRegistry[1]">{{actionRegistry[1]}}</option>
+                  </select> -->
+                </div>
+                <div ng-if="!package.displayPackageActionDropdown" ng-click="updateAction(package.packageUpdateAction,package.packageId)"
+                  class="action" style="cursor: pointer;">
+                  {{package.packageUpdateAction}}&nbsp;&nbsp;&nbsp;
+                  <img ng-if="package.packageUpdateAction!='NA'" src="Icon/Chevron Blue.png">
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- <div class="pagecount">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1"><img src="Icon/Chevron Dark.png" alt="previous"/></a>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">...</a></li>
+          <li class="page-item"><a class="page-link" href="#">10</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#"><img src="Icon/Chevron Dark.png" alt="next" style="transform: rotate(180deg);"/></a>
+          </li>
+        </ul>
+      </nav>
+    </div> -->
+      <div class="back" ng-if="dispatches.length>0">
+        <a href="#">
+          < Back</a>
+      </div>
+      <div class="back" ng-if="dispatches.length==0" style="font-family:'IBMPlexSans-Bold';margin-top:10%;">
+
+        NO DATA
+      </div>
+      <div ng-if="!dispatchView" class="dispute-btn my-5" id="dispute-all">
+        <button type="button" class="btn">DISPUTE ALL</button>
+      </div>
+    </div>
+
+    <div class="container" id="summary-container" style="display: block;">
+      <div class="row summary-data mt-2 p-5">
+        <div class="col-md-3 col-sm-5 col-xs-4">
+          <div class="circle-data">{{totalReconciledPackages}}</div>
+          <p class="circle-caption">Total Reconciled Items</p>
+        </div>
+        <div class="col-md-3 col-sm-5 col-xs-4">
+          <div class="circle-data">{{totalReconciledWeight}}</div>
+          <p class="circle-caption">Total Reconciled Weight (kg)</p>
+        </div>
+        <div class="col-md-3 col-sm-5 col-xs-4">
+          <div class="circle-data">{{totalUnreconciledPackages}}</div>
+          <p class="circle-caption">Total Unreconciled Items</p>
+        </div>
+        <div class="col-md-3 col-sm-5 col-xs-4">
+          <div class="circle-data">{{totalUnreconciledWeight}}</div>
+          <p class="circle-caption">Unreconciled Package Weight (kg)</p>
+        </div>
+      </div>
+
+      <div class="back">
+        <a href="/home.html">
+          < Back</a>
+      </div>
+    </div>
+    <footer class="footer pt-3">
+      <img src="Icon/Package footer.png" alt="">
+      <div class="copyright">
+        <p>Copyright © 2018 Accenture.</p>
+        <p>All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/dummyData.js"></script>
+
+    <script src="js/controllers/main.js"></script>
+    <script src="js/controllers/dispatchReportController.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/custom-select.js"></script>
+
+    </script>
+</body>
+
+</html>
