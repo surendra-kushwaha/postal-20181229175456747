@@ -107,8 +107,8 @@ class Postal {
    */
   
   async createPackage(payload) {
-    winston.info('Postal:<createPackage>');
-    winston.debug('Payload received:', payload);
+    winston.info('Postal:<createPackage> test');
+    winston.debug('Payload received test2121:', payload);
     /*const factory = this.businessNetworkDefinition.getFactory();
 
     const packageConcept = factory.newConcept(workspace, 'Package');
@@ -121,24 +121,27 @@ class Postal {
     packageConcept.lastUpdated = payload.lastUpdated;
     packageConcept.settlementStatus = payload.settlementStatus;
 */
-
+    winston.info('Postal:<createPackage> test1');
   var packageId=payload.packageId;
+  winston.info('Postal:<createPackage> test11'+packageId);
   var weight=payload.weight;
   var originCountry=payload.originCountry;
   var destinationCountry=payload.destinationCountry;
   var settlementStatus=payload.settlementStatus;
+  winston.info('Postal:<createPackage> test1$1');
   var shipmentStatus=payload.shipmentStatus;
   var packageType=payload.packageType;
   var originReceptacleId=payload.receptacleId;
   var dispatchId=payload.dispatchId;
   var lastUpdated=payload.lastUpdated;
+  winston.info('Postal:<createPackage> test1##1');
 	//var subscriberId = req.body.subscriberID;
 		//var argsValue=['{\"postalId\":\"China1\"}'];
   var argsValue = ['{\"PackageID\":\"' + packageId + '\", \"Weight\":\"' + weight + '\" , \"OriginCountry\":\"' + originCountry + '\" , \"DestinationCountry\":\"' + destinationCountry + '\", \"SettlementStatus\":\"' + settlementStatus + '\" , \"ShipmentStatus\":\"' + shipmentStatus + '\", \"OriginReceptacleID\":\"' + originReceptacleId + '\",  \"PackageType\":\"' + packageType + '\", \"DispatchID\":\"' + dispatchId + '\" , \"LastUpdated\":\"' + lastUpdated + '\"}'];
   options.method_type="invoke";
       options.func="createPostalPackage";
       options.args=argsValue;
-      winston.info("before callback from blockchain");
+      winston.info("before callback from blockchain"+argsValue);
       postalscm_lib.call_chaincode(options,function (err, response) {
     	  winston.info("callback from blockchain");
         if (err) {
