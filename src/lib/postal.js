@@ -138,6 +138,7 @@ class Postal {
   options.method_type="invoke";
       options.func="createPostalPackage";
       options.args=argsValue;
+      winston.info("before callback from blockchain");
       postalscm_lib.call_chaincode(options,function (err, response) {
     	  winston.info("callback from blockchain");
         if (err) {
