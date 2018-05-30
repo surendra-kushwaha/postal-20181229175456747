@@ -1,21 +1,7 @@
 import logger from '../../../logger';
-import PostalPackage from '../../../models/postalPackageData';
 
-const viewReports = (req, res) => {
-  const { country } = req.query;
-  const queryObj = {
-    $or: [{ originPost: country }, { destinationPost: country }],
-  };
-  PostalPackage.find(queryObj, (err, postalData) => {
-    if (err) {
-      res.send({ status: 'fail', data: { msg: err } });
-    } else {
-      res.send({ status: 'success', data: postalData });
-    }
-  });
-};
+const { PostalPackage } = require('../../../models/postalPackageData');
 
-// helper function to create Dispatch Object
 /* const queryObj = {
   originPost: req.body.originPost,
   destinationPost: req.body.destinationPost,
@@ -134,6 +120,58 @@ const packageReport = (req, res) => {
       res.send({ status: 'success', data: postalData });
     }
   });
+};
+
+// Mongo DB changes end here
+
+const filterViewReports = (packages: []) => {
+  const filteredArray = [];
+  packages.forEach(packageObj => {
+    // need to get rid of unique identifier of each package
+    const viewReportObj = {
+      originPost: packageObj.originPost,
+      destinationPost: packageObj.destinationPost,
+      startDate: packageObj.startDate,
+      endDate: packageObj.endDate,
+      dateCreated: packageObj.dateCreated,
+    };
+
+    if (
+      filteredArray.findIndex(
+        uniqueObject =>
+          viewReportObj.originPost === uniqueObject.originPost &&
+          viewReportObj.destinationPost === uniqueObject.destinationPost &&
+          viewReportObj.startDate === uniqueObject.startDate &&
+          viewReportObj.endDate === uniqueObject.endDate &&
+          viewReportObj.dateCreated === uniqueObject.dateCreated,
+      ) < 0
+    ) {
+      filteredArray.push(viewReportObj);
+    }
+  });
+  return filteredArray;
+};
+
+const viewReports = (req, res) => {
+  const { country } = req.query;
+  const queryObj = {
+    $or: [{ originPost: country }, { destinationPost: country }],
+  };
+  PostalPackage.find(
+    queryObj,
+    'startDate endDate originPost destinationPost dateCreated',
+    (err, postalData) => {
+      if (err) {
+        res.send({ status: 'fail', data: { msg: err } });
+      } else {
+        // need to filter any duplicate results
+        const filteredData = filterViewReports(postalData);
+        logger.info(`Filtered data: ${JSON.stringify(filteredData, null, 2)}`);
+        res.send({ status: 'success', data: filteredData });
+      }
+    },
+  );
+  // res.status(200).json('');
 };
 
 export { viewReports, report, packageReport };

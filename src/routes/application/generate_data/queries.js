@@ -30,7 +30,7 @@ const simulate = async (req: $Request, res: $Response) => {
 
     // res.send(response);
     res.send('Simulation complete.');
-    await dispatchsimulator.createpackage(response[0]); // CreatePackage In BlockChain
+    await dispatchsimulator.createpackage(response[0], startDate, endDate); // CreatePackage In BlockChain - also need to include startDate and endDate
     await dispatchsimulator.updatepackage(response[1]); // Update Package In BlockChain
 
     res.status(200).end();

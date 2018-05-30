@@ -106,7 +106,7 @@ class Postal {
    *
    */
 
-  async createPackage(payload) {
+  async createPackage(payload, startDate, endDate) {
     logger.info('Postal:<createPackage>');
     logger.debug('Payload received', payload);
     /* const factory = this.businessNetworkDefinition.getFactory();
@@ -148,6 +148,10 @@ class Postal {
       } else if (!err) {
         logger.info({ status: 'success', data: response });
         const blockchainPackage = JSON.parse(response.data);
+        // create today's date
+        const todayTimestamp = new Date();
+        const today = `${todayTimestamp.getFullYear()}/${todayTimestamp.getMonth() +
+          1}/${todayTimestamp.getDate()}`;
         // logger.info("response data111:::"+blockchainPackage.PackageID);
         // Save the data to DB start
         const postalData = {
@@ -159,13 +163,12 @@ class Postal {
           destinationPost: blockchainPackage.DestinationCountry,
           packageType: blockchainPackage.PackageType,
           weight: blockchainPackage.Weight,
-          currentStatus: '',
           settlementStatus: blockchainPackage.SettlementStatus,
           shipmentStatus: blockchainPackage.ShipmentStatus,
-          startDate: '',
-          endDate: '',
+          startDate,
+          endDate,
           // dateCreated: blockchainPackage.LastUpdated,
-          dateCreated: '',
+          dateCreated: today,
         };
         logger.info(`PostalData to save in DB::${JSON.stringify(postalData)}`);
         const postal = new PostalPackage(postalData);

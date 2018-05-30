@@ -352,19 +352,19 @@ class DispatchSimulator {
     );
 
     const rateNumOfRecInExcess = Math.round(
-      repeatpackage * config.simulate.ReceivedinExcess_rate / 100,
+      (repeatpackage * config.simulate.ReceivedinExcess_rate) / 100,
     );
     logger.info(
       ` Packets with rate NumOfRecInExcess      ${rateNumOfRecInExcess}`,
     );
     const rateNumOfLostParcel = Math.round(
-      repeatpackage * config.simulate.LostParcel_rate / 100,
+      (repeatpackage * config.simulate.LostParcel_rate) / 100,
     );
     logger.info(
       ` Packets with rate NumOfLostParcel       ${rateNumOfLostParcel}`,
     );
     const rateNumOfSeizedorReturned = Math.round(
-      repeatpackage * config.simulate.SeizedorReturned_rate / 100,
+      (repeatpackage * config.simulate.SeizedorReturned_rate) / 100,
     );
     logger.info(
       ` Packets with rate NumOfSeizedorReturned ${rateNumOfSeizedorReturned}`,
@@ -559,32 +559,22 @@ class DispatchSimulator {
   };
 
   // insert intro blockchain-createpackage one by one
-  createpackage = (EDImessage: []): Promise<any> => {
+  createpackage = (
+    EDImessage: [],
+    startDate: Date,
+    endDate: Date,
+  ): Promise<any> => {
     for (let i = 0; i < EDImessage.length; i += 1) {
-      postal.createPackage(EDImessage[i]);
+      postal.createPackage(EDImessage[i], startDate, endDate);
     }
     return EDImessage;
   };
 
   // insert intro blockchain-updatepackage all the status package
   updatepackage = (EDImessage: []): Promise<any> => {
-    // *** for demo app we have to do a little bit of processing here ****
-    const payload = {};
-    const packageIds = [];
-    const newShipmentStatus = [];
-    const lastUpdated = [];
-    const newSettlementStatus = [];
-    EDImessage.forEach(ediMessage => {
-      packageIds.push(ediMessage.packageId);
-      newShipmentStatus.push(ediMessage.shipmentStatus);
-      lastUpdated.push(ediMessage.lastUpdated);
-      newSettlementStatus.push(ediMessage.settlementStatus);
-    });
-    payload.packageIDs = packageIds;
-    payload.newShipmentStatus = newShipmentStatus;
-    payload.lastUpdated = lastUpdated;
-    payload.newSettlementStatus = newSettlementStatus;
-    postal.updateShipmentStatus(payload);
+    for (let i = 0; i < EDImessage.length; i += 1) {
+      postal.updateShipmentStatus(EDImessage[i]);
+    }
     return EDImessage;
   };
 }
