@@ -46,7 +46,7 @@ args: {
 };
 
 function setup_postalscm_lib() {
-	logger.debug('Setup SharedAccums Lib...');
+	logger.debug('Setup postal scm Lib...');
 
 	var opts = helper.makeSharedAccumsLibOptions();
 	postalscm_lib = require('../../utils/postalscm_cc_lib.js')(enrollObj, opts, fcw, logger);
@@ -105,32 +105,7 @@ class Postal {
    * bizNetwork name will be able to be used by Composer to get the suitable model files.
    *
    */
-  constructor() {
-    this.bizNetworkConnection = new BusinessNetworkConnection();
-  }
-
-  /**
-   * @description Initalizes the Postal by making a connection to the Composer runtime
-   * @return {Promise} A promise whose fullfillment means the initialization has completed
-   */
-  async init() {
-    this.businessNetworkDefinition = await this.bizNetworkConnection.connect(
-      cardname,
-    );
-    winston.info(
-      'Postal:<init>',
-      'businessNetworkDefinition obtained',
-      this.businessNetworkDefinition.getIdentifier(),
-    );
-    winston.info('Subscribing to events');
-    this.bizNetworkConnection.on('event', evt => {
-      winston.info('New ShipmentPackageEvent', evt);
-      // eslint-disable-next-line no-unused-vars
-      const options = {
-        properties: { key: 'value' },
-      };
-    });
-  }
+  
   async createPackage(payload) {
     winston.info('Postal:<createPackage>');
     winston.debug('Payload received:', payload);
@@ -164,12 +139,13 @@ class Postal {
       options.func="createPostalPackage";
       options.args=argsValue;
       postalscm_lib.call_chaincode(options,function (err, response) {
+    	  winston.info("callback from blockchain");
         if (err) {
-          console.log({ "status": "error", "data": [err,response] });
+        	winston.info({ "status": "error", "data": [err,response] });
         } else if (!err) {
-          console.log({ "status": "success", "data": response });
+        	winston.info({ "status": "success", "data": response });
         } else {
-          console.log({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
+        	winston.info({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
         }
       });
   }
@@ -202,11 +178,11 @@ class Postal {
      options.args=argsValue;
       postalscm_lib.call_chaincode(options,function (err, response) {
         if (err) {
-          console.log({ "status": "error", "data": [err,response] });
+        	logger.info({ "status": "error", "data": [err,response] });
         } else if (!err) {
-          console.log({ "status": "success", "data": response });
+        	logger.info({ "status": "success", "data": response });
         } else {
-          console.log({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
+        	logger.info({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
         }
       });
   }
@@ -226,17 +202,16 @@ class Postal {
       options.args=argsValue;
       postalscm_lib.call_chaincode(options,function (err, response) {
         if (err) {
-          console.log({ "status": "error", "data": [err,response] });
+        	logger.info({ "status": "error", "data": [err,response] });
         } else if (!err) {
-          console.log({ "status": "success", "data": response });
+        	logger.info({ "status": "success", "data": response });
         } else {
-          console.log({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
+        	logger.info({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
         }
       });
   }
 }
 
 const postal = new Postal();
-postal.init();
 
 export default postal;
