@@ -1,8 +1,0 @@
-applications:
-- path: .
-  memory: 256M
-  instances: 1
-  domain: mybluemix.net
-  name: postal-scm-go
-  host: postal-scm-go
-  disk_quota: 1024M
