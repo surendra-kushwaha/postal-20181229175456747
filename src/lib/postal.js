@@ -13,6 +13,9 @@ var logger = new (winston.Logger)({
 	]
 });
 
+const { PostalPackage } = require('../models/postalPackageData');
+const { PostalDispatch } = require('../models/postalDispatchData');
+
 var helper = require('../../utils/helper.js')(process.env.creds_filename, logger);
 var fcw = require('../../utils/fc_wrangler/index.js')({ block_delay: helper.getBlockDelay() }, logger);
 var ws_server = require('../../utils/websocket_server_side.js')({ block_delay: helper.getBlockDelay() }, fcw, logger);
@@ -20,7 +23,7 @@ var opts = helper.makeSharedAccumsLibOptions();
 
 enroll_admin(1, function (e) {console.log("hiaaaa");
 						if (e == null) {
-							console.log("hiaaaa###");
+							//console.log("hiaaaa###");
 							setup_postalscm_lib();
 						}
 					});
