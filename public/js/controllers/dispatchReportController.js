@@ -56,7 +56,7 @@ $scope.TestAngularMethod=function(val){
                 //(response.data.data)
                 response.data.data.forEach(dispatch => {
                     $scope.totalReconciledWeight += dispatch.totalReconciledWeight;
-                    $scope.totalUnreconciledWeight += dispatch.totalUnreconciledPackages;
+                    $scope.totalUnreconciledWeight += dispatch.totalUnreconcileWeight;
                     $scope.totalReconciledPackages += dispatch.totalReconciledPackages;
                     $scope.totalUnreconciledPackages += dispatch.totalUnreconciledPackages;
                     if (dispatch.settlementStatus === "Reconciled" || dispatch.settlementStatus === "Settlement Agreed")
