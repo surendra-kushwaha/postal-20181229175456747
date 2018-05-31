@@ -77,6 +77,11 @@ const performDispatchCalculations = (dispatches, queryObj) => {
     dispatchObject.totalReconciledWeight = reconciledWeight;
     dispatchObject.totalUnreconciledPackages = unreconciledPackages;
     dispatchObject.totalUnreconciledWeight = unreconciledWeight;
+    if (unreconciledPackages > 0) {
+      dispatchObject.settlementStatus = 'Unreconciled';
+    } else {
+      dispatchObject.settlementStatus = 'Reconciled';
+    }
     resultArray.push(dispatchObject);
   });
   return resultArray;
