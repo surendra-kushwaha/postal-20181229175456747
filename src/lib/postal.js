@@ -204,25 +204,25 @@ class Postal {
     });
   }
 
-  async getPackageHistory(packageId, res) {
+  async getPackageHistory(packageId) {
     logger.info('Postal:<getPackageHistory>');
     // const packageId=payload;
     const argsValue = [packageId];
     options.method_type = 'query';
     options.func = 'getPackageHistory';
     options.args = argsValue;
-    postalscm_lib.call_chaincode(options, (err, response) => {
-      if (err) {
-        res.send({ status: 'error', data: [err, response] });
-      } else if (!err) {
-        res.send({ status: 'success', data: { msg: response.parsed } });
-      } else {
-        res.send({
-          status: 'fail',
-          data: { msg: 'Something went wrong. Please try again' },
-        });
-      }
-    });
+    return new Promise((resolve, reject) =>
+      postalscm_lib.call_chaincode(options, (err, response) => {
+        if (err) {
+          reject(err);
+        } else if (!err) {
+          resolve(response.parsed);
+        } else {
+          // eslint-disable-line prefer-promise-reject-errors
+          reject('Something went wrong. Please try again');
+        }
+      }),
+    );
   }
 
   async updateShipmentStatus(payload) {

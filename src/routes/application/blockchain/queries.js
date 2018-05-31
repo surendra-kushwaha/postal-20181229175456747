@@ -4,12 +4,12 @@ import postal from '../../../lib/postal';
 const { PostalPackage } = require('../../../models/postalPackageData');
 
 const updateDispatchSettlement = (req, res) => {
-  //logger.trace('Entered updateDispatchSettlement');
+  // logger.trace('Entered updateDispatchSettlement');
   res.status(200).json('');
 };
 
 const updatePackageSettlement = (req, res) => {
-  //logger.trace('Entered updatePackageSettlement');
+  // logger.trace('Entered updatePackageSettlement');
   // Connect to local database (PostalPackage) and grab packageUUID by using parameters given in swagger (packageId)
   PostalPackage.find({}, 'packageUUID', async (err, data) => {
     // add query parameters from front end
@@ -34,16 +34,36 @@ const updatePackageSettlement = (req, res) => {
   });
 };
 
-/*const packageHistory = async (req, res) => {
+/* const packageHistory = async (req, res) => {
   logger.trace('Entered packageHistory');
   const history = await postal.getPackageHistory(req.query.packageId);
   // may need to do some transformations on history
   res.status(200).json(history);
-};*/
+}; */
 
-const packageHistory = (req, res) => {
-	  logger.info('Entered packageHistory');
-	  postal.getPackageHistory(req.query.packageId,res)
+const packageHistory = async (req, res) => {
+  logger.info('Entered packageHistory');
+  try {
+    const response = await postal.getPackageHistory(req.query.packageId);
+    if (!response) {
+      res.status(405).send('Package History response came back empty');
+    } else {
+      const historyArray = [];
+      response.forEach(transax => {
+        logger.info(`Transax: ${JSON.stringify(transax, null, 2)}`);
+        const historyData = {
+          date: transax.value.LastUpdated,
+          status: transax.value.ShipmentStatus,
+          statusType: 'Shipment Status',
+        };
+        logger.info(`History array: ${JSON.stringify(historyData)}`);
+        historyArray.push(historyData);
+      });
+      res.status(200).send(historyArray);
+    }
+  } catch (error) {
+    res.status(405).send(error);
+  }
 };
 
 export { updateDispatchSettlement, updatePackageSettlement, packageHistory };
