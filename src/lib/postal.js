@@ -327,7 +327,6 @@ class Postal {
     logger.debug('Payload received:', payload);
     const { packageId, lastUpdated } = payload;
     const settlementStatus = payload.newSettlementStatus;
-    const lastUpdated = payload.lastUpdated;
 
     const argsValue = [String(packageId), String(settlementStatus),String(lastUpdated)];
 
