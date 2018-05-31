@@ -87,9 +87,9 @@ const report = async (req, res) => {
   const queryObj = {
     originPost: req.body.originPost,
     destinationPost: req.body.destinationPost,
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-    dateCreated: req.body.dateCreated,
+    // startDate: new Date(req.body.startDate),
+    // endDate: new Date(req.body.endDate),
+    // dateCreated: new Date(req.body.dateCreated),
   };
   logger.info(`Input Params:${JSON.stringify(queryObj)}`);
 
@@ -135,7 +135,6 @@ const filterViewReports = (packages: []) => {
       endDate: packageObj.endDate,
       dateCreated: packageObj.dateCreated,
     };
-
     if (
       filteredArray.findIndex(
         uniqueObject =>

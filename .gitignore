@@ -14,3 +14,7 @@ logs
 !.vscode/snippets
 !.vscode/launch.json
 !.vscode/settings.json
+
+# logs
+logs.txt
+log.txt

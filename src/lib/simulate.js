@@ -559,7 +559,7 @@ class DispatchSimulator {
   };
 
   // insert intro blockchain-createpackage one by one
-  createpackage = (
+  createpackage = async (
     EDImessage: [],
     startDate: Date,
     endDate: Date,
@@ -571,7 +571,7 @@ class DispatchSimulator {
   };
 
   // insert intro blockchain-updatepackage all the status package
-  updatepackage = (EDImessage: []): Promise<any> => {
+  updatepackage = async (EDImessage: []): Promise<any> => {
     for (let i = 0; i < EDImessage.length; i += 1) {
       postal.updateShipmentStatus(EDImessage[i]);
     }

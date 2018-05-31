@@ -4,7 +4,7 @@ module.exports = {
   host: process.env.VCAP_APP_HOST || 'localhost',
   simulate: {
     size: {
-      small: 25,
+      small: 10,
       medium: 75,
       large: 250,
     },

@@ -42,10 +42,11 @@ logger.debug('Checking if chaincode is already deployed or not');
 /* var options = {
 peer_urls: [helper.getPeersUrl(0)],
 }; */
-
 const channel = helper.getChannelId();
 const first_peer = helper.getFirstPeerName(channel);
+
 logger.info(`first_peer::${first_peer}`);
+
 const options = {
   peer_urls: [helper.getPeersUrl(first_peer)],
   args: {
@@ -138,9 +139,16 @@ class Postal {
     const argsValue = [
       `{"PackageID":"${packageId}", "Weight":"${weight}" , "OriginCountry":"${originCountry}" , "DestinationCountry":"${destinationCountry}", "SettlementStatus":"${settlementStatus}" , "ShipmentStatus":"${shipmentStatus}", "OriginReceptacleID":"${originReceptacleId}",  "PackageType":"${packageType}", "DispatchID":"${dispatchId}" , "LastUpdated":"${lastUpdated}"}`,
     ];
+    // const options = {
+    //   peer_urls: peerUrls,
+    //   method_type: 'invoke',
+    //   func: 'createPostalPackage',
+    //   args: argsValue,
+    // };
     options.method_type = 'invoke';
     options.func = 'createPostalPackage';
     options.args = argsValue;
+
     postalscm_lib.call_chaincode(options, (err, response) => {
       logger.info('callback from blockchain');
       if (err) {
@@ -177,7 +185,7 @@ class Postal {
             logger.info({ status: 'fails', data: err });
           } else {
             logger.info('package data saved successfully to mongodb');
-            logger.info({ status: 'success', data: result });
+            // logger.info({ status: 'success', data: result });
           }
         });
         // Save the data to DB end
@@ -215,15 +223,22 @@ class Postal {
     } = payload;
 
     const argsValue = [
-      packageId,
-      shipmentStatus,
-      originReceptacleId,
-      dispatchId,
-      lastUpdated,
+      String(packageId),
+      String(shipmentStatus),
+      String(originReceptacleId),
+      String(dispatchId),
+      // String(lastUpdated)
     ];
+    // const options = {
+    //   peer_urls: peerUrls,
+    //   method_type: 'invoke',
+    //   func: 'updateShipmentStatus',
+    //   args: argsValue,
+    // }
     options.method_type = 'invoke';
     options.func = 'updateShipmentStatus';
     options.args = argsValue;
+
     postalscm_lib.call_chaincode(options, (err, response) => {
       if (err) {
         logger.info({ status: 'error', data: [err, response] });
@@ -247,10 +262,19 @@ class Postal {
     const settlementStatus = payload.newSettlementStatus;
     // var country="China";
     // var argsValue = ['{\"PostalId\":\"' + postalId + '\", \"Name\":\"' + name + '\" , \"Country\":\"' + country + '\"}'];
-    const argsValue = [packageId, settlementStatus];
+    const argsValue = [String(packageId), String(settlementStatus)];
+    // const options = {
+    //   peer_urls: peerUrls,
+    //   method_type: 'invoke',
+    //   func: 'updateSettlementStatus',
+    //   args: argsValue,
+    // }
+
     options.method_type = 'invoke';
     options.func = 'updateSettlementStatus';
     options.args = argsValue;
+
+    logger.info(`Options for updateShipmentStatus: ${JSON.stringify(options)}`);
     postalscm_lib.call_chaincode(options, (err, response) => {
       if (err) {
         logger.info({ status: 'error', data: [err, response] });

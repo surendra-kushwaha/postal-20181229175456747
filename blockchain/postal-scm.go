@@ -300,11 +300,11 @@ func updateSettlementStatus(APIstub shim.ChaincodeStubInterface, args []string) 
 
 //Update shipment status for package.
 func updateShipmentStatus(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
+	fmt.Println("entering updateShipmentStatus " + args)
 	if len(args) != 4 {
 		return shim.Error("Incorrect number of arguments. Expecting 4")
 	}
-
+	
 	packageAsBytes, _ := APIstub.GetState(args[0])
 	packageData := PostalPackage{}
 
