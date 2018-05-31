@@ -10,6 +10,7 @@ mainApp
 
     $scope.getDateTime=function(date)
     {
+
       var dd = date.getDate();
                     var mm = date.getMonth() + 1; //January is 0!
 
@@ -28,28 +29,29 @@ mainApp
   hours = hours ? hours : 12; // the hour '0' should be '12'
   minutes = minutes < 10 ? '0'+minutes : minutes;
   //var strTime = hours + ':' + minutes + ' ' + ampm;
-  
+
                     return (mm + '/' + dd + '/' + yyyy + " - "+ hours + ':' + minutes + ' ' + ampm);
     }
     // $scope.array.push(false);
     // $scope.array.push(true);
 
-    $http.get('/package-history?packageId=' + sessionStorage.getItem('packageId'), {
+  $http.get('/package-history?packageId=' + sessionStorage.getItem('packageId'), {
         headers: {
             'Content-Type': 'application/json'
         }
     }).then(
         function (response) {
-
+          console.log(response.data)
             $scope.packageHistory=[];
-          
-            response.data.data.forEach(element => {
+
+            response.data.forEach(element => {
+              element.date=new Date(element.date);
              if(element.statusType==="shipment")
              var td=$sce.trustAsHtml("<td class='shipment-status-entry'><p><span class='EMA mb-2'>"+element.status+"</span>"+element.statusDescription+"</p></td><td class='timestamp pt-0'>"+$scope.getDateTime(element.date)+"</td>");
              else
              var td=$sce.trustAsHtml("<td class='timestamp pt-2'>"+$scope.getDateTime(element.date)+"</td><td class='settlment-status-entry'> <p>"+element.status+"</p></td>");
 
-            packageHistory.push(td);
+             $scope.packageHistory.push(td);
             });
 
 

@@ -1,7 +1,7 @@
 mainApp.controller('ViewReportsController', function ($scope, $window, $http) {
 
 
-  $http.get('/view-reports?country=' + sessionStorage.getItem('countryName'), {
+$http.get('/view-reports?country=' + sessionStorage.getItem('countryName'), {
     headers: {
       'Content-Type': 'application/json'
     }
