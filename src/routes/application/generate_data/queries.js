@@ -27,11 +27,38 @@ const simulate = async (req: $Request, res: $Response) => {
       startDate,
       endDate,
     );
-
-    await dispatchsimulator.createpackage(response[0], startDate, endDate); // CreatePackage In BlockChain - also need to include startDate and endDate
-    await dispatchsimulator.updatepackage(response[1]); // Update Package In BlockChain
-
-    // res.send(response);
+    try {
+      const promiseResults = await dispatchsimulator.createpackage(
+        response[0],
+        startDate,
+        endDate,
+      ); // CreatePackage In BlockChain - also need to include startDate and endDate
+      promiseResults.forEach(result => {
+        if (result instanceof Error) {
+          logger.error('reject reason', result.rejectErr);
+        } else {
+          // fulfilled value
+          logger.info('Package created in blockchain and saved in database');
+        }
+      });
+    } catch (createError) {
+      logger.error(`There was an error creating packages: ${createError}`);
+    }
+    try {
+      const promiseResults = await dispatchsimulator.updatepackage(response[1]); // Update Package In BlockChain
+      promiseResults.forEach(result => {
+        if (result instanceof Error) {
+          logger.error('reject reason', result.rejectErr);
+        } else {
+          // fulfilled value
+          logger.info('Package updated in blockchain and saved in database');
+        }
+      });
+    } catch (updateError) {
+      logger.error(
+        `There was an error updating packages during simulation. ${updateError}`,
+      );
+    }
     res.send('Simulation complete.');
     res.status(200).end();
   } catch (error) {
@@ -39,9 +66,9 @@ const simulate = async (req: $Request, res: $Response) => {
       `There was an error retrieving a response from SIMULATE DISPATH`,
       error,
     );
-    res.send('Was not able to get simulated data.');
-    res.status(500).end();
+    res.status(500).send('Was not able to get simulated data.');
   }
+  res.send('Simulation complete.');
 };
 
 export default simulate;

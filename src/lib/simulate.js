@@ -2,7 +2,7 @@
 
 import config from '../config';
 import logger from '../logger';
-import postal from './postal'; // eslint-disable-line no-unused-vars
+import postal from './postal';
 
 // define random values
 const PackageType = ['LA', 'CA', 'EX', 'UA', 'RA']; // tracked,parcels,express,untracked,registered
@@ -312,6 +312,35 @@ function generateEDI(
   return MockEDI;
 }
 
+// eslint-disable-line func-names
+Promise.settle = function(promises) {
+  return Promise.all(
+    promises.map(p =>
+      // make sure any values or foreign promises are wrapped in a promise
+      Promise.resolve(p).catch(err => {
+        // make sure error is wrapped in Error object so we can reliably detect which promises rejected
+        if (err instanceof Error) {
+          return err;
+        }
+        const errObject = new Error();
+        errObject.rejectErr = err;
+        return errObject;
+      }),
+    ),
+  );
+};
+
+const updateProcessStep = async (messages: []): Promise<any> => {
+  const allPromises = [];
+  logger.debug(
+    `Set of process step messages: ${JSON.stringify(messages, null, 2)}`,
+  );
+  messages.forEach(message => {
+    allPromises.push(postal.updateShipmentStatus(message));
+  });
+  return Promise.settle(allPromises);
+};
+
 class DispatchSimulator {
   simulate = (
     size: string,
@@ -564,26 +593,99 @@ class DispatchSimulator {
     startDate: Date,
     endDate: Date,
   ): Promise<any> => {
-    // const allpromisescreate = [];
+    const allPromises = [];
     EDImessage.forEach(element => {
-      // allpromisescreate.push(
-      // to do insert in allpromises the promise with postal.createPackage(element, startDate, endDate);
-      postal.createPackage(element, startDate, endDate);
-      // );
+      allPromises.push(
+        // to do insert in allpromises the promise with postal.createPackage(element, startDate, endDate);
+        postal.createPackage(element, startDate, endDate),
+      );
     });
-    // Promise.all(allpromises);
+    return Promise.settle(allPromises);
   };
 
   // insert intro blockchain-updatepackage all the status package
   updatepackage = async (EDImessage: []): Promise<any> => {
-    // const allpromises = [];
-    EDImessage.forEach(element => {
-      // allpromises.push(
-      // to do insert in allpromises the promise with postal.updateShipmentStatus(element);
-      postal.updateShipmentStatus(element);
-      // );
-    });
-    // Promise.all(allpromises);
+    // we need to run updateShipmentStatus separately for each update type
+    // to avoid read/write errors in blockchain due to multiple requests for the same package
+
+    // create array of messages for each shipment status step
+
+    // Acceptance Scan (EMA) is taken care of by createPackage
+    const allProcessStepArrays = [];
+
+    const intoExports = EDImessage.filter(
+      message => message.shipmentStatus === 'EXA',
+    );
+    allProcessStepArrays.push(intoExports);
+
+    const outExports = EDImessage.filter(
+      message => message.shipmentStatus === 'EXC',
+    );
+    allProcessStepArrays.push(outExports);
+
+    const leftOrigin = EDImessage.filter(
+      message =>
+        message.shipmentStatus === 'EMC' || message.shipmentStatus === 'PREDES',
+    );
+    allProcessStepArrays.push(leftOrigin);
+
+    const arriveDestination = EDImessage.filter(
+      message =>
+        message.shipmentStatus === 'RESDES' || message.shipmentStatus === 'EMD',
+    );
+    allProcessStepArrays.push(arriveDestination);
+
+    const intoImport = EDImessage.filter(
+      message =>
+        message.shipmentStatus === 'EDA' || message.shipmentStatus === 'EDB',
+    );
+    allProcessStepArrays.push(intoImport);
+
+    const outImports = EDImessage.filter(
+      message => message.shipmentStatus === 'EDC',
+    );
+    allProcessStepArrays.push(outImports);
+
+    const inDomestic = EDImessage.filter(
+      message =>
+        message.shipmentStatus === 'EMF' ||
+        message.shipmentStatus === 'EDD' ||
+        message.shipmentStatus === 'EDE',
+    );
+    allProcessStepArrays.push(inDomestic);
+
+    const delivery = EDImessage.filter(
+      message =>
+        message.shipmentStatus === 'EMI' ||
+        message.shipmentStatus === 'EMH' ||
+        message.shipmentStatus === 'EMG' ||
+        message.shipmentStatus === 'EDF' ||
+        message.shipmentStatus === 'EDG' ||
+        message.shipmentStatus === 'EDH',
+    );
+    allProcessStepArrays.push(delivery);
+
+    const seized = EDImessage.filter(
+      message =>
+        message.shipmentStatus === 'EME' ||
+        message.shipmentStatus === 'EXB' ||
+        message.shipmentStatus === 'EDX' ||
+        message.shipmentStatus === 'EXX',
+    );
+    allProcessStepArrays.push(seized);
+
+    logger.debug(
+      `All process array: ${JSON.stringify(allProcessStepArrays, null, 2)}`,
+    );
+    const allPromiseResults = [];
+
+    // eslint-disable-line no-restricted-syntax
+    for (const processStep of allProcessStepArrays) {
+      const stepPromiseResults = await updateProcessStep(processStep); // eslint-disable-line no-await-in-loop
+      logger.info('Completed a process step!');
+      allPromiseResults.push(stepPromiseResults);
+    }
+    return allPromiseResults;
   };
 }
 

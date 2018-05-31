@@ -20,6 +20,7 @@ const updatePackageSettlement = async (req, res) => {
   const payload = {
     packageId: req.body.id,
     newSettlementStatus: req.body.newStatus,
+    lastUpdated: new Date(),
   }; // need to add transformation logic
   try {
     const updatedPackageId = await postal.updateSettlementStatus(payload);

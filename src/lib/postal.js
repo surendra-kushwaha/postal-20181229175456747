@@ -153,10 +153,10 @@ class Postal {
       postalscm_lib.call_chaincode(options, (err, response) => {
         logger.info('callback from blockchain');
         if (err) {
-          logger.info({ status: 'error', data: [err, response] });
+          logger.debug({ status: 'error', data: [err, response] });
           reject(err);
         } else if (!err) {
-          logger.info({ status: 'success', data: response });
+          logger.debug({ status: 'success', data: response });
           const blockchainPackage = JSON.parse(response.data);
           // create today's date
           const todayTimestamp = new Date();
@@ -186,7 +186,7 @@ class Postal {
           ) {
             postalData.dispatchId = 'none';
           }
-          logger.info(
+          logger.debug(
             `PostalData to save in DB::${JSON.stringify(postalData)}`,
           );
           const postal = new PostalPackage(postalData);
@@ -202,7 +202,7 @@ class Postal {
           });
           // Save the data to DB end
         } else {
-          logger.info({
+          logger.debug({
             status: 'fail',
             data: { msg: 'Something went wrong. Please try again' },
           });
@@ -235,7 +235,6 @@ class Postal {
 
   async updateShipmentStatus(payload) {
     logger.info('Postal:<updateShipmentStatus>');
-    logger.info('app.js - Process claim is calling');
     /* var packageId="EX103456792US";
     var settlementStatus="Reconciled1"
     updateShipmentTransaction.packageIDs = payload.packageIDs;
@@ -277,32 +276,32 @@ class Postal {
     return new Promise((resolve, reject) =>
       postalscm_lib.call_chaincode(options, (err, response) => {
         if (err) {
-          logger.info({ status: 'error', data: [err, response] });
+          logger.debug({ status: 'error', data: [err, response] });
           reject(err);
         } else if (!err) {
-          logger.info({ status: 'success', data: response });
+          logger.debug({ status: 'success', data: response });
           const updateConditions = { packageId: response.data.packageId };
           const updateObj = {
             shipmentStatus,
             receptacleId: originReceptacleId,
             dispatchId,
+            lastUpdated,
           };
           PostalPackage.findOneAndUpdate(
             updateConditions,
             updateObj,
             (err, result) => {
               if (err) {
-                logger.info({ status: 'fails', data: err });
+                logger.debug({ status: 'fails', data: err });
                 reject(err);
               } else {
-                logger.info('package data saved successfully to mongodb');
+                logger.debug('package data saved successfully to mongodb');
                 resolve(result);
-                // logger.info({ status: 'success', data: result });
               }
             },
           );
         } else {
-          logger.info({
+          logger.error({
             status: 'fail',
             data: { msg: 'Something went wrong. Please try again' },
           });
@@ -315,42 +314,43 @@ class Postal {
   async updateSettlementStatus(payload) {
     logger.info('Postal:<updateSettlementStatus>');
     logger.debug('Payload received:', payload);
-    const { packageId } = payload;
+    const { packageId, lastUpdated } = payload;
     const settlementStatus = payload.newSettlementStatus;
-    
+
     const argsValue = [String(packageId), String(settlementStatus)];
 
     options.method_type = 'invoke';
     options.func = 'updateSettlementStatus';
     options.args = argsValue;
 
-    logger.info(
+    logger.debug(
       `Options for updateSettlementStatus: ${JSON.stringify(options)}`,
     );
     return new Promise((resolve, reject) =>
       postalscm_lib.call_chaincode(options, (err, response) => {
         if (err) {
-          logger.info({ status: 'error', data: [err, response] });
+          logger.debug({ status: 'error', data: [err, response] });
           reject(err);
         } else if (!err) {
-          logger.info({ status: 'success', data: response });
+          logger.debug({ status: 'success', data: response });
           const updateConditions = {
             packageId: response.data,
           };
           const updateObj = {
             settlementStatus, // should be response.shipmentStatus
+            lastUpdated,
           };
           PostalPackage.findOneAndUpdate(updateConditions, updateObj, error => {
             if (error) {
-              logger.info({ status: 'fails', data: error });
+              logger.debug({ status: 'fails', data: error });
               reject(error);
             } else {
-              logger.info('package data saved successfully to mongodb');
+              logger.debug('package data saved successfully to mongodb');
               resolve(response);
             }
           });
         } else {
-          logger.info({
+          logger.debug({
             status: 'fail',
             data: { msg: 'Something went wrong. Please try again' },
           });

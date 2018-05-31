@@ -18,7 +18,7 @@ const logger = new winston.Logger({
     new winston.transports.Console({
       timestamp: timestampFormat,
       colorize: true,
-      level: 'debug',
+      level: 'info',
       prettyPrint: prettyprintFormat,
     }),
     new WinstonRotateFile({
@@ -26,7 +26,7 @@ const logger = new winston.Logger({
       timestamp: timestampFormat,
       datePattern: 'yyyy-MM-dd',
       prepend: true,
-      level: 'info',
+      level: 'debug',
       json: false,
       prettyprint: prettyprintFormat,
     }),
