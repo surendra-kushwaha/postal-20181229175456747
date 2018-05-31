@@ -198,6 +198,24 @@ class Postal {
     });
   }
 
+async getPackageHistory(packageId,res) {
+	logger.info('Postal:<getPackageHistory>');
+    //const packageId=payload;
+    const argsValue = [packageId];
+    options.method_type="query";
+     options.func="getPackageHistory";
+     options.args=argsValue;
+      postalscm_lib.call_chaincode(options,function (err, response) {
+        if (err) {
+          res.send({ "status": "error", "data": [err,response] });
+        } else if (!err) {
+          res.send({ "status": "success", "data": { "msg": response.parsed } });
+        } else {
+          res.send({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
+        }
+      });
+  }
+
   async updateShipmentStatus(payload) {
     logger.info('Postal:<updateShipmentStatus>');
     logger.info('app.js - Process claim is calling');
