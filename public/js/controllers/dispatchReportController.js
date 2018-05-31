@@ -257,7 +257,7 @@ dispatchId="";
 
           } else if (package.settlementStatus === "Unreconciled") {
             package.displayPackageActionDropdown = false;
-            if (sessionStorage.getItem('location') === 'destination')
+            if (sessionStorage.getItem('location') === "destination")
               package.packageUpdateAction = "Request Settlement";
             else
               package.packageUpdateAction = "NA";
