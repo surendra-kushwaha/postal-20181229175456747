@@ -18,8 +18,8 @@ mainApp.controller('HomeController', function ($scope, $window, $http) {
             let data = JSON.stringify({
                 startDate: $scope.startDate,
                 endDate: $scope.endDate,
-                originPost: $scope.originCountry.slice(0, $scope.originCountry.indexOf("(")).trim(),
-                destinationPost: $scope.destinationCountry.slice(0, $scope.destinationCountry.indexOf("(")).trim(),
+                originPost: "CA",//$scope.originCountry.slice(0, $scope.originCountry.indexOf("(")).trim(),
+                destinationPost: "US",//$scope.destinationCountry.slice(0, $scope.destinationCountry.indexOf("(")).trim(),
                 size: $scope.simulationSize
             });
             $http.post('/simulate', data, {
