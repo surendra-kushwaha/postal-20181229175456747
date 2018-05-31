@@ -6,7 +6,7 @@ import postal from './postal'; // eslint-disable-line no-unused-vars
 
 // define random values
 const PackageType = ['LA', 'CA', 'EX', 'UA', 'RA']; // tracked,parcels,express,untracked,registered
-const Countrys = ['US', 'CN', 'UK', 'DE', 'CA', 'JP', 'FR'];
+const Countrys = ['US', 'CN', 'GB', 'DE', 'CA', 'JP', 'FR'];
 const AirportsUS = ['JFKA'];
 const AirportsCN = ['BJSA'];
 const AirportsUK = ['LONA', 'CVTA'];
