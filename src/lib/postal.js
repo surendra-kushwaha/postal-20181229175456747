@@ -191,7 +191,7 @@ class Postal {
   }
 
 async getPackageHistory(packageId,res) {
-    winston.info('Postal:<getPackageHistory>');
+	logger.info('Postal:<getPackageHistory>');
     //const packageId=payload;
     const argsValue = [packageId];
     options.method_type="query";
