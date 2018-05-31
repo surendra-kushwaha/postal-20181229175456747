@@ -279,14 +279,25 @@ class Postal {
           logger.debug({ status: 'error', data: [err, response] });
           reject(err);
         } else if (!err) {
-          logger.debug({ status: 'success', data: response });
-          const updateConditions = { packageId: response.data.packageId };
+          logger.debug('Package updated on blockchain.');
+          const updateConditions = { packageId: response.data };
+          const date = new Date();
+          let lastUpdated = `${date.getMonth() +
+            1}/${date.getDate()}/${date.getFullYear()}`;
+          if (date.getMonth() + 1 < 10) {
+            lastUpdated = `0${date.getMonth() +
+              1}/${date.getDate()}/${date.getFullYear()}`;
+          }
           const updateObj = {
             shipmentStatus,
             receptacleId: originReceptacleId,
             dispatchId,
             lastUpdated,
           };
+
+          logger.debug(
+            `Conditions for update: ${JSON.stringify(updateConditions)}`,
+          );
           PostalPackage.findOneAndUpdate(
             updateConditions,
             updateObj,

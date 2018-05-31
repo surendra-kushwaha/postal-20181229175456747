@@ -674,18 +674,27 @@ class DispatchSimulator {
     );
     allProcessStepArrays.push(seized);
 
-    logger.debug(
-      `All process array: ${JSON.stringify(allProcessStepArrays, null, 2)}`,
-    );
     const allPromiseResults = [];
 
+    // need to cycle through all statuses and update package
     // eslint-disable-line no-restricted-syntax
     for (const processStep of allProcessStepArrays) {
       const stepPromiseResults = await updateProcessStep(processStep); // eslint-disable-line no-await-in-loop
       logger.info('Completed a process step!');
       allPromiseResults.push(stepPromiseResults);
     }
-    return allPromiseResults;
+
+    // need to update settlement status for delivered packages
+    delivery.forEach(message => {
+      logger.debug('Updating settlement statuses of delivered packages');
+      const payload = {
+        packageId: message.packageId,
+        lastUpdated: message.lastUpdated,
+        newSettlementStatus: message.settlementStatus,
+      };
+      allPromiseResults.push(postal.updateSettlementStatus(payload));
+    });
+    return Promise.settle(allPromiseResults);
   };
 }
 

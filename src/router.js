@@ -10,6 +10,8 @@ import {
   viewReports,
   report,
   packageReport,
+  getPackage,
+  clearData,
 } from './routes/application/database/queries';
 import simulate from './routes/application/generate_data/queries';
 
@@ -37,6 +39,10 @@ router.get('/view-reports', viewReports);
 router.post('/report', report);
 
 router.get('/package-report', packageReport);
+
+router.get('/get-package', getPackage);
+
+router.get('/clear-data', clearData);
 
 router.post('/update-package-settlement', updatePackageSettlement);
 
