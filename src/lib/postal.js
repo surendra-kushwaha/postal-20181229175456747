@@ -159,9 +159,14 @@ class Postal {
           logger.debug({ status: 'success', data: response });
           const blockchainPackage = JSON.parse(response.data);
           // create today's date
-          const todayTimestamp = new Date();
+          /*const todayTimestamp = new Date();
           const today = `${todayTimestamp.getFullYear()}/${todayTimestamp.getMonth() +
-            1}/${todayTimestamp.getDate()}`;
+            1}/${todayTimestamp.getDate()}`;*/
+          const todateTimeStamp = new Date(); 
+          let today=(todateTimeStamp.getMonth() + 1) + '/' + todateTimeStamp.getDate() + '/' +  todateTimeStamp.getFullYear();
+          if((todateTimeStamp.getMonth() + 1)<10){
+            today="0"+(todateTimeStamp.getMonth() + 1) + '/' + todateTimeStamp.getDate() + '/' +  todateTimeStamp.getFullYear();
+          }
           // logger.info("response data111:::"+blockchainPackage.PackageID);
           // Save the data to DB start
           const postalData = {
