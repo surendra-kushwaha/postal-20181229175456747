@@ -564,18 +564,26 @@ class DispatchSimulator {
     startDate: Date,
     endDate: Date,
   ): Promise<any> => {
-    for (let i = 0; i < EDImessage.length; i += 1) {
-      postal.createPackage(EDImessage[i], startDate, endDate);
-    }
-    return EDImessage;
+    // const allpromisescreate = [];
+    EDImessage.forEach(element => {
+      // allpromisescreate.push(
+      // to do insert in allpromises the promise with postal.createPackage(element, startDate, endDate);
+      postal.createPackage(element, startDate, endDate);
+      // );
+    });
+    // Promise.all(allpromises);
   };
 
   // insert intro blockchain-updatepackage all the status package
   updatepackage = async (EDImessage: []): Promise<any> => {
-    for (let i = 0; i < EDImessage.length; i += 1) {
-      postal.updateShipmentStatus(EDImessage[i]);
-    }
-    return EDImessage;
+    // const allpromises = [];
+    EDImessage.forEach(element => {
+      // allpromises.push(
+      // to do insert in allpromises the promise with postal.updateShipmentStatus(element);
+      postal.updateShipmentStatus(element);
+      // );
+    });
+    // Promise.all(allpromises);
   };
 }
 
