@@ -149,59 +149,67 @@ class Postal {
     options.func = 'createPostalPackage';
     options.args = argsValue;
 
-    postalscm_lib.call_chaincode(options, (err, response) => {
-      logger.info('callback from blockchain');
-      if (err) {
-        logger.info({ status: 'error', data: [err, response] });
-      } else if (!err) {
-        logger.info({ status: 'success', data: response });
-        const blockchainPackage = JSON.parse(response.data);
-        // create today's date
-        const todayTimestamp = new Date();
-        const today = `${todayTimestamp.getFullYear()}/${todayTimestamp.getMonth() +
-          1}/${todayTimestamp.getDate()}`;
-        // logger.info("response data111:::"+blockchainPackage.PackageID);
-        // Save the data to DB start
-        const postalData = {
-          dispatchId: blockchainPackage.DispatchID,
-          packageId: blockchainPackage.PackageID,
-          receptacleId: blockchainPackage.OriginReceptacleID,
-          uniqueId: '',
-          originPost: blockchainPackage.OriginCountry,
-          destinationPost: blockchainPackage.DestinationCountry,
-          packageType: blockchainPackage.PackageType,
-          weight: blockchainPackage.Weight,
-          settlementStatus: blockchainPackage.SettlementStatus,
-          shipmentStatus: blockchainPackage.ShipmentStatus,
-          startDate,
-          endDate,
-          // dateCreated: blockchainPackage.LastUpdated,
-          dateCreated: today,
-        };
-        if (
-          postalData.dispatchId === undefined ||
-          postalData.dispatchId === ''
-        ) {
-          postalData.dispatchId = 'none';
-        }
-        logger.info(`PostalData to save in DB::${JSON.stringify(postalData)}`);
-        const postal = new PostalPackage(postalData);
-        postal.save((err, result) => {
-          if (err) {
-            logger.info({ status: 'fails', data: err });
-          } else {
-            logger.info('package data saved successfully to mongodb');
-            // logger.info({ status: 'success', data: result });
+    return new Promise((resolve, reject) =>
+      postalscm_lib.call_chaincode(options, (err, response) => {
+        logger.info('callback from blockchain');
+        if (err) {
+          logger.info({ status: 'error', data: [err, response] });
+          reject(err);
+        } else if (!err) {
+          logger.info({ status: 'success', data: response });
+          const blockchainPackage = JSON.parse(response.data);
+          // create today's date
+          const todayTimestamp = new Date();
+          const today = `${todayTimestamp.getFullYear()}/${todayTimestamp.getMonth() +
+            1}/${todayTimestamp.getDate()}`;
+          // logger.info("response data111:::"+blockchainPackage.PackageID);
+          // Save the data to DB start
+          const postalData = {
+            dispatchId: blockchainPackage.DispatchID,
+            packageId: blockchainPackage.PackageID,
+            receptacleId: blockchainPackage.OriginReceptacleID,
+            uniqueId: '',
+            originPost: blockchainPackage.OriginCountry,
+            destinationPost: blockchainPackage.DestinationCountry,
+            packageType: blockchainPackage.PackageType,
+            weight: blockchainPackage.Weight,
+            settlementStatus: blockchainPackage.SettlementStatus,
+            shipmentStatus: blockchainPackage.ShipmentStatus,
+            startDate,
+            endDate,
+            // dateCreated: blockchainPackage.LastUpdated,
+            dateCreated: today,
+          };
+          if (
+            postalData.dispatchId === undefined ||
+            postalData.dispatchId === ''
+          ) {
+            postalData.dispatchId = 'none';
           }
-        });
-        // Save the data to DB end
-      } else {
-        logger.info({
-          status: 'fail',
-          data: { msg: 'Something went wrong. Please try again' },
-        });
-      }
-    });
+          logger.info(
+            `PostalData to save in DB::${JSON.stringify(postalData)}`,
+          );
+          const postal = new PostalPackage(postalData);
+          postal.save((err, result) => {
+            if (err) {
+              logger.info({ status: 'fails', data: err });
+              reject(err);
+            } else {
+              logger.info('package data saved successfully to mongodb');
+              resolve(result);
+              // logger.info({ status: 'success', data: result });
+            }
+          });
+          // Save the data to DB end
+        } else {
+          logger.info({
+            status: 'fail',
+            data: { msg: 'Something went wrong. Please try again' },
+          });
+          reject('Something went wrong. Please try again');
+        }
+      }),
+    );
   }
 
   async getPackageHistory(packageId) {
@@ -266,18 +274,47 @@ class Postal {
     options.func = 'updateShipmentStatus';
     options.args = argsValue;
 
-    postalscm_lib.call_chaincode(options, (err, response) => {
-      if (err) {
-        logger.info({ status: 'error', data: [err, response] });
-      } else if (!err) {
-        logger.info({ status: 'success', data: response });
-      } else {
-        logger.info({
-          status: 'fail',
-          data: { msg: 'Something went wrong. Please try again' },
-        });
-      }
-    });
+    return new Promise((resolve, reject) =>
+      postalscm_lib.call_chaincode(options, (err, response) => {
+        if (err) {
+          logger.info({ status: 'error', data: [err, response] });
+          reject(err);
+        } else if (!err) {
+          logger.info({ status: 'success', data: response });
+          const blockchainPackage = JSON.parse(response.data);
+          const postalData = {
+            dispatchId: blockchainPackage.DispatchID,
+            packageId: blockchainPackage.PackageID,
+            receptacleId: blockchainPackage.OriginReceptacleID,
+            uniqueId: '',
+            originPost: blockchainPackage.OriginCountry,
+            destinationPost: blockchainPackage.DestinationCountry,
+            packageType: blockchainPackage.PackageType,
+            weight: blockchainPackage.Weight,
+            settlementStatus: blockchainPackage.SettlementStatus,
+            shipmentStatus: blockchainPackage.ShipmentStatus,
+            // dateCreated: blockchainPackage.LastUpdated,
+          };
+          const postal = new PostalPackage(postalData);
+          postal.save((err, result) => {
+            if (err) {
+              logger.info({ status: 'fails', data: err });
+              reject(err);
+            } else {
+              logger.info('package data saved successfully to mongodb');
+              resolve(result);
+              // logger.info({ status: 'success', data: result });
+            }
+          });
+        } else {
+          logger.info({
+            status: 'fail',
+            data: { msg: 'Something went wrong. Please try again' },
+          });
+          reject(err);
+        }
+      }),
+    );
   }
 
   async updateSettlementStatus(payload) {
