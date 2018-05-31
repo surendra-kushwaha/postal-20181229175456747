@@ -287,12 +287,7 @@ class Postal {
           logger.debug('Package updated on blockchain.');
           const updateConditions = { packageId: response.data };
           const date = new Date();
-          let lastUpdated = `${date.getMonth() +
-            1}/${date.getDate()}/${date.getFullYear()}`;
-          if (date.getMonth() + 1 < 10) {
-            lastUpdated = `0${date.getMonth() +
-              1}/${date.getDate()}/${date.getFullYear()}`;
-          }
+          
           const updateObj = {
             shipmentStatus,
             receptacleId: originReceptacleId,
