@@ -9,7 +9,7 @@ mainApp.controller('DispatchReportController', function ($scope, $window, $http)
   $scope.endDate = sessionStorage.getItem('endDate');
   $scope.dispatchView = true;
   $scope.dispatches = [];
-  $scope.packages = [];
+  $scope.packages = ["dummy"];
 
 
 
@@ -23,6 +23,8 @@ mainApp.controller('DispatchReportController', function ($scope, $window, $http)
 
   }
   $scope.updateSummaryData=function(){
+    $scope.reconciledDispatches=[];
+    $scope.unreconciledDispatches=[];
     $scope.totalReconciledWeight = 0;
     $scope.totalUnreconciledWeight = 0;
     $scope.totalReconciledPackages = 0;
@@ -33,7 +35,14 @@ mainApp.controller('DispatchReportController', function ($scope, $window, $http)
         $scope.totalUnreconciledWeight += dispatch.totalUnreconciledWeight;
         $scope.totalReconciledPackages += dispatch.totalReconciledPackages;
         $scope.totalUnreconciledPackages += dispatch.totalUnreconciledPackages;
+        if(dispatch.dispatchId==="" || dispatch.dispatchId==="none")
+        dispatch.dispatchId="NOT AVAILABLE";
+        if (dispatch.settlementStatus === "Reconciled" || dispatch.settlementStatus === "Settlement Agreed")
+          $scope.reconciledDispatches.push(dispatch);
+        else
+          $scope.unreconciledDispatches.push(dispatch);
       }
+
 
     });
     if($scope.totalUnreconciledWeight % 1 !=0)
@@ -41,6 +50,7 @@ mainApp.controller('DispatchReportController', function ($scope, $window, $http)
         if($scope.totalReconciledWeight % 1 !=0)
         $scope.totalReconciledWeight=$scope.totalReconciledWeight.toFixed(2);
     $("#" + sessionStorage.getItem('typeOfData') + "-link").click();
+    //$scope.callback(sessionStorage.getItem('typeOfData') + "-link");
   }
 
   $scope.getAllDispatches = function () {
@@ -60,12 +70,6 @@ mainApp.controller('DispatchReportController', function ($scope, $window, $http)
       function (response) {
         console.log(response);
         $scope.allDispatches=response.data.data;
-        $scope.reconciledDispatches = [];
-        $scope.unreconciledDispatches = [];
-        $scope.totalReconciledWeight = 0;
-        $scope.totalUnreconciledWeight = 0;
-        $scope.totalReconciledPackages = 0;
-        $scope.totalUnreconciledPackages = 0;
         if (response.data.data.length == 0) {
           $scope.parcelType = "Express";
           return;
@@ -73,15 +77,7 @@ mainApp.controller('DispatchReportController', function ($scope, $window, $http)
         $scope.parcelType = response.data.data[0].packageType;
         $('.select-styled').text($scope.parcelType);
         //(response.data.data)
-        (response.data.data).forEach(dispatch => {
-          if(dispatch.dispatchId==="" || dispatch.dispatchId==="none")
-          dispatch.dispatchId="NOT AVAILABLE";
-          if (dispatch.settlementStatus === "Reconciled" || dispatch.settlementStatus === "Settlement Agreed")
-            $scope.reconciledDispatches.push(dispatch);
-          else
-            $scope.unreconciledDispatches.push(dispatch);
 
-        });
 $scope.updateSummaryData();
 
       },
@@ -242,6 +238,7 @@ dispatchId="";
 
         // packagesData
         (response.data.data).forEach(package => {
+
           if (package.settlementStatus === "Reconciled") {
             package.displayPackageActionDropdown = false;
             package.packageUpdateAction = "Dispute Package";
@@ -319,7 +316,7 @@ dispatchId="";
 
   $scope.updateAction = function (action, packageId) {
     if (action != null && action != "NA") {
-      let data = {
+      let updateSettlementObject = {
 
         'type': 'package',
         'id': packageId,
@@ -328,7 +325,7 @@ dispatchId="";
         'country': sessionStorage.getItem('countryName')
 
       }
-      $http.post('/update-package-settlement', data, {
+      $http.post('/update-package-settlement', updateSettlementObject, {
         headers: {
           'Content-Type': 'application/json'
         }

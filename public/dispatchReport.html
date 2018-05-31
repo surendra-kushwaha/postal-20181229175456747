@@ -10,7 +10,7 @@
 
   <!-- Bootstrap core CSS -->
 
-  <link href="css/bootstrap.min.css" rel="stylesheet">
+
   <link href="css/font.css" rel="stylesheet">
   <link href="css/main.css" rel="stylesheet">
   <!-- Custom styles for this template -->
@@ -138,7 +138,7 @@
             </tr>
           </thead>
           <tbody ng-if="dispatchView" id="dispatch-table">
-            <tr dir-paginate="dispatch in dispatches  |filter:parcelType |filter:query|itemsPerPage:5 ">
+            <tr dir-paginate="dispatch in dispatches  | filter: parcelType |itemsPerPage:5 ">
               <td>
                 <a href="#" ng-click="moveToPackageScreen(dispatch.dispatchId)">{{dispatch.dispatchId}}</a>
               </td>
@@ -230,21 +230,21 @@ Action
     </div>
 
     <div class="container" id="summary-container" style="display: block;">
-      <div class="row summary-data mt-2 p-5">
+      <div class="row summary-data">
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-block">  <div class="circle-data">{{totalReconciledPackages}}</div></div>
+          <div class="circle-block">  <div class="circle-data">4567</div></div>
           <p class="circle-caption">Total Reconciled Items</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-block"> <div class="circle-data">{{totalReconciledWeight}}</div></div>
+          <div class="circle-block"> <div class="circle-data">1456.0</div></div>
           <p class="circle-caption">Total Reconciled Weight (kg)</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-block">  <div class="circle-data">{{totalUnreconciledPackages}}</div></div>
+          <div class="circle-block">  <div class="circle-data">2345</div></div>
           <p class="circle-caption">Total Unreconciled Items</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-block"> <div class="circle-data">{{totalUnreconciledWeight}}</div></div>
+          <div class="circle-block"> <div class="circle-data">1234.5</div></div>
           <p class="circle-caption">Unreconciled Package Weight (kg)</p>
         </div>
       </div>
