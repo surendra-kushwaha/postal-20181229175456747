@@ -6,9 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>View Reports</title>
+  <title>Detailed Reports</title>
 
   <!-- Bootstrap core CSS -->
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/font.css" rel="stylesheet">
   <link href="css/main.css" rel="stylesheet">
   <!-- Custom styles for this template -->
@@ -36,15 +38,15 @@
     </ul>
   </nav>
   <header>
-    <a href="/home.html">
-      < Back</a>
-        <div class="title">
-          POSTAL SETTLEMENT APPLICATION
-          <button class="menu-button">
-            <img src="Icon/Menu.png" alt="Menu">
-          </button>
-        </div>
-        <div class="user" style="display:none">View Reports</div>
+    <a href="/home.html" >
+      <img src="Icon/Path 4.png" class="float-left pt-1"> &nbsp;&nbsp;Back</a>
+    <div class="title">
+      POSTAL SETTLEMENT APPLICATION
+      <button class="menu-button">
+        <img src="Icon/Menu.png" alt="Menu">
+      </button>
+    </div>
+    <div class="user" style="display:none">View Reports</div>
   </header>
 
   <div class="table-responsive dispatch-options-block">
@@ -69,9 +71,9 @@
         <tr>
           <td class="p-0">
             <div class="mt-3 summary-view">
-              <img src="Icon/Active.png" alt="origin" id="origin-img" style="cursor: pointer;" ng-click="originDispatches()">
+              <img src="Icon/Active.png" alt="origin" id="origin-img"  >
               <span class="OD-line"></span>
-              <img src="Icon/Unactive.png" id="destination-img" style="cursor: pointer;" ng-click="destinationDispatches()" alt="destonation">
+              <img src="Icon/Unactive.png" id="destination-img"   alt="destonation">
               <div class="OD-countries">
                 <div>
                   <p class="blue-text">ORIGIN</p>
@@ -92,10 +94,10 @@
 
               <select>
 
-               <option value="Package Type">Package Type</option>
-                <option value="Tracked Packet">Tracked Packet</option>
+                <option value="Package Type">Package Type</option>
+                <option value="Tracked Packets">Tracked Packets</option>
                 <option value="Express">Express</option>
-                <option value="Untracked Packet">Untracked Packet</option>
+                <option value="Untracked Packets">Untracked Packets</option>
                 <option value="Parcel">Parcel</option>
                 <option value="Registered">Registered</option>
                 <!-- <option ng-repeat="item in parcelRegistry" ng-value="item">{{item}}</option>-->
@@ -104,15 +106,15 @@
           </td>
           <td class="border-0">
             <p class="blue-text mt-4">DATA RANGE</p>
-            <p class="normal-text mt-4">{{startDate}}
-              <img src="Icon/line.png" class="mb-1 px-2" />{{endDate}}</p>
+            <p class="normal-text mt-4">{{startDate| date : "MM/dd/y" }}
+              <img src="Icon/line.png" class="mb-1 px-2" />{{endDate| date : "MM/dd/y" }}</p>
           </td>
         </tr>
         <tr ng-if="!dispatchView" id="package-id-container">
           <td colspan="3">
             <p class="blue-text">DISPATCH ID</p>
             <p class="normal-text mt-3">{{dispatchId}}</p>
-            <a href="#" ng-click="backToAllDispatch()" class="back">
+            <a href="#" ng-click="backToAllDispatch()" class="back" style="text-decoration: none !important;">
               < Back to All Dispatches</a>
           </td>
         </tr>
@@ -125,7 +127,8 @@
     <div class="container" id="table-container" style="display: none;">
       <div class="search" ng-if="dispatches.length>0">
         <img src="Icon/serach.png" alt="search">
-        <input type="text" placeholder="Search by {{searchBy}} or Settlement Status" ng-model="searchText" />
+        <input id="searchBox" type="text" ng-model="query" ng-change="updateOutput()" placeholder="Search by {{searchBy}} or Settlement Status"
+        />
       </div>
       <div class="table-responsive-sm">
         <table class="table" ng-if="dispatches.length>0">
@@ -135,12 +138,14 @@
             </tr>
           </thead>
           <tbody ng-if="dispatchView" id="dispatch-table">
-            <tr ng-repeat="dispatch in dispatches | filter:  parcelType">
+            <tr dir-paginate="dispatch in dispatches  |filter:parcelType |filter:query|itemsPerPage:5 ">
               <td>
                 <a href="#" ng-click="moveToPackageScreen(dispatch.dispatchId)">{{dispatch.dispatchId}}</a>
               </td>
-              <td>{{dispatch.totalReconciledWeight}}</td>
-              <td>{{dispatch.totalReconciledPackages}}</td>
+              <td ng-if="dispatchType==='reconcile'">{{dispatch.totalReconciledWeight}}</td>
+              <td ng-if="dispatchType==='reconcile'">{{dispatch.totalReconciledPackages}}</td>
+              <td ng-if="dispatchType==='unreconcile'">{{dispatch.totalUnreconciledWeight}}</td>
+              <td ng-if="dispatchType==='unreconcile'">{{dispatch.totalUnreconciledPackages}}</td>
               <td>{{dispatch.settlementStatus}}</td>
               <!-- <td ng-if="displayAction">
 Action
@@ -148,7 +153,7 @@ Action
             </tr>
           </tbody>
           <tbody ng-if="!dispatchView" id="package-table">
-            <tr ng-repeat="package in packages | filter:  parcelType ">
+            <tr dir-paginate="package in packages   | filter: query |itemsPerPage:5">
               <td>
                 <a href="#" ng-click="moveToPackageTimeLineScreen(package)">{{package.packageId}}</a>
               </td>
@@ -156,16 +161,43 @@ Action
               <td>{{package.shipmentStatus}}</td>
               <td>{{package.settlementStatus}}</td>
               <td ng-if="displayAction">
-                <div ng-if="package.displayPackageActionDropdown">
+                <!-- <div ng-if="package.displayPackageActionDropdown">
                   <select ng-model="selectedAction" ng-change="updateAction(selectedAction,package.packageId)" ng-options="x for x in package.actionRegistry">
                     <option value="">Action</option>
 
                   </select>
-                  <!-- <select>
-                    <option value="">Action</option>
-                    <option value="actionRegistry[0]">{{actionRegistry[0]}}</option>
-                    <option value="actionRegistry[1]">{{actionRegistry[1]}}</option>
-                  </select> -->
+
+                </div>
+                <div ng-if="!package.displayPackageActionDropdown" ng-click="updateAction(package.packageUpdateAction,package.packageId)"
+                  class="action" style="cursor: pointer;">
+                  {{package.packageUpdateAction}}&nbsp;&nbsp;&nbsp;
+                  <img ng-if="package.packageUpdateAction!='NA'" src="Icon/Chevron Blue.png">
+                </div> -->
+                <!-- <div class="select">
+
+                  <div class="select-styled" id="first">
+                    Action</div>
+                  <ul class="select-options" id="second" style="display: none;">
+                    <li rel="1">Action</li>
+                    <li rel="2">Settlement Agreed</li>
+                    <li rel="3">Dispute Settlement</li>
+                  </ul>
+                </div> -->
+                <div class="dropdown" ng-if="package.displayPackageActionDropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="border: none;font-family: IBMPlexSans-Regular;text-decoration: none; font-size: 12px;color: #333366;letter-spacing: -0.2px;line-height: 15px;">Action
+
+                  </button>
+                  <ul class="dropdown-menu menu-action">
+                    <li>
+                      <a href="#" ng-click="updateAction(package.actionRegistry[0],package.packageId)">{{package.actionRegistry[0]}}</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                      <a href="#" ng-click="updateAction(package.actionRegistry[1],package.packageId)">{{package.actionRegistry[1]}}</a>
+                    </li>
+
+
+                  </ul>
                 </div>
                 <div ng-if="!package.displayPackageActionDropdown" ng-click="updateAction(package.packageUpdateAction,package.packageId)"
                   class="action" style="cursor: pointer;">
@@ -176,29 +208,18 @@ Action
 
             </tr>
           </tbody>
+
         </table>
+
       </div>
-      <!-- <div class="pagecount">
-      <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-          <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1"><img src="Icon/Chevron Dark.png" alt="previous"/></a>
-          </li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">...</a></li>
-          <li class="page-item"><a class="page-link" href="#">10</a></li>
-          <li class="page-item">
-            <a class="page-link" href="#"><img src="Icon/Chevron Dark.png" alt="next" style="transform: rotate(180deg);"/></a>
-          </li>
-        </ul>
-      </nav>
-    </div> -->
-      <div class="back" ng-if="dispatches.length>0">
-        <a href="#">
-          < Back</a>
+
+      <div class="pagecount" ng-if="dispatches.length>0 && packages.length>0">
+        <nav aria-label="Page navigation example">
+          <dir-pagination-controls max-size="1" direction-links="true" boundary-links="true">
+          </dir-pagination-controls>
+        </nav>
       </div>
+
       <div class="back" ng-if="dispatches.length==0" style="font-family:'IBMPlexSans-Bold';margin-top:10%;">
 
         NO DATA
@@ -211,27 +232,30 @@ Action
     <div class="container" id="summary-container" style="display: block;">
       <div class="row summary-data mt-2 p-5">
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-data">{{totalReconciledPackages}}</div>
+          <div class="circle-block">  <div class="circle-data">{{totalReconciledPackages}}</div></div>
           <p class="circle-caption">Total Reconciled Items</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-data">{{totalReconciledWeight}}</div>
+          <div class="circle-block"> <div class="circle-data">{{totalReconciledWeight}}</div></div>
           <p class="circle-caption">Total Reconciled Weight (kg)</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-data">{{totalUnreconciledPackages}}</div>
+          <div class="circle-block">  <div class="circle-data">{{totalUnreconciledPackages}}</div></div>
           <p class="circle-caption">Total Unreconciled Items</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-data">{{totalUnreconciledWeight}}</div>
+          <div class="circle-block"> <div class="circle-data">{{totalUnreconciledWeight}}</div></div>
           <p class="circle-caption">Unreconciled Package Weight (kg)</p>
         </div>
       </div>
 
-      <div class="back">
-        <a href="/home.html">
-          < Back</a>
-      </div>
+
+
+    </div>
+
+    <div class="back">
+      <a href="/home.html">
+        <img src="Icon/Path 4.png" class="float-left pt-1"> &nbsp;&nbsp;Back</a>
     </div>
     <footer class="footer pt-3">
       <img src="Icon/Package footer.png" alt="">
@@ -246,7 +270,7 @@ Action
     <script src="js/bootstrap.min.js"></script>
     <script src="js/angular.min.js"></script>
     <script src="js/dummyData.js"></script>
-
+    <script src="js/dirPagination.js"></script>
     <script src="js/controllers/main.js"></script>
     <script src="js/controllers/dispatchReportController.js"></script>
     <script src="js/nav.js"></script>
