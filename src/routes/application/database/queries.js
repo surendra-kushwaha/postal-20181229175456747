@@ -122,7 +122,8 @@ const packageReport = (req, res) => {
   if (
     queryObj.dispatchId === undefined ||
     queryObj.dispatchId === '""' ||
-    queryObj.dispatchId === ''
+    queryObj.dispatchId === '' ||
+    queryObj.dispatchId === '"none"'
   ) {
     queryObj.dispatchId = 'none';
   }
