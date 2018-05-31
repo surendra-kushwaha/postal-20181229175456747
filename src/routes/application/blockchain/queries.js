@@ -8,30 +8,37 @@ const updateDispatchSettlement = (req, res) => {
   res.status(200).json('');
 };
 
-const updatePackageSettlement = (req, res) => {
+const updatePackageSettlement = async (req, res) => {
   // logger.trace('Entered updatePackageSettlement');
   // Connect to local database (PostalPackage) and grab packageUUID by using parameters given in swagger (packageId)
-  PostalPackage.find({}, 'packageUUID', async (err, data) => {
-    // add query parameters from front end
-    if (err) {
-      res.send(400);
-    } else {
-      // pass packageUUID and newSettlementStatus to postal
-      const payload = {
-        packageId: data,
-        newSettlementStatus: req.body.newStatus,
-      }; // need to add transformation logic
-      await postal.updateSettlementStatus(payload);
-      // once call to postal is complete grab updated package from database and send to front end
-      PostalPackage.find({ data }, (error, newData) => {
+  // PostalPackage.find({}, 'packageUUID', async (err, data) => {
+  // add query parameters from front end
+  // if (err) {
+  //   res.send(400);
+  // } else {
+  // pass packageUUID and newSettlementStatus to postal
+  const payload = {
+    packageId: req.body.id,
+    newSettlementStatus: req.body.newStatus,
+  }; // need to add transformation logic
+  try {
+    const updatedPackageId = await postal.updateSettlementStatus(payload);
+    // once call to postal is complete grab updated package from database and send to front end
+    PostalPackage.find(
+      { packageId: updatedPackageId.data },
+      (error, newData) => {
         if (error) {
-          res.send(400);
+          res.sendStatus(400);
         } else {
-          res.status(200).json({ newData }); // need to add returned data transformation logic
+          logger.debug(`NewData: ${JSON.stringify(newData)}`);
+          res.status(200).json(newData[0]); // need to add returned data transformation logic
         }
-      });
-    }
-  });
+      },
+    );
+  } catch (err) {
+    logger.error(`There was an error updating Settlement Status. ${err}`);
+    res.status(400).send(err);
+  }
 };
 
 /* const packageHistory = async (req, res) => {

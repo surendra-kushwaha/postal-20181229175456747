@@ -281,31 +281,26 @@ class Postal {
           reject(err);
         } else if (!err) {
           logger.info({ status: 'success', data: response });
-          const blockchainPackage = JSON.parse(response.data);
-          const postalData = {
-            dispatchId: blockchainPackage.DispatchID,
-            packageId: blockchainPackage.PackageID,
-            receptacleId: blockchainPackage.OriginReceptacleID,
-            uniqueId: '',
-            originPost: blockchainPackage.OriginCountry,
-            destinationPost: blockchainPackage.DestinationCountry,
-            packageType: blockchainPackage.PackageType,
-            weight: blockchainPackage.Weight,
-            settlementStatus: blockchainPackage.SettlementStatus,
-            shipmentStatus: blockchainPackage.ShipmentStatus,
-            // dateCreated: blockchainPackage.LastUpdated,
+          const updateConditions = { packageId: response.data.packageId };
+          const updateObj = {
+            shipmentStatus,
+            receptacleId: originReceptacleId,
+            dispatchId,
           };
-          const postal = new PostalPackage(postalData);
-          postal.save((err, result) => {
-            if (err) {
-              logger.info({ status: 'fails', data: err });
-              reject(err);
-            } else {
-              logger.info('package data saved successfully to mongodb');
-              resolve(result);
-              // logger.info({ status: 'success', data: result });
-            }
-          });
+          PostalPackage.findOneAndUpdate(
+            updateConditions,
+            updateObj,
+            (err, result) => {
+              if (err) {
+                logger.info({ status: 'fails', data: err });
+                reject(err);
+              } else {
+                logger.info('package data saved successfully to mongodb');
+                resolve(result);
+                // logger.info({ status: 'success', data: result });
+              }
+            },
+          );
         } else {
           logger.info({
             status: 'fail',
@@ -320,37 +315,49 @@ class Postal {
   async updateSettlementStatus(payload) {
     logger.info('Postal:<updateSettlementStatus>');
     logger.debug('Payload received:', payload);
-    /* var packageId="EX103456792US";
-	var settlementStatus="Reconciled1" */
-    const packageId = payload.packageUUID;
+    const { packageId } = payload;
     const settlementStatus = payload.newSettlementStatus;
-    // var country="China";
-    // var argsValue = ['{\"PostalId\":\"' + postalId + '\", \"Name\":\"' + name + '\" , \"Country\":\"' + country + '\"}'];
+    
     const argsValue = [String(packageId), String(settlementStatus)];
-    // const options = {
-    //   peer_urls: peerUrls,
-    //   method_type: 'invoke',
-    //   func: 'updateSettlementStatus',
-    //   args: argsValue,
-    // }
 
     options.method_type = 'invoke';
     options.func = 'updateSettlementStatus';
     options.args = argsValue;
 
-    logger.info(`Options for updateShipmentStatus: ${JSON.stringify(options)}`);
-    postalscm_lib.call_chaincode(options, (err, response) => {
-      if (err) {
-        logger.info({ status: 'error', data: [err, response] });
-      } else if (!err) {
-        logger.info({ status: 'success', data: response });
-      } else {
-        logger.info({
-          status: 'fail',
-          data: { msg: 'Something went wrong. Please try again' },
-        });
-      }
-    });
+    logger.info(
+      `Options for updateSettlementStatus: ${JSON.stringify(options)}`,
+    );
+    return new Promise((resolve, reject) =>
+      postalscm_lib.call_chaincode(options, (err, response) => {
+        if (err) {
+          logger.info({ status: 'error', data: [err, response] });
+          reject(err);
+        } else if (!err) {
+          logger.info({ status: 'success', data: response });
+          const updateConditions = {
+            packageId: response.data,
+          };
+          const updateObj = {
+            settlementStatus, // should be response.shipmentStatus
+          };
+          PostalPackage.findOneAndUpdate(updateConditions, updateObj, error => {
+            if (error) {
+              logger.info({ status: 'fails', data: error });
+              reject(error);
+            } else {
+              logger.info('package data saved successfully to mongodb');
+              resolve(response);
+            }
+          });
+        } else {
+          logger.info({
+            status: 'fail',
+            data: { msg: 'Something went wrong. Please try again' },
+          });
+          reject();
+        }
+      }),
+    );
   }
 }
 
