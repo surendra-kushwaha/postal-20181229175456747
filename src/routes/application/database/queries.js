@@ -102,11 +102,9 @@ const report = async (req, res) => {
     if (err) {
       res.send({ status: 'fail', data: { msg: err } });
     } else {
-      logger.debug(`PostalData: ${JSON.stringify(postalData, null, 2)}`);
       const dispatchIds = createDispatchIdArray(postalData);
-      logger.debug(`DispatchIds: ${JSON.stringify(dispatchIds, null, 2)}`);
       const dispatches = createArrayOfDispatches(dispatchIds, postalData);
-      logger.debug(`Dispatches: ${JSON.stringify(dispatches, null, 2)}`);
+      logger.debug(`Dispatches: ${JSON.stringify(dispatches)}`);
       const reportData = performDispatchCalculations(dispatches, queryObj); // final array to push completed dispatch data
       res.send({ status: 'success', data: reportData });
     }
@@ -188,4 +186,27 @@ const viewReports = (req, res) => {
   // res.status(200).json('');
 };
 
-export { viewReports, report, packageReport };
+const getPackage = (req, res) => {
+  const queryObj = {
+    packageId: req.query.packageId,
+  };
+  PostalPackage.find(queryObj, (err, postalData) => {
+    if (err) {
+      res.send({ status: 'fail', data: { msg: err } });
+    } else {
+      res.send({ status: 'success', data: postalData });
+    }
+  });
+};
+
+const clearData = (req, res) => {
+  //   PostalPackage.remove({}, (err, postalData) => {
+  //     if (err) {
+  //       res.send({ status: 'fail', data: { msg: err } });
+  //     } else {
+  res.send({ status: 'success' /* , data: postalData  */ });
+  //     }
+  //   })
+};
+
+export { viewReports, report, packageReport, getPackage, clearData };
