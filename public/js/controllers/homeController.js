@@ -31,8 +31,8 @@ mainApp.controller('HomeController', function ($scope, $window, $http) {
         function (response) {
           sessionStorage.setItem('startDate', $scope.startDate);
           sessionStorage.setItem('endDate', $scope.endDate);
-          sessionStorage.setItem('originPost', $scope.originCountry);
-          sessionStorage.setItem('destinationPost', $scope.destinationCountry);
+          sessionStorage.setItem('originPost', $scope.originCountry.split("(")[1].slice(0,-1).trim());
+          sessionStorage.setItem('destinationPost', $scope.destinationCountry.split("(")[1].slice(0,-1).trim());
           var today = new Date();
           var dd = today.getDate();
           var mm = today.getMonth() + 1; //January is 0!

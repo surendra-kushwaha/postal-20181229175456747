@@ -59,7 +59,7 @@ mainApp.controller('DispatchReportController', function ($scope, $window, $http)
       endDate: sessionStorage.getItem('endDate'),
       originPost: sessionStorage.getItem('originPost'),
       destinationPost: sessionStorage.getItem('destinationPost'),
-      dateCreated: sessionStorage.getItem('startDate')
+      dateCreated: sessionStorage.getItem('dateCreated')
     });
 
     $http.post('/report', data, {
@@ -278,7 +278,7 @@ dispatchId="";
           } else if (package.settlementStatus === "Settlement Requested") {
 
             package.packageUpdateAction = "NA";
-            if (sessionStorage.getItem('location') === 'origin') {
+            if (sessionStorage.getItem('location') === "origin") {
               package.actionRegistry = ["Settlement Agreed", "Dispute Settlement"];
               package.displayPackageActionDropdown = true;
             } else
