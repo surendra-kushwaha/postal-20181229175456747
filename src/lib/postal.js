@@ -261,7 +261,7 @@ class Postal {
       String(shipmentStatus),
       String(originReceptacleId),
       String(dispatchId),
-      // String(lastUpdated)
+      String(lastUpdated)
     ];
     // const options = {
     //   peer_urls: peerUrls,
@@ -316,8 +316,9 @@ class Postal {
     logger.debug('Payload received:', payload);
     const { packageId, lastUpdated } = payload;
     const settlementStatus = payload.newSettlementStatus;
+    const lastUpdated = payload.lastUpdated;
 
-    const argsValue = [String(packageId), String(settlementStatus)];
+    const argsValue = [String(packageId), String(settlementStatus),String(lastUpdated)];
 
     options.method_type = 'invoke';
     options.func = 'updateSettlementStatus';
