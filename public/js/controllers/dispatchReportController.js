@@ -241,7 +241,10 @@ dispatchId="";
 
           if (package.settlementStatus === "Reconciled") {
             package.displayPackageActionDropdown = false;
+            if (sessionStorage.getItem('location') === "origin")
             package.packageUpdateAction = "Dispute Package";
+            else
+            package.packageUpdateAction = "NA"
             package.actionRegistry = ["NA", "NA"];
             $scope.reconciledPackages.push(package);
 
@@ -254,17 +257,17 @@ dispatchId="";
 
           } else if (package.settlementStatus === "Unreconciled") {
             package.displayPackageActionDropdown = false;
-            if (sessionStorage.getItem('location') === 'origin')
+            if (sessionStorage.getItem('location') === 'destination')
               package.packageUpdateAction = "Request Settlement";
             else
               package.packageUpdateAction = "NA";
-            package.actionRegistry = ["Confirm Dispute", "Request Settlement"];
+            package.actionRegistry = ["NA", "NA"];
             $scope.unreconciledPackages.push(package);
 
           } else if (package.settlementStatus === "Settlement Disputed") {
 
             package.packageUpdateAction = "NA";
-            if (sessionStorage.getItem('location') === 'destination') {
+            if (sessionStorage.getItem('location') === "destination") {
               package.actionRegistry = ["Confirm Dispute", "Request Settlement"];
               package.displayPackageActionDropdown = true;
             } else {
