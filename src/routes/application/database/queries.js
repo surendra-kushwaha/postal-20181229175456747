@@ -115,9 +115,18 @@ const report = async (req, res) => {
 
 // Get package details for dispatch
 const packageReport = (req, res) => {
+  logger.info(`Req.query: ${JSON.stringify(req.query)}`);
   const queryObj = {
     dispatchId: req.query.dispatchId,
   };
+  if (
+    queryObj.dispatchId === undefined ||
+    queryObj.dispatchId === '""' ||
+    queryObj.dispatchId === ''
+  ) {
+    queryObj.dispatchId = 'none';
+  }
+  logger.info(JSON.stringify(queryObj));
   PostalPackage.find(queryObj, (err, postalData) => {
     if (err) {
       res.send({ status: 'fail', data: { msg: err } });

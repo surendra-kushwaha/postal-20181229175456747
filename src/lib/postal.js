@@ -178,6 +178,12 @@ class Postal {
           // dateCreated: blockchainPackage.LastUpdated,
           dateCreated: today,
         };
+        if (
+          postalData.dispatchId === undefined ||
+          postalData.dispatchId === ''
+        ) {
+          postalData.dispatchId = 'none';
+        }
         logger.info(`PostalData to save in DB::${JSON.stringify(postalData)}`);
         const postal = new PostalPackage(postalData);
         postal.save((err, result) => {
@@ -198,22 +204,25 @@ class Postal {
     });
   }
 
-async getPackageHistory(packageId,res) {
-	logger.info('Postal:<getPackageHistory>');
-    //const packageId=payload;
+  async getPackageHistory(packageId, res) {
+    logger.info('Postal:<getPackageHistory>');
+    // const packageId=payload;
     const argsValue = [packageId];
-    options.method_type="query";
-     options.func="getPackageHistory";
-     options.args=argsValue;
-      postalscm_lib.call_chaincode(options,function (err, response) {
-        if (err) {
-          res.send({ "status": "error", "data": [err,response] });
-        } else if (!err) {
-          res.send({ "status": "success", "data": { "msg": response.parsed } });
-        } else {
-          res.send({ "status": "fail", "data": { "msg": "Something went wrong. Please try again" } });
-        }
-      });
+    options.method_type = 'query';
+    options.func = 'getPackageHistory';
+    options.args = argsValue;
+    postalscm_lib.call_chaincode(options, (err, response) => {
+      if (err) {
+        res.send({ status: 'error', data: [err, response] });
+      } else if (!err) {
+        res.send({ status: 'success', data: { msg: response.parsed } });
+      } else {
+        res.send({
+          status: 'fail',
+          data: { msg: 'Something went wrong. Please try again' },
+        });
+      }
+    });
   }
 
   async updateShipmentStatus(payload) {
