@@ -9,7 +9,7 @@ mainApp.controller('HomeController', function ($scope, $window, $http) {
     var date2 = new Date($scope.endDate);
     var timeDiff = Math.abs(date2.getTime() - date1.getTime());
     var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    if (diffDays <= 1) {
+  if (diffDays <= 1) {
       alert("Date Range of Simulation should be greater than 15 days!!");
       return;
     } else {

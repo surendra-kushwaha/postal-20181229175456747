@@ -218,7 +218,7 @@ $scope.updateSummaryData();
   }
 
 
-  $scope.moveToPackageScreen = function (dispatchId) {
+$scope.moveToPackageScreen = function (dispatchId) {
 if(dispatchId==="NOT AVAILABLE")
 dispatchId="";
 

@@ -35,7 +35,7 @@ mainApp
     // $scope.array.push(false);
     // $scope.array.push(true);
 
-    $http.get('/package-history?packageId=' + sessionStorage.getItem('packageId'), {
+  $http.get('/package-history?packageId=' + sessionStorage.getItem('packageId'), {
         headers: {
             'Content-Type': 'application/json'
         }
