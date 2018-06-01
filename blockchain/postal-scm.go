@@ -16,6 +16,7 @@ import (
 	"encoding/json"
 	"fmt"
 	//"strconv"
+	//"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	sc "github.com/hyperledger/fabric/protos/peer"
@@ -44,6 +45,7 @@ type PostalPackage struct {
 	OriginReceptacleID  string `json:"OriginReceptacleID"`
 	DispatchID   string `json:"DispatchID"`
 	LastUpdated string `json:"LastUpdated"`
+	TransactionName string `json:"TransactionName"`
 }
 
 /*
@@ -94,6 +96,10 @@ func (self *PostalScmChainCode) Invoke(APIstub shim.ChaincodeStubInterface) sc.R
 	if function == "updateShipmentStatus" {
 			fmt.Println("invoking updateShipmentStatus " + function)
 			return updateShipmentStatus(APIstub,args);
+	}
+
+	if function == "getPackageHistory"{        //read history of a package (audit)
+		return getPackageHistory(APIstub, args)
 	}
 
 
@@ -184,6 +190,7 @@ func queryPostal(postalId string, APIstub shim.ChaincodeStubInterface)(Postal, e
 		return postalData, err
 	}
 
+/*
 func addPostal12(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	var err error
 
@@ -230,7 +237,7 @@ func addPostal12(APIstub shim.ChaincodeStubInterface, args []string) sc.Response
 	}
 	fmt.Println("- end creating postal")
 	return shim.Success(nil)
-}
+}*/
 
 
 func queryPackage(packageId string, stub shim.ChaincodeStubInterface)(PostalPackage, error) {
@@ -249,12 +256,64 @@ func queryPackage(packageId string, stub shim.ChaincodeStubInterface)(PostalPack
 		return postalPackageData, err
 	}
 
+// ============================================================================================================================
+// Get history of asset
+//
+// Shows Off GetHistoryForKey() - reading complete history of a key/value
+// ============================================================================================================================
+func getPackageHistory(stub shim.ChaincodeStubInterface, args []string) sc.Response {
+	type AuditHistory struct {
+		TxId    string   `json:"txId"`
+		Value   PostalPackage  `json:"value"`
+	}
+	var history []AuditHistory;
+	var packageData PostalPackage
+
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expecting 1")
+	}
+
+	packageId := args[0]
+	fmt.Printf("- start getHistoryForPackage: %s\n", packageId)
+
+	// Get History
+	resultsIterator, err := stub.GetHistoryForKey(packageId)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	defer resultsIterator.Close()
+
+	for resultsIterator.HasNext() {
+		historyData, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+
+		var tx AuditHistory
+		tx.TxId = historyData.TxId                     //copy transaction id over
+		json.Unmarshal(historyData.Value, &packageData)     //un stringify it aka JSON.parse()
+		if historyData.Value == nil {                  //package has been deleted
+			var emptypackage PostalPackage
+			tx.Value = emptypackage                 //copy nil package
+		} else {
+			json.Unmarshal(historyData.Value, &packageData) //un stringify it aka JSON.parse()
+			tx.Value = packageData                      //copy package over
+		}
+		history = append(history, tx)              //add this tx to the list
+	}
+	fmt.Printf("- getHistoryForPackage returning:\n%s", history)
+
+	//change to array of bytes
+	historyAsBytes, _ := json.Marshal(history)     //convert to array of bytes
+	return shim.Success(historyAsBytes)
+}
 
 func createPostalPackage(packageJSON string, stub shim.ChaincodeStubInterface) ([]byte, error) {
 		fmt.Println("In services.AddUser start ")
 		res := &PostalPackage{}
 		//user := &User{}
 		err := json.Unmarshal([]byte(packageJSON), res)
+		res.TransactionName = "createPostalPackage"
 		if err != nil {
 			fmt.Println("Failed to unmarshal package ")
 			return nil, err
@@ -282,8 +341,8 @@ func createPostalPackage(packageJSON string, stub shim.ChaincodeStubInterface) (
 //Update settlement status for package.
 func updateSettlementStatus(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
-	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting 2")
+	if len(args) !=3 {
+		return shim.Error("Incorrect number of arguments. Expecting 3")
 	}
 
 	packageAsBytes, _ := APIstub.GetState(args[0])
@@ -291,20 +350,28 @@ func updateSettlementStatus(APIstub shim.ChaincodeStubInterface, args []string) 
 
 	json.Unmarshal(packageAsBytes, &packageData)
 	packageData.SettlementStatus = args[1]
+	packageData.LastUpdated = args[2]
+	packageData.TransactionName = "updateSettlementStatus"
 
 	packageAsBytes, _ = json.Marshal(packageData)
 	APIstub.PutState(args[0], packageAsBytes)
+
+	//APIstub.SetEvent("SettlementPackageEvent", packageAsBytes)
+	/*err = APIstub.SetEvent("SettlementPackageEvent", packageAsBytes)
+	if err != nil {
+		return shim.Error(err.Error())
+	}*/
 
 	return shim.Success(nil)
 }
 
 //Update shipment status for package.
 func updateShipmentStatus(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-	fmt.Println("entering updateShipmentStatus " + args)
-	if len(args) != 4 {
-		return shim.Error("Incorrect number of arguments. Expecting 4")
+
+	if len(args) !=5 {
+		return shim.Error("Incorrect number of arguments. Expecting 5")
 	}
-	
+
 	packageAsBytes, _ := APIstub.GetState(args[0])
 	packageData := PostalPackage{}
 
@@ -312,9 +379,17 @@ func updateShipmentStatus(APIstub shim.ChaincodeStubInterface, args []string) sc
 	packageData.ShipmentStatus = args[1]
 	packageData.OriginReceptacleID = args[2]
 	packageData.DispatchID = args[3]
+	packageData.LastUpdated = args[4]
+	packageData.TransactionName = "updateShipmentStatus"
 
 	packageAsBytes, _ = json.Marshal(packageData)
 	APIstub.PutState(args[0], packageAsBytes)
+
+	//APIstub.SetEvent("ShipmentPackageEvent", packageAsBytes)
+	/*err = APIstub.SetEvent("ShipmentPackageEvent", packageAsBytes)
+	if err != nil {
+		return shim.Error(err.Error())
+	}*/
 
 	return shim.Success(nil)
 }
