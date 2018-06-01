@@ -32,9 +32,9 @@ $scope.activeMenuHeading=["Summary View","Reconciled Dispatches","Unreconciled D
         $scope.totalUnreconciledPackages += dispatch.totalUnreconciledPackages;
         if(dispatch.dispatchId==="" || dispatch.dispatchId==="none")
         dispatch.dispatchId="NONE";
-        if (dispatch.settlementStatus === "Reconciled" || dispatch.settlementStatus === "Settlement Agreed")
+        if (dispatch.totalReconciledPackages>0)
           $scope.reconciledDispatches.push(dispatch);
-        else
+        if(dispatch.totalUnreconciledPackages>0)
           $scope.unreconciledDispatches.push(dispatch);
       }
 
@@ -174,8 +174,8 @@ $scope.updateSummaryData();
   }
 
   $scope.getReconciledDispatches = function () {
-    $scope.noPackagesMsg="Sorry, We din't find any Reconciled Packages for This Time Period!!";
-    $scope.activeMenuHeading[1]="Reconciled Dispatches";
+    $scope.noPackagesMsg="Sorry, We could not find any Reconciled Packages for This Time Period!!";
+    $scope.activeMenuHeading=["Summary View","Reconciled Dispatches","Unreconciled Dispatches"];
     $scope.dispatchType=sessionStorage.getItem('typeOfData');
     $scope.dispatches = $scope.reconciledDispatches;
     if($scope.dispatches.length>0)
@@ -194,8 +194,8 @@ $scope.updateSummaryData();
 
   $scope.getUnreconciledDispatches = function () {
 
-    $scope.noPackagesMsg="Sorry, We din't find any Unreconciled Packages for This Time Period!!";
-    $scope.activeMenuHeading[2]="Unreconciled Dispatches";
+    $scope.noPackagesMsg="Sorry, We could not find any Unreconciled Packages for This Time Period!!";
+    $scope.activeMenuHeading=["Summary View","Reconciled Dispatches","Unreconciled Dispatches"];
     $scope.dispatchType=sessionStorage.getItem('typeOfData');
     $scope.dispatches = $scope.unreconciledDispatches;
     if($scope.dispatches.length>0)
@@ -232,6 +232,9 @@ dispatchId="";
 
 
         $scope.packages=[];
+        $scope.reconciledPackages = [];
+        $scope.unreconciledPackages = [];
+
 
         // packagesData
         (response.data.data).forEach(package => {
@@ -242,15 +245,15 @@ dispatchId="";
             package.packageUpdateAction = "Dispute Package";
             else
             package.packageUpdateAction = "NA"
-            package.actionRegistry = ["NA", "NA"];
-            $scope.packages.push(package);
+
+            $scope.reconciledPackages.push(package);
 
 
           } else if (package.settlementStatus === "Settlement Agreed") {
             package.displayPackageActionDropdown = false;
             package.packageUpdateAction = "NA";
-            package.actionRegistry = ["NA", "NA"];
-            $scope.packages.push(package);
+
+            $scope.reconciledPackages.push(package);
 
           } else if (package.settlementStatus === "Unreconciled") {
             package.displayPackageActionDropdown = false;
@@ -258,8 +261,8 @@ dispatchId="";
               package.packageUpdateAction = "Request Settlement";
             else
               package.packageUpdateAction = "NA";
-            package.actionRegistry = ["NA", "NA"];
-            $scope.packages.push(package);
+
+            $scope.unreconciledPackages.push(package);
 
           } else if (package.settlementStatus === "Settlement Disputed") {
 
@@ -270,7 +273,7 @@ dispatchId="";
             } else {
               package.displayPackageActionDropdown = false;
             }
-            $scope.packages.push(package);
+            $scope.unreconciledPackages.push(package);
 
           } else if (package.settlementStatus === "Settlement Requested") {
 
@@ -280,28 +283,36 @@ dispatchId="";
               package.displayPackageActionDropdown = true;
             } else
               package.displayPackageActionDropdown = false;
-            $scope.packages.push(package);
+            $scope.unreconciledPackages.push(package);
 
           } else if (package.settlementStatus === "Dispute Confirmed") {
             package.displayPackageActionDropdown = false;
             package.packageUpdateAction = "NA";
-            $scope.packages.push(package);
+            $scope.unreconciledPackages.push(package);
           }
         });
 
-        if (sessionStorage.getItem('location') === "destination" && sessionStorage.getItem('typeOfData') === 'reconcile') {
-          $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS"];
-         // $scope.packages = $scope.reconciledPackages;
 
-        } else {
-          $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
-          $scope.dispatchView = false;
-          // if (sessionStorage.getItem('typeOfData') === 'reconcile')
-          //   $scope.packages = $scope.reconciledPackages;
-          // else
-          //   $scope.packages = $scope.unreconciledPackages;
+        // if (sessionStorage.getItem('location') === "destination" && sessionStorage.getItem('typeOfData') === 'reconcile') {
+        //   $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS"];
+        //  $scope.packages = $scope.reconciledPackages;
 
-        }
+        // } else {
+        //   $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+        //   $scope.dispatchView = false;
+        //    if (sessionStorage.getItem('typeOfData') === 'reconcile')
+        //      $scope.packages = $scope.reconciledPackages;
+        //    else
+        //    $scope.packages = $scope.unreconciledPackages;
+
+        // }
+        $scope.dispatchView = false;
+        $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS","ACTION"];
+        if(sessionStorage.getItem('typeOfData') === 'reconcile')
+          $scope.packages = $scope.reconciledPackages;
+        else
+        $scope.packages = $scope.unreconciledPackages;
+
 
 
 if($scope.dispatchType=sessionStorage.getItem('typeOfData') ==="reconcile")
@@ -319,8 +330,18 @@ $scope.activeMenuHeading[2]="Unreconciled Packages";
 
   }
 
+
   $scope.updateAction = function (action, packageId) {
     if (action != null && action != "NA") {
+      if(action==="Dispute Package")
+      action="Settlement Disputed";
+      else if(action==="Request Settlement")
+      action="Settlement Requested";
+      else if(action==="Confirm Dispute")
+      action="Dispute Confirmed";
+      else if(action ==="Dispute Settlement")
+      action="Settlement Disputed";
+
       let updateSettlementObject =JSON.stringify( {
 
         'type': 'package',
