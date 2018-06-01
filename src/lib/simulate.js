@@ -97,11 +97,7 @@ function dateformat(datestatus, daytime?) {
   while (minutes.length < 2) {
     minutes = `0${minutes}`;
   }
-  return `${datestatus.getFullYear().toString() +
-    month +
-    day +
-    hour +
-    minutes}`;
+  return new Date(datestatus.getFullYear(), month, day, hour, minutes, 0, 0);
 }
 
 // return the Dispatch ID

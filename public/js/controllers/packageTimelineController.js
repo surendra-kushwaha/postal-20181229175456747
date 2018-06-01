@@ -10,37 +10,38 @@ mainApp
 
     $scope.getDateTime=function(date)
     {
-  //     alert(new Date(date));
-  //     var dd = date.getDate();
-  //                   var mm = date.getMonth() + 1; //January is 0!
+      var dd = date.getDate();
+                    var mm = date.getMonth() + 1; //January is 0!
 
-  //                   var yyyy = date.getFullYear();
-  //                   if (dd < 10) {
-  //                       dd = '0' + dd;
-  //                   }
-  //                   if (mm < 10) {
-  //                       mm = '0' + mm;
-  //                   }
+                    var yyyy = date.getFullYear();
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
 
-  //                   var hours = date.getHours();
-  // var minutes = date.getMinutes();
-  // var ampm = hours >= 12 ? 'pm' : 'am';
-  // hours = hours % 12;
-  // hours = hours ? hours : 12; // the hour '0' should be '12'
-  // minutes = minutes < 10 ? '0'+minutes : minutes;
-  // //var strTime = hours + ':' + minutes + ' ' + ampm;
+                    var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  // var strTime = hours + ':' + minutes + ' ' + ampm;
 
-          var hh=Number(date.substring(8,10))
-          if(hh>11)
-          var ampm="pm"
-          else
-          var ampm="am";
-          if(hh>12)
-          hh=hh-12;
+  return (mm + '/' + dd + '/' + yyyy + " - "+ hours + ':' + minutes + ' ' + ampm);
+
+          // var hh=Number(date.substring(8,10))
+          // if(hh>11)
+          // var ampm="pm"
+          // else
+          // var ampm="am";
+          // if(hh>12)
+          // hh=hh-12;
 
 
 
-                    return (date.substring(4,6) + '/' + date.substring(6,8) + '/' + date.substring(0,4) + " - "+ hh + ':' + date.substring(10,12) + " "+ampm );
+                    // return (date.substring(4,6) + '/' + date.substring(6,8) + '/' + date.substring(0,4) + " - "+ hh + ':' + date.substring(10,12) + " "+ampm );
     }
     // $scope.array.push(false);
     // $scope.array.push(true);
@@ -61,12 +62,13 @@ mainApp
             $scope.packageHistory=[];
 
             response.data.forEach(element => {
+              element.date=new Date(element.date);
               if(element.statusDescription==undefined)
               element.statusDescription="";
              if(element.statusType==="Shipment Status")
-             var td=$sce.trustAsHtml("<td class='shipment-status-entry'><p><span class='EMA mb-2'>"+element.status+"</span>"+element.statusDescription+"</p></td><td class='timestamp pt-0'>"+$scope.getDateTime(element.date.trim())+"</td>");
+             var td=$sce.trustAsHtml("<td class='shipment-status-entry'><p><span class='EMA mb-2'>"+element.status+"</span>"+element.statusDescription+"</p></td><td class='timestamp pt-0'>"+$scope.getDateTime(element.date)+"</td>");
              else
-             var td=$sce.trustAsHtml("<td class='timestamp pt-2'>"+$scope.getDateTime(element.date.trim())+"</td><td class='settlment-status-entry'> <p>"+element.status+"</p></td>");
+             var td=$sce.trustAsHtml("<td class='timestamp pt-2'>"+$scope.getDateTime(element.date)+"</td><td class='settlment-status-entry'> <p>"+element.status+"</p></td>");
 
              $scope.packageHistory.push(td);
             });
