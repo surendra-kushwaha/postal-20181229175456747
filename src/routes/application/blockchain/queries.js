@@ -62,11 +62,12 @@ const packageHistory = async (req, res) => {
         const historyData = {
           date: transax.value.LastUpdated,
         };
-        if (transax.value.TransactionName === 'updateSettlementStatus') {
+        if (
+          String(transax.value.TransactionName) === 'updateSettlementStatus'
+        ) {
           historyData.status = transax.value.SettlementStatus;
           historyData.statusType = 'Settlement Status';
-        }
-        if (transax.value.TransactionName === 'createPostalPackage') {
+        } else if (transax.value.TransactionName === 'createPostalPackage') {
           const creationHistoryData = {
             date: transax.value.LastUpdated,
             status: transax.value.ShipmentStatus,
