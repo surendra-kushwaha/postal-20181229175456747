@@ -74,7 +74,7 @@ function getPackageParams(packagetype) {
 
 // return a date with define format and random hour/minute
 function dateformat(datestatus, daytime?) {
-  let month = (datestatus.getMonth() + 1).toString();
+  let month = datestatus.getMonth().toString();
   while (month.length < 2) {
     month = `0${month}`;
   }

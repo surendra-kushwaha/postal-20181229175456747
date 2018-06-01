@@ -61,10 +61,26 @@ const packageHistory = async (req, res) => {
         logger.info(`Transax: ${JSON.stringify(transax, null, 2)}`);
         const historyData = {
           date: transax.value.LastUpdated,
-          status: transax.value.ShipmentStatus,
-          statusType: 'Shipment Status',
         };
-        logger.info(`History array: ${JSON.stringify(historyData)}`);
+        if (transax.value.TransactionName === 'updateSettlementStatus') {
+          historyData.status = transax.value.SettlementStatus;
+          historyData.statusType = 'Settlement Status';
+        }
+        if (transax.value.TransactionName === 'createPostalPackage') {
+          const creationHistoryData = {
+            date: transax.value.LastUpdated,
+            status: transax.value.ShipmentStatus,
+            statusType: 'Shipment Status',
+          };
+          historyArray.push(creationHistoryData);
+          historyData.status = transax.value.SettlementStatus;
+          historyData.statusType = 'Settlement Status';
+        } else {
+          historyData.status = transax.value.ShipmentStatus;
+          historyData.statusType = 'Shipment Status';
+        }
+
+        logger.info(`History data: ${JSON.stringify(historyData)}`);
         historyArray.push(historyData);
       });
       res.status(200).send(historyArray);
