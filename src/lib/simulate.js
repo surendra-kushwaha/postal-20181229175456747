@@ -308,7 +308,7 @@ function generateEDI(
   return MockEDI;
 }
 
-// eslint-disable-line func-names
+// eslint-disable-next-line func-names
 Promise.settle = function(promises) {
   return Promise.all(
     promises.map(p =>
@@ -672,7 +672,7 @@ class DispatchSimulator {
 
     const allPromiseResults = [];
 
-    // eslint-disable-line no-restricted-syntax
+    // eslint-disable-next-line no-restricted-syntax
     for (const processStep of allProcessStepArrays) {
       const stepPromiseResults = await updateProcessStep(processStep); // eslint-disable-line no-await-in-loop
       logger.info('Completed a process step!');
