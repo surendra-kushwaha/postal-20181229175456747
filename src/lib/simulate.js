@@ -536,7 +536,7 @@ class DispatchSimulator {
               dateend.setDate(dateend.getDate() + 6); // add 7 days to lost package
               data.lastUpdated = dateformat(dateend, false);
             }
-            // EDIUpdatePackage.push(data);
+            EDIUpdatePackage.push(data);
           } else {
             // add new status
             EDIUpdatePackage.push(data);
