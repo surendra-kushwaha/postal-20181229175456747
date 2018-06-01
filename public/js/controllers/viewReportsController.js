@@ -8,6 +8,10 @@ $http.get('/view-reports?country=' + sessionStorage.getItem('countryName'), {
   }).then(
     function (response) {
       $scope.tableData = response.data.data;
+      $scope.tableData.forEach(element => {
+        element.dateCreated=new Date(element.dateCreated);
+
+      });
     },
     function (response) {
       console.log(response);

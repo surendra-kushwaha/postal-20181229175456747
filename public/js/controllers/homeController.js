@@ -1,7 +1,9 @@
 mainApp.controller('HomeController', function ($scope, $window, $http) {
 
-  // $scope.countryList = ["UK(GB)", "USA(US)", "China(CN)", "Germany(DN)", "Canada(CA)", "Japan(JP)", "France(FR)"]
+   var countryNamesList = ["UK", "USA", "China", "Germany", "Canada", "JP", "FR"];
+   var countryCodesList = ["GB", "US", "CN", "DN", "CA", "JP", "FR"]
 
+   $scope.userCountry=countryNamesList[countryCodesList.indexOf(sessionStorage.getItem('countryName'))];
   $scope.simulate = function () {
     $scope.originCountry=$scope.originCountry.split("(")[1].slice(0,-1).trim();
     $scope.destinationCountry= $scope.destinationCountry.split("(")[1].slice(0,-1).trim();
@@ -12,7 +14,13 @@ mainApp.controller('HomeController', function ($scope, $window, $http) {
   if (diffDays <= 1) {
       alert("Date Range of Simulation should be greater than 15 days!!");
       return;
-    } else {
+    }
+    else if($scope.originCountry!==sessionStorage.getItem('countryName') && $scope.destinationCountry!==sessionStorage.getItem('countryName'))
+    {
+      alert("Please select "+$scope.userCountry+" as Origin OR Destination!!");
+      return;
+    }
+    else {
       $('#exampleModalCenter').modal('hide');
       $('#loadModal').modal('show');
       //$window.location.href = '/dispatchReport.html';

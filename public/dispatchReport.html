@@ -54,15 +54,15 @@
       <thead>
         <tr class="border-0">
           <th scope="col" class="p-0">
-            <a href="#" class="active" id="summary-link" ng-click="callback('summary-link')">Summary View</a>
+            <a href="#" class="active" id="summary-link" ng-click="callback('summary-link')">{{activeMenuHeading[0]}}</a>
             </i>
           </th>
           <th scope="col" class="p-0">
-            <a href="#" id="reconcile-link" ng-click="callback('reconcile-link')">Reconciled Dispatch</a>
+            <a href="#" id="reconcile-link" ng-click="callback('reconcile-link')">{{activeMenuHeading[1]}}</a>
             </i>
           </th>
           <th scope="col" class="p-0">
-            <a href="#" id="unreconcile-link" ng-click="callback('unreconcile-link')">Unreconciled Dispatch</a>
+            <a href="#" id="unreconcile-link" ng-click="callback('unreconcile-link')">{{activeMenuHeading[2]}}</a>
             </i>
           </th>
         </tr>
@@ -98,7 +98,7 @@
                 <option value="Tracked Packets">Tracked Packets</option>
                 <option value="Express">Express</option>
                 <option value="Untracked Packets">Untracked Packets</option>
-                <option value="Parcel">Parcel</option>
+                <option value="Parcels">Parcels</option>
                 <option value="Registered">Registered</option>
                 <!-- <option ng-repeat="item in parcelRegistry" ng-value="item">{{item}}</option>-->
               </select>
@@ -153,7 +153,7 @@ Action
             </tr>
           </tbody>
           <tbody ng-if="!dispatchView" id="package-table">
-            <tr dir-paginate="package in packages   | filter: query |itemsPerPage:5">
+            <tr dir-paginate="package in packages |orderBy:'package.dateCreated':true |filter: query |itemsPerPage:5">
               <td>
                 <a href="#" ng-click="moveToPackageTimeLineScreen(package)">{{package.packageId}}</a>
               </td>
@@ -222,7 +222,7 @@ Action
 
       <div class="back" ng-if="dispatches.length==0" style="font-family:'IBMPlexSans-Bold';margin-top:10%;">
 
-        NO DATA
+       {{noPackagesMsg}}
       </div>
       <div ng-if="!dispatchView" class="dispute-btn my-5" id="dispute-all">
         <button type="button" class="btn">DISPUTE ALL</button>

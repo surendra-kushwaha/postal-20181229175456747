@@ -45,7 +45,7 @@
             <img src="Icon/Menu.png" alt="Menu">
           </button>
         </div>
-        <div class="user mt-5">View Reports</div>
+        <div class="user mt-5" style="top:7%;">View Reports</div>
   </header>
   <div class="container" ng-if="tableData.length>0">
     <div class="search">
@@ -69,7 +69,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr dir-paginate="data in tableData| filter:searchText |itemsPerPage:10 " style="font-family:IBMPlexSans-Regular;">
+          <tr dir-paginate="data in tableData| orderBy:'data.dateCreated':true |filter:searchText |itemsPerPage:10 " style="font-family:IBMPlexSans-Regular;">
             <td> {{data.startDate | date : "MM/dd/y" }} – {{data.endDate | date : "MM/dd/y" }}</td>
             <td>{{data.dateCreated | date : "MM/dd/y" }}</td>
             <td>{{data.originPost}}</td>
