@@ -148,17 +148,27 @@ const filterViewReports = (packages: []) => {
       endDate: packageObj.endDate,
       dateCreated: packageObj.dateCreated,
     };
-    if (
-      filteredArray.findIndex(
-        uniqueObject =>
-          viewReportObj.originPost === uniqueObject.originPost &&
-          viewReportObj.destinationPost === uniqueObject.destinationPost &&
-          viewReportObj.startDate === uniqueObject.startDate &&
-          viewReportObj.endDate === uniqueObject.endDate &&
-          viewReportObj.dateCreated === uniqueObject.dateCreated,
-      ) < 0
-    ) {
+    if (filteredArray.length < 1) {
       filteredArray.push(viewReportObj);
+    } else {
+      let push = false;
+      filteredArray.forEach(uniqueObject => {
+        logger.debug(`View Report: ${JSON.stringify(viewReportObj)}`);
+        logger.debug(`Unique Object: ${JSON.stringify(uniqueObject)}`);
+        if (
+          viewReportObj.originPost !== uniqueObject.originPost ||
+          viewReportObj.destinationPost !== uniqueObject.destinationPost ||
+          String(viewReportObj.startDate) !== String(uniqueObject.startDate) ||
+          String(viewReportObj.endDate) !== String(uniqueObject.endDate) ||
+          String(viewReportObj.dateCreated) !== String(uniqueObject.dateCreated)
+        ) {
+          push = true;
+        }
+      });
+      if (push) {
+        logger.debug('Adding view report object');
+        filteredArray.push(viewReportObj);
+      }
     }
   });
   return filteredArray;
