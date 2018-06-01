@@ -242,29 +242,29 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
       datestatus.setDate(datestatus.getDate() + config.simulate.days[3]);
       break;
     case 7:
-      // actualStatus = ['EMJ']; // Left Origin (Originally called Item Left)
+      // actualStatus = ['EMJ','EMK']; // Left Origin (Originally called Item Left)
       break;
     case 8:
-      // actualStatus = ['EMK']; // Left Origin (Originally called Item Left)
-      break;
-    // end directdespatch status
-    case 9:
-      actualStatus = ['EMD', 'EDA']; // Arrive Destination Post (Receipt Scan)
+      actualStatus = ['EMD', 'RESDES']; // Arrive Destination Post (Receipt Scan)
       datestatus.setDate(datestatus.getDate() + config.simulate.days[4]);
       break;
-    case 10:
-      actualStatus = ['EDB']; // Into Customs
+    case 9:
+      actualStatus = ['EDA', 'EDB']; // Into Customs
       datestatus.setDate(datestatus.getDate() + config.simulate.days[5]);
       break;
-    case 11:
+    case 10:
       if (typeofpatch === 'seizedorReturned' && randomreceivedExcess === 2) {
         actualStatus = ['EME']; // RETENIDO: Handed over to customs
         datestatus.setDate(datestatus.getDate() + 1);
       }
       break;
-    case 12:
-      actualStatus = ['EDC', 'EMF', 'EDD', 'EDE']; // Out of Customs
+    case 11:
+      actualStatus = ['EDC']; // Out of Customs
       datestatus.setDate(datestatus.getDate() + config.simulate.days[6]);
+      break;
+    case 12:
+      actualStatus = ['EMF', 'EDD', 'EDE']; // Domestic process
+      datestatus.setDate(datestatus.getDate() + config.simulate.days[7]);
       break;
     case 13:
       if (typeofpatch === 'seizedorReturned' && randomreceivedExcess === 3) {
@@ -274,7 +274,7 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
       break;
     case 14:
       actualStatus = ['EMG', 'EDF', 'EDG', 'EDH', 'EMH', 'EMI']; // Delivery
-      datestatus.setDate(datestatus.getDate() + config.simulate.days[7]);
+      datestatus.setDate(datestatus.getDate() + config.simulate.days[8]);
       break;
   }
   return [randomArray(actualStatus), datestatus];
@@ -676,7 +676,6 @@ class DispatchSimulator {
 
     const allPromiseResults = [];
 
-    // need to cycle through all statuses and update package
     // eslint-disable-line no-restricted-syntax
     for (const processStep of allProcessStepArrays) {
       const stepPromiseResults = await updateProcessStep(processStep); // eslint-disable-line no-await-in-loop
