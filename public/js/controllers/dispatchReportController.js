@@ -14,6 +14,10 @@ mainApp.controller('DispatchReportController', function ($scope, $window, $http)
   $scope.dispatchView = true;
   $scope.dispatches = [];
   $scope.packages = [];
+  $scope.totalReconciledWeight = 0;
+  $scope.totalUnreconciledWeight = 0;
+  $scope.totalReconciledPackages = 0;
+  $scope.totalUnreconciledPackages = 0;
 $scope.activeMenuHeading=["Summary View","Reconciled Packages","Unreconciled Packages"];
 
   $scope.updateOutput = function () {
@@ -74,6 +78,14 @@ $scope.activeMenuHeading=["Summary View","Reconciled Packages","Unreconciled Pac
           return;
         }
         $scope.parcelType = response.data.data[0].packageType;
+        if($scope.parcelType==="Tracked Packets")
+    $scope.parcelType = "Tracked Packet";
+    else if($scope.parcelType==="Untracked Packets")
+    $scope.parcelType = "Untracked Packet";
+    else if($scope.parcelType==="Parcels")
+    $scope.parcelType = "Parcel";
+        
+        
        
         $('.select-styled').text($scope.parcelType);
         //(response.data.data)
