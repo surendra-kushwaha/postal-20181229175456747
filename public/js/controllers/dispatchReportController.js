@@ -351,6 +351,7 @@ $scope.activeMenuHeading[2]="Unreconciled Packages";
     $scope.callback(sessionStorage.getItem('typeOfData')+"-link");
     
     $scope.moveToPackageScreen(sessionStorage.getItem('selectedPackageDispatchId'));
+    $scope.dispatches=["dummy"];
 
   }
   
