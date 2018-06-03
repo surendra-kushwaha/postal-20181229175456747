@@ -67,11 +67,15 @@ mainApp.controller('HomeController', function ($scope, $window, $http) {
 
 
   }
+  if (!('countryName' in sessionStorage)) {
+  $window.location.href='/';
+  return;
+  }
 
   setInterval(function () {
     $scope.originCountry = $('#origin').text();
     $scope.destinationCountry = $('#destination').text();
-    if ($scope.originCountry != null && $scope.destinationCountry != null && $scope.originCountry !== $scope.destinationCountry && $scope.simulationSize != null && $scope.startDate != null && $scope.endDate != null)
+    if ( $scope.originCountry!=="Origin" && $scope.destinationCountry!=="Destination" && $scope.originCountry !== $scope.destinationCountry && $scope.simulationSize != null && $scope.startDate != "" && $scope.endDate != "" && Date.parse($scope.startDate) <= Date.parse($scope.endDate))
       $("#continue-button").prop('disabled', false);
     else
       $("#continue-button").prop('disabled', true);

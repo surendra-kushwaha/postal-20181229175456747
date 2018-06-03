@@ -1,6 +1,9 @@
 mainApp.controller('ViewReportsController', function ($scope, $window, $http) {
 
-
+  if (!('countryName' in sessionStorage)) {
+    $window.location.href='/';
+    return;
+    }
 $http.get('/view-reports?country=' + sessionStorage.getItem('countryName'), {
     headers: {
       'Content-Type': 'application/json'

@@ -1,5 +1,8 @@
 mainApp.controller('DispatchReportController', function ($scope, $window, $http) {
-
+  if (!('countryName' in sessionStorage)) {
+    $window.location.href='/';
+    return;
+    }
   $scope.parcelRegistry = ["Tracked Packet", "Express", "Untracked Packet", "Parcel", "Registered"];
   if (!('back' in sessionStorage)) {
   sessionStorage.setItem('location', 'origin');

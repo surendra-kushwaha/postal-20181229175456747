@@ -1,6 +1,9 @@
 mainApp
   .controller('PackageTimelineController', function($scope,$window, $http,$sce) {
-
+    if (!('countryName' in sessionStorage)) {
+        $window.location.href='/';
+        return;
+        }
  $scope.getDateTime=function(date)
     {
       var dd = date.getDate();
