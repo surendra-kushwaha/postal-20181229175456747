@@ -174,7 +174,12 @@ $scope.updateSummaryData();
 
   $scope.TestAngularMethod = function (val) {
 
-    $scope.parcelType = val;
+    if(val==="Tracked Packets")
+    $scope.parcelType = "Tracked Packet";
+    else if(val==="Untracked Packets")
+    $scope.parcelType = "Untracked Packet";
+    else if(val==="Parcels")
+    $scope.parcelType = "Parcel";
 $scope.packages=[];
 $scope.dispatches=[];
 
