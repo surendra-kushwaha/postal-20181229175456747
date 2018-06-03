@@ -11,7 +11,7 @@ mainApp.controller('DispatchReportController', function ($scope, $window, $http)
   $scope.dispatchView = true;
   $scope.dispatches = [];
   $scope.packages = [];
-$scope.activeMenuHeading=["Summary View","Reconciled Dispatches","Unreconciled Dispatches"];
+$scope.activeMenuHeading=["Summary View","Reconciled Packages","Unreconciled Packages"];
 
   $scope.updateOutput = function () {
 
@@ -182,7 +182,7 @@ $scope.dispatches=[];
     $scope.dispatches = [];
   $scope.packages = [];
     $scope.noPackagesMsg="Sorry, We could not find any Reconciled Packages for This Time Period!!";
-    $scope.activeMenuHeading=["Summary View","Reconciled Dispatches","Unreconciled Dispatches"];
+    //$scope.activeMenuHeading=["Summary View","Reconciled Dispatches","Unreconciled Dispatches"];
     $scope.dispatchType=sessionStorage.getItem('typeOfData');
     $scope.dispatches = $scope.reconciledDispatches;
     if($scope.dispatches.length>0)
@@ -204,7 +204,7 @@ $scope.dispatches=[];
     $scope.packages = [];
 
     $scope.noPackagesMsg="Sorry, We could not find any Unreconciled Packages for This Time Period!!";
-    $scope.activeMenuHeading=["Summary View","Reconciled Dispatches","Unreconciled Dispatches"];
+    //$scope.activeMenuHeading=["Summary View","Reconciled Dispatches","Unreconciled Dispatches"];
     $scope.dispatchType=sessionStorage.getItem('typeOfData');
     $scope.dispatches = $scope.unreconciledDispatches;
     if($scope.dispatches.length>0)
@@ -329,10 +329,7 @@ dispatchId="";
 
 
 
-if($scope.dispatchType=sessionStorage.getItem('typeOfData') ==="reconcile")
-$scope.activeMenuHeading[1]="Reconciled Packages";
-else if($scope.dispatchType=sessionStorage.getItem('typeOfData')==="unreconcile")
-$scope.activeMenuHeading[2]="Unreconciled Packages";
+
 
       },
       function (response) {
