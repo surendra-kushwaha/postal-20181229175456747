@@ -95,10 +95,10 @@
               <select>
 
                 <option value="Package Type">Package Type</option>
-                <option value="Tracked Packets">Tracked Packets</option>
+                <option value="Tracked Packet">Tracked Packets</option>
                 <option value="Express">Express</option>
-                <option value="Untracked Packets">Untracked Packets</option>
-                <option value="Parcels">Parcels</option>
+                <option value="Untracked Packet">Untracked Packets</option>
+                <option value="Parcel">Parcels</option>
                 <option value="Registered">Registered</option>
                 <!-- <option ng-repeat="item in parcelRegistry" ng-value="item">{{item}}</option>-->
               </select>
@@ -213,7 +213,7 @@ Action
 
       </div>
 
-      <div class="pagecount" ng-if="dispatches.length>0 && packages.length>0">
+      <div class="pagecount" ng-if="dispatches.length>0 || packages.length>0">
         <nav aria-label="Page navigation example">
           <dir-pagination-controls max-size="1" direction-links="true" boundary-links="true">
           </dir-pagination-controls>

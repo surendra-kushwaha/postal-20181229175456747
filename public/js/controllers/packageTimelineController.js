@@ -1,14 +1,7 @@
 mainApp
   .controller('PackageTimelineController', function($scope,$window, $http,$sce) {
 
-    $scope.shipmentStatusHtml=$sce.trustAsHtml("<td class='shipment-status-entry'><p><span class='EMA mb-2'>"+"element.status"+"</span>"+"element.status"+"</p></td><td class='timestamp pt-0'>"+"element.timeStamp"+"</td>");
-    $scope.shipmentStatusHtml1=$sce.trustAsHtml("<td class='timestamp pt-2'>03/23/2018 — 04:15 pm</td><td class='settlment-status-entry'> <p>Unreconciled</p></td>");
-
-    $scope.array=[];
-    $scope.array.push($scope.shipmentStatusHtml);
-    $scope.array.push($scope.shipmentStatusHtml1);
-
-    $scope.getDateTime=function(date)
+ $scope.getDateTime=function(date)
     {
       var dd = date.getDate();
                     var mm = date.getMonth() + 1; //January is 0!
@@ -43,8 +36,7 @@ mainApp
 
                     // return (date.substring(4,6) + '/' + date.substring(6,8) + '/' + date.substring(0,4) + " - "+ hh + ':' + date.substring(10,12) + " "+ampm );
     }
-    // $scope.array.push(false);
-    // $scope.array.push(true);
+   
 
   $http.get('/package-history?packageId=' + sessionStorage.getItem('selectedPackageId'), {
         headers: {
@@ -72,21 +64,8 @@ mainApp
 
              $scope.packageHistory.push(td);
             });
-
-
-
-
-        },function(response){
+},function(response){
 
         });
 
-
-
-
-
-
-
-
-
-
-  });
+});

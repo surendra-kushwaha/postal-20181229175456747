@@ -1,7 +1,7 @@
 mainApp.controller('HomeController', function ($scope, $window, $http) {
 
-   var countryNamesList = ["UK", "USA", "China", "Germany", "Canada", "JP", "FR"];
-   var countryCodesList = ["GB", "US", "CN", "DN", "CA", "JP", "FR"]
+   var countryNamesList = ["UK", "USA", "China", "Germany", "Canada", "Japan", "France"];
+   var countryCodesList = ["GB", "US", "CN", "DE", "CA", "JP", "FR"]
 
    $scope.userCountry=countryNamesList[countryCodesList.indexOf(sessionStorage.getItem('countryName'))];
   $scope.simulate = function () {

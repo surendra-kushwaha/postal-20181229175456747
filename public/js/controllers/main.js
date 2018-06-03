@@ -12,3 +12,6 @@ factory('httpq', function ($http, $q) {
     },
   };
 })
+mainApp.config(['$httpProvider', function($httpProvider) {
+  $httpProvider.defaults.timeout = 5000;
+}]);
