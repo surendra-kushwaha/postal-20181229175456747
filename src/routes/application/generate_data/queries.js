@@ -3,6 +3,7 @@
 import { $Request, $Response } from 'express';
 import logger from '../../../logger';
 import DispatchSimulator from '../../../lib/simulate';
+import config from '../../../config';
 
 const dispatchsimulator = new DispatchSimulator();
 
@@ -19,6 +20,32 @@ const simulate = async (req: $Request, res: $Response) => {
     const {
       body: { size, originPost, destinationPost, startDate, endDate },
     } = req;
+
+    // chech days between start and end dates:
+    const daysofstatus = config.simulate.days;
+    let totaldaysofstatus = 0;
+    for (let z = 0; z < daysofstatus.length; z += 1) {
+      totaldaysofstatus += +daysofstatus[z];
+    }
+
+    const datestart = new Date(startDate);
+    const dateend = new Date(endDate);
+    const dayasmilliseconds = 86400000;
+    const diffinmillisenconds = dateend - datestart;
+    const diffindays =
+      diffinmillisenconds / dayasmilliseconds - totaldaysofstatus - 1;
+    if (diffindays <= 0) {
+      logger.error(
+        'Error between start and end dates. Was not able to get simulated data.',
+      );
+      res
+        .status(500)
+        .send(
+          'Error between start and end dates. Was not able to get simulated data.',
+        );
+    }
+    // end check
+
     logger.debug(`Sending Size: ${size}`);
     response = await dispatchsimulator.simulate(
       size,
@@ -27,6 +54,7 @@ const simulate = async (req: $Request, res: $Response) => {
       startDate,
       endDate,
     );
+
     try {
       const promiseResults = await dispatchsimulator.createpackage(
         response[0],
