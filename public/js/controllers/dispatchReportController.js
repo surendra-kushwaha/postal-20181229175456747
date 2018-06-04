@@ -8,10 +8,16 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http) 
         sessionStorage.setItem('location', 'origin');
         sessionStorage.setItem('typeOfData', 'summary');
     }
+    $scope.convertToUTC = function(dt) {
+        var localDate = new Date(dt);
+        var localTime = localDate.getTime();
+        var localOffset = localDate.getTimezoneOffset() * 60000;
+        return new Date(localTime + localOffset);
+    }
     $scope.originPost = sessionStorage.getItem('originPost');
     $scope.destinationPost = sessionStorage.getItem('destinationPost');
-    $scope.startDate = sessionStorage.getItem('startDate');
-    $scope.endDate = sessionStorage.getItem('endDate');
+    $scope.startDate =  $scope.convertToUTC(sessionStorage.getItem('startDate'));
+    $scope.endDate =  $scope.convertToUTC(sessionStorage.getItem('endDate'));
     $scope.dispatchView = true;
     $scope.dispatches = [];
     $scope.packages = [];
