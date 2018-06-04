@@ -153,8 +153,6 @@ const filterViewReports = (packages: []) => {
     } else {
       let same = false;
       filteredArray.forEach(uniqueObject => {
-        logger.debug(`View Report: ${JSON.stringify(viewReportObj)}`);
-        logger.debug(`Unique Object: ${JSON.stringify(uniqueObject)}`);
         if (
           viewReportObj.originPost === uniqueObject.originPost &&
           viewReportObj.destinationPost === uniqueObject.destinationPost &&
