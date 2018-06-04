@@ -78,12 +78,9 @@ $scope.activeMenuHeading=["Summary View","Reconciled Packages","Unreconciled Pac
           return;
         }
         $scope.parcelType = response.data.data[0].packageType;
-        if(response.data.data[0].packageType==="Tracked Packet")
-        $('.select-styled').text("Tracked Packets");
-    else if(response.data.data[0].packageType==="Untracked Packet")
-    $('.select-styled').text("Untracked Packets");
-    else if(response.data.data[0].packageType==="Parcel")
-    $('.select-styled').text("Parcels");
+        
+        $('.select-styled').text($scope.parcelType);
+   
         
         
        
@@ -186,12 +183,7 @@ $scope.updateSummaryData();
 
   $scope.TestAngularMethod = function (val) {
 
-    if(val==="Tracked Packets")
-    $scope.parcelType = "Tracked Packet";
-    else if(val==="Untracked Packets")
-    $scope.parcelType = "Untracked Packet";
-    else if(val==="Parcels")
-    $scope.parcelType = "Parcel";
+    
 $scope.packages=[];
 $scope.dispatches=[];
 

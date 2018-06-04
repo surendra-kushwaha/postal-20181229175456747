@@ -25,7 +25,7 @@ mainApp
                     sessionStorage.setItem('countryName', username);
                     $window.location.href = '/home.html';
                 } else {
-                    $window.location.href = '/home.html';
+                    $window.location.href = '/';
                 }
             });
 
