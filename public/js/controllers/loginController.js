@@ -21,7 +21,8 @@ mainApp
                 config: 'Content-Type: application/json;',
             }).then(function(response) {
                 if (response.data === 'Authorized') {
-                    sessionStorage.setItem('countryName', response.data.name);
+                    // sessionStorage.setItem('countryName', response.data.name);
+                    sessionStorage.setItem('countryName', username);
                     $window.location.href = '/home.html';
                 } else {
                     $window.location.href = '/home.html';
