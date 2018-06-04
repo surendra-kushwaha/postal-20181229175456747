@@ -151,21 +151,23 @@ class Postal {
 
     return new Promise((resolve, reject) =>
       postalscm_lib.call_chaincode(options, (err, response) => {
-        logger.info('callback from blockchain');
+        logger.debug('callback from blockchain');
         if (err) {
-          logger.debug({ status: 'error', data: [err, response] });
+          logger.error(`Unable to create package in blockchain: ${err}`);
           reject(err);
         } else if (!err) {
           logger.debug({ status: 'success', data: response });
           const blockchainPackage = JSON.parse(response.data);
           // create today's date
-          /*const todayTimestamp = new Date();
+          /* const todayTimestamp = new Date();
           const today = `${todayTimestamp.getFullYear()}/${todayTimestamp.getMonth() +
-            1}/${todayTimestamp.getDate()}`;*/
-          const todateTimeStamp = new Date(); 
-          let today=(todateTimeStamp.getMonth() + 1) + '/' + todateTimeStamp.getDate() + '/' +  todateTimeStamp.getFullYear();
-          if((todateTimeStamp.getMonth() + 1)<10){
-            today="0"+(todateTimeStamp.getMonth() + 1) + '/' + todateTimeStamp.getDate() + '/' +  todateTimeStamp.getFullYear();
+            1}/${todayTimestamp.getDate()}`; */
+          const todateTimeStamp = new Date();
+          let today = `${todateTimeStamp.getMonth() +
+            1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
+          if (todateTimeStamp.getMonth() + 1 < 10) {
+            today = `0${todateTimeStamp.getMonth() +
+              1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
           }
           // logger.info("response data111:::"+blockchainPackage.PackageID);
           // Save the data to DB start
@@ -197,7 +199,7 @@ class Postal {
           const postal = new PostalPackage(postalData);
           postal.save((err, result) => {
             if (err) {
-              logger.info({ status: 'fails', data: err });
+              logger.info(`Unable to save created package in database: ${err}`);
               reject(err);
             } else {
               logger.info('package data saved successfully to mongodb');
@@ -207,11 +209,11 @@ class Postal {
           });
           // Save the data to DB end
         } else {
-          logger.debug({
-            status: 'fail',
-            data: { msg: 'Something went wrong. Please try again' },
-          });
-          reject('Something went wrong. Please try again');
+          reject(
+            new Error(
+              `There was an unknown error while creating the package (${packageId}).`,
+            ),
+          );
         }
       }),
     );
@@ -266,7 +268,7 @@ class Postal {
       String(shipmentStatus),
       String(originReceptacleId),
       String(dispatchId),
-      String(lastUpdated)
+      String(lastUpdated),
     ];
     // const options = {
     //   peer_urls: peerUrls,
@@ -281,13 +283,13 @@ class Postal {
     return new Promise((resolve, reject) =>
       postalscm_lib.call_chaincode(options, (err, response) => {
         if (err) {
-          logger.debug({ status: 'error', data: [err, response] });
+          logger.error(`Unable to update package in blockchain: ${err}`);
           reject(err);
         } else if (!err) {
-          logger.debug('Package updated on blockchain.');
+          logger.info(`Package (${response.data}) updated on blockchain.`);
           const updateConditions = { packageId: response.data };
           const date = new Date();
-          
+
           const updateObj = {
             shipmentStatus,
             receptacleId: originReceptacleId,
@@ -301,10 +303,12 @@ class Postal {
           PostalPackage.findOneAndUpdate(
             updateConditions,
             updateObj,
-            (err, result) => {
-              if (err) {
-                logger.debug({ status: 'fails', data: err });
-                reject(err);
+            (errDb, result) => {
+              if (errDb) {
+                logger.error(
+                  `Unable to save update to package in blockchain. ${errDb}`,
+                );
+                reject(errDb);
               } else {
                 logger.debug('package data saved successfully to mongodb');
                 resolve(result);
@@ -312,11 +316,13 @@ class Postal {
             },
           );
         } else {
-          logger.error({
-            status: 'fail',
-            data: { msg: 'Something went wrong. Please try again' },
-          });
-          reject(err);
+          reject(
+            new Error(
+              `There was an unknown error while updating the package (${
+                response.data
+              }).`,
+            ),
+          );
         }
       }),
     );
@@ -328,7 +334,11 @@ class Postal {
     const { packageId, lastUpdated } = payload;
     const settlementStatus = payload.newSettlementStatus;
 
-    const argsValue = [String(packageId), String(settlementStatus),String(lastUpdated)];
+    const argsValue = [
+      String(packageId),
+      String(settlementStatus),
+      String(lastUpdated),
+    ];
 
     options.method_type = 'invoke';
     options.func = 'updateSettlementStatus';

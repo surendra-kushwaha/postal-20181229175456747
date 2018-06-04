@@ -87,8 +87,7 @@ const simulate = async (req: $Request, res: $Response) => {
         `There was an error updating packages during simulation. ${updateError}`,
       );
     }
-    res.send('Simulation complete.');
-    res.status(200).end();
+    res.status(200).end('Simulation complete.');
   } catch (error) {
     logger.error(
       `There was an error retrieving a response from SIMULATE DISPATH`,
@@ -96,7 +95,6 @@ const simulate = async (req: $Request, res: $Response) => {
     );
     res.status(500).send('Was not able to get simulated data.');
   }
-  res.send('Simulation complete.');
 };
 
 export default simulate;
