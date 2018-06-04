@@ -122,7 +122,21 @@
     </table>
     </div>
 
-
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="display:none;text-align: center;">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body" style="padding:50px;">
+            <img src="img/confirmation.png"></img> 
+           
+            <h5 style="margin-top: 50px;">Status Updated Sucessfully.</h5>
+          </div>
+          <div class="modal-footer justify-content-center" style="border:none">
+            <button type="button" class="btn btn-secondary allbuttons" data-dismiss="modal" onclick=" $('#exampleModalCenter').modal('hide')">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
 
     <div class="container" id="table-container" style="display: none;">
       <div class="search" ng-if="dispatches.length>0">
@@ -214,7 +228,7 @@ Action
           <p class="circle-caption">Total Reconciled Items</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-block"> <div class="circle-data">{{totalReconciledWeight | number:2}}</div></div>
+          <div class="circle-block"> <div class="circle-data">{{totalReconciledWeight}}</div></div>
           <p class="circle-caption">Total Reconciled Weight (kg)</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
@@ -222,7 +236,7 @@ Action
           <p class="circle-caption">Total Unreconciled Items</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-block"> <div class="circle-data">{{totalUnreconciledWeight | number:2}}</div></div>
+          <div class="circle-block"> <div class="circle-data">{{totalUnreconciledWeight}}</div></div>
           <p class="circle-caption">Unreconciled Package Weight (kg)</p>
         </div>
       </div>
@@ -235,28 +249,7 @@ Action
       <a href="/home.html">
         <img src="Icon/Path 4.png" class="float-left pt-1"> &nbsp;&nbsp;Back</a>
     </div>
-     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="display:none;text-align: center;">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-body" style="padding:50px;">
-            <img src="img/confirmation.png"></img> 
-           
-            <h5 style="margin-top: 50px;">Status Updated Sucessfully.</h5>
-          </div>
-          <div class="modal-footer justify-content-center" style="border:none">
-            <button type="button" class="btn btn-secondary allbuttons" data-dismiss="modal" onclick=" $('#exampleModalCenter').modal('hide')">OK</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal fade" id="exampleModalCenterError" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="text-align: center;">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        
-          <div class="modal-body">
-           <img src="img/loading.gif"></img>
-      
-      </div>
-    </div>
+   
     <footer class="footer pt-3">
       <img src="Icon/Package footer.png" alt="">
       <div class="copyright">
