@@ -48,7 +48,7 @@ const createArrayOfDispatches = (dispatchIds, postalPackageData) => {
 
 // Perform all necessary calculations for front end application
 const performDispatchCalculations = (dispatches, queryObj) => {
-  const reconciledStatus = ['Reconciled', 'SettlementAgreed'];
+  const reconciledStatus = ['Reconciled', 'Settlement Agreed'];
   const resultArray = [];
   dispatches.forEach(dispatch => {
     // initialize variables that we will return

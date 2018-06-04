@@ -590,6 +590,7 @@ class DispatchSimulator {
     endDate: Date,
   ): Promise<any> => {
     const allPromises = [];
+    logger.debug(`Dates sent to simulator are: ${startDate}, ${endDate}`);
     EDImessage.forEach(element => {
       allPromises.push(
         // to do insert in allpromises the promise with postal.createPackage(element, startDate, endDate);
