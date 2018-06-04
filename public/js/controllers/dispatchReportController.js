@@ -321,19 +321,6 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http) 
                 });
 
 
-                // if (sessionStorage.getItem('location') === "destination" && sessionStorage.getItem('typeOfData') === 'reconcile') {
-                //   $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS"];
-                //  $scope.packages = $scope.reconciledPackages;
-
-                // } else {
-                //   $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
-                //   $scope.dispatchView = false;
-                //    if (sessionStorage.getItem('typeOfData') === 'reconcile')
-                //      $scope.packages = $scope.reconciledPackages;
-                //    else
-                //    $scope.packages = $scope.unreconciledPackages;
-
-                // }
                 $scope.dispatchView = false;
                
                 if (sessionStorage.getItem('typeOfData') === 'reconcile')
@@ -398,7 +385,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http) 
                 }
             }).then(
                 function(response) {
-
+                    $('#exampleModalCenter').modal('show');
                     $scope.getAllDispatches();
                     $scope.moveToPackageScreen($scope.dispatchId);
 
