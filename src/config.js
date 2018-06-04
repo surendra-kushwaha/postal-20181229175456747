@@ -13,4 +13,8 @@ module.exports = {
     LostParcel_rate: 4, // over 100 %
     SeizedorReturned_rate: 6, // over 100 %
   },
+  users: {
+    username: ['US', 'GB', 'CN', 'CA', 'FR', 'DE', 'JP'],
+    password: 'acit@1234',
+  },
 };
