@@ -57,10 +57,8 @@ module.exports = function (g_options, logger) {
 		} else {
 			logger.debug('[fcw] will not use tx event');
 		}
-		console.log("invoke_chaincode:::::::"+options.cc_args);
 		// Send Proposal
 		channel.sendTransactionProposal(request).then(function (results) {
-			console.log("invoke_chaincode::::::11:"+results);
 			// Check Response
 			var request = common.check_proposal_res(results, options.endorsed_hook);
 			return channel.sendTransaction(request);
@@ -86,7 +84,7 @@ module.exports = function (g_options, logger) {
 								return cb(null);						//timeout pass it back
 							}
 							else return;
-						}, g_options.block_delay + 10000);              //increasing timeout from 2000 to 10000
+						}, g_options.block_delay + 20000);              //increasing timeout from 2000 to 10000 to 20000
 
 						// Wait for tx committed event
 						eventHub.registerTxEvent(request.txId.getTransactionID(), (tx, code) => {
