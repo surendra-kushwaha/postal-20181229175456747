@@ -11,17 +11,22 @@ $http.get('/view-reports?country=' + sessionStorage.getItem('countryName'), {
   }).then(
     function (response) {
       $scope.tableData = response.data.data;
-      $scope.tableData.forEach(element => {
-        element.dateCreated=new Date(element.dateCreated);
+      // $scope.tableData.forEach(element => {
+      //   element.dateCreated=new Date(element.dateCreated);
 
-      });
+      // });
     },
     function (response) {
       console.log(response);
-    },
+    }
   );
 
-
+$scope.convertToUTC = function(dt) {
+    var localDate = new Date(dt);
+    var localTime = localDate.getTime();
+    var localOffset = localDate.getTimezoneOffset() * 60000;
+    return new Date(localTime + localOffset);
+}
   $scope.moveToDispatchReportScreen = function (data) {
 
     sessionStorage.setItem('startDate', data.startDate);
@@ -31,5 +36,6 @@ $http.get('/view-reports?country=' + sessionStorage.getItem('countryName'), {
     sessionStorage.setItem('dateCreated', data.dateCreated);
     $window.location.href = '/dispatchReport.html';
   }
+
 
 });
