@@ -142,9 +142,9 @@
               <td>
                 <a href="#" ng-click="moveToPackageScreen(dispatch.dispatchId)">{{dispatch.dispatchId}}</a>
               </td>
-              <td ng-if="dispatchType==='reconcile'">{{dispatch.totalReconciledWeight}}</td>
+              <td ng-if="dispatchType==='reconcile'">{{dispatch.totalReconciledWeight | number:2}}</td>
               <td ng-if="dispatchType==='reconcile'">{{dispatch.totalReconciledPackages}}</td>
-              <td ng-if="dispatchType==='unreconcile'">{{dispatch.totalUnreconciledWeight}}</td>
+              <td ng-if="dispatchType==='unreconcile'">{{dispatch.totalUnreconciledWeight | number:2}}</td>
               <td ng-if="dispatchType==='unreconcile'">{{dispatch.totalUnreconciledPackages}}</td>
               <td>{{dispatch.settlementStatus}}</td>
               <!-- <td ng-if="displayAction">
@@ -157,7 +157,7 @@ Action
               <td>
                 <a href="#" ng-click="moveToPackageTimeLineScreen(package)">{{package.packageId}}</a>
               </td>
-              <td>{{package.weight}}</td>
+              <td>{{package.weight | number:2}}</td>
               <td>{{package.shipmentStatus}}</td>
               <td>{{package.settlementStatus}}</td>
               <td ng-if="displayAction">
@@ -236,7 +236,7 @@ Action
           <p class="circle-caption">Total Reconciled Items</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-block"> <div class="circle-data">{{totalReconciledWeight}}</div></div>
+          <div class="circle-block"> <div class="circle-data">{{totalReconciledWeight | number:2}}</div></div>
           <p class="circle-caption">Total Reconciled Weight (kg)</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
@@ -244,7 +244,7 @@ Action
           <p class="circle-caption">Total Unreconciled Items</p>
         </div>
         <div class="col-md-3 col-sm-5 col-xs-4">
-          <div class="circle-block"> <div class="circle-data">{{totalUnreconciledWeight}}</div></div>
+          <div class="circle-block"> <div class="circle-data">{{totalUnreconciledWeight | number:2}}</div></div>
           <p class="circle-caption">Unreconciled Package Weight (kg)</p>
         </div>
       </div>
