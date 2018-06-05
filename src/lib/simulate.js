@@ -308,6 +308,18 @@ function generateEDI(
   return MockEDI;
 }
 
+function rateArray(numpackages, ratepackages) {
+  const ratearray = [];
+  let lastnumber = ratepackages;
+  for (let a = 1; a < numpackages / 50; a += 1) {
+    const ratepercent = Math.round(ratepackages / (numpackages / 50));
+    ratearray.push(ratepercent);
+    lastnumber -= ratepercent;
+  }
+  ratearray.push(lastnumber);
+  return ratearray;
+}
+
 // eslint-disable-next-line func-names
 Promise.settle = function(promises) {
   return Promise.all(
@@ -379,30 +391,44 @@ class DispatchSimulator {
     const rateNumOfRecInExcess = Math.round(
       (repeatpackage * config.simulate.ReceivedinExcess_rate) / 100,
     );
+    const NumOfRecInExcessArray = rateArray(
+      repeatpackage,
+      rateNumOfRecInExcess,
+    );
     logger.info(
-      ` Packets with rate NumOfRecInExcess      ${rateNumOfRecInExcess}`,
+      ` Packets with rate NumOfRecInExcess      ${rateNumOfRecInExcess} - ${NumOfRecInExcessArray}`,
     );
     const rateNumOfLostParcel = Math.round(
       (repeatpackage * config.simulate.LostParcel_rate) / 100,
     );
+    const LostParcelArray = rateArray(repeatpackage, rateNumOfLostParcel);
     logger.info(
-      ` Packets with rate NumOfLostParcel       ${rateNumOfLostParcel}`,
+      ` Packets with rate NumOfLostParcel       ${rateNumOfLostParcel} - ${LostParcelArray}`,
     );
     const rateNumOfSeizedorReturned = Math.round(
       (repeatpackage * config.simulate.SeizedorReturned_rate) / 100,
     );
-    logger.info(
-      ` Packets with rate NumOfSeizedorReturned ${rateNumOfSeizedorReturned}`,
+    const SeizedorReturnedArray = rateArray(
+      repeatpackage,
+      rateNumOfSeizedorReturned,
     );
-    const totalrateNumPackages =
-      rateNumOfRecInExcess + rateNumOfLostParcel + rateNumOfSeizedorReturned;
-    const totalNumPackages = repeatpackage - totalrateNumPackages;
-    // logger.info("TOTAL RATES " + totalrateNumPackages);
-    // logger.info("TOTAL MINUS RATES " + totalNumPackages);
+    logger.info(
+      ` Packets with rate NumOfSeizedorReturned ${rateNumOfSeizedorReturned} - ${SeizedorReturnedArray}`,
+    );
+
+    // sum the array for calculate rates in each dispatch
+    let countDispatch = -1;
+    let sumofrates;
+    console.log(sumofrates);
+    let minvalue;
 
     // REPEAT X PACKAGE FROM SIZE
     for (let j = 0; j < repeatpackage; j += 1) {
+      let i = 0;
+      let countstatus = 0;
+
       if (j % 50 === 0) {
+        countDispatch += 1;
         EDIpackagetype = randomArray(PackageType);
         // GENERATE DISPATCHID EACH 50 PACKAGEID GENERATED (with same origin, destination and package type)
         EDIdispatchid = generatedispatch(
@@ -410,6 +436,11 @@ class DispatchSimulator {
           EDIdestination,
           EDIpackagetype,
         );
+        sumofrates =
+          NumOfRecInExcessArray[countDispatch] +
+          LostParcelArray[countDispatch] +
+          SeizedorReturnedArray[countDispatch];
+        minvalue = 50 * countDispatch;
       }
       const EDIpackageParams = getPackageParams(EDIpackagetype[0]);
       const EDIpackageid = generatepackage(EDIorigin, EDIpackagetype);
@@ -417,9 +448,6 @@ class DispatchSimulator {
         EDIdispatchid,
         EDIpackageParams[1],
       );
-
-      let i = 0;
-      let countstatus = 0;
 
       // generate sum date for status
       const daysofstatus = config.simulate.days;
@@ -486,28 +514,36 @@ class DispatchSimulator {
         }
 
         // type o patch: happypatch, lost, seized or returned and received in excess
-        if (totalNumPackages > j) {
-          // HAPPY PATH
-          typeofpatch = 'happypatch';
-          // logger.info(j); //mensaje normal
-        } else if (
-          totalNumPackages <= j &&
-          j < totalNumPackages + rateNumOfSeizedorReturned
+        if (
+          minvalue <= j &&
+          j < minvalue + SeizedorReturnedArray[countDispatch]
         ) {
           // Seized or Returned by Customs
           typeofpatch = 'seizedorReturned';
         } else if (
-          totalNumPackages + rateNumOfSeizedorReturned <= j &&
-          j < totalNumPackages + rateNumOfSeizedorReturned + rateNumOfLostParcel
+          minvalue + SeizedorReturnedArray[countDispatch] <= j &&
+          j <
+            minvalue +
+              SeizedorReturnedArray[countDispatch] +
+              LostParcelArray[countDispatch]
         ) {
           // Lost Parcel
           typeofpatch = 'lostParcel';
         } else if (
-          totalNumPackages + rateNumOfSeizedorReturned + rateNumOfLostParcel <=
-          j
+          minvalue +
+            SeizedorReturnedArray[countDispatch] +
+            LostParcelArray[countDispatch] <=
+            j &&
+          j <
+            minvalue +
+              SeizedorReturnedArray[countDispatch] +
+              LostParcelArray[countDispatch] +
+              NumOfRecInExcessArray[countDispatch]
         ) {
           // Received In Excess
           typeofpatch = 'receivedExcess';
+        } else {
+          typeofpatch = 'happypatch';
         }
 
         const data = generateEDI(
