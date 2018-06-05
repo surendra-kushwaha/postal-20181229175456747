@@ -191,9 +191,9 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
       // actualStatus = ['EMA']; // Posting / Collection
       break;
     case 0:
-      if (typeofpatch !== 'receivedExcess') {
-        actualStatus = ['EMA']; // Posting / Collection
-      }
+      // if (typeofpatch !== 'receivedExcess') {
+      actualStatus = ['EMA']; // Posting / Collection
+      // }
       datestatus.setDate(datestatus.getDate() + config.simulate.days[0]);
       break;
     case 1:
@@ -346,12 +346,12 @@ class DispatchSimulator {
     endDate: Date,
   ): Promise<any> => {
     let repeatpackage = 1;
-    if (size === 'small') {
-      repeatpackage = config.simulate.size.small;
+    if (size === 'large') {
+      repeatpackage = config.simulate.size.large;
     } else if (size === 'medium') {
       repeatpackage = config.simulate.size.medium;
-    } else if (size === 'large') {
-      repeatpackage = config.simulate.size.large;
+    } else {
+      repeatpackage = config.simulate.size.small;
     }
 
     let EDIorigin = origin;

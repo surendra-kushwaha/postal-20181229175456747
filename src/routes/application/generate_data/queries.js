@@ -43,51 +43,54 @@ const simulate = async (req: $Request, res: $Response) => {
         .send(
           'Error between start and end dates. Was not able to get simulated data.',
         );
-    }
-    // end check
+    } else {
+      // end check
 
-    logger.debug(`Sending Size: ${size}`);
-    response = await dispatchsimulator.simulate(
-      size,
-      originPost,
-      destinationPost,
-      startDate,
-      endDate,
-    );
-
-    try {
-      const promiseResults = await dispatchsimulator.createpackage(
-        response[0],
+      logger.debug(`Sending Size: ${size}`);
+      response = await dispatchsimulator.simulate(
+        size,
+        originPost,
+        destinationPost,
         startDate,
         endDate,
-      ); // CreatePackage In BlockChain - also need to include startDate and endDate
-      promiseResults.forEach(result => {
-        if (result instanceof Error) {
-          logger.error('reject reason', result.rejectErr);
-        } else {
-          // fulfilled value
-          logger.info('Package created in blockchain and saved in database');
-        }
-      });
-    } catch (createError) {
-      logger.error(`There was an error creating packages: ${createError}`);
-    }
-    try {
-      const promiseResults = await dispatchsimulator.updatepackage(response[1]); // Update Package In BlockChain
-      promiseResults.forEach(result => {
-        if (result instanceof Error) {
-          logger.error('reject reason', result.rejectErr);
-        } else {
-          // fulfilled value
-          logger.info('Package updated in blockchain and saved in database');
-        }
-      });
-    } catch (updateError) {
-      logger.error(
-        `There was an error updating packages during simulation. ${updateError}`,
       );
+
+      try {
+        const promiseResults = await dispatchsimulator.createpackage(
+          response[0],
+          startDate,
+          endDate,
+        ); // CreatePackage In BlockChain - also need to include startDate and endDate
+        promiseResults.forEach(result => {
+          if (result instanceof Error) {
+            logger.error('reject reason', result.rejectErr);
+          } else {
+            // fulfilled value
+            logger.info('Package created in blockchain and saved in database');
+          }
+        });
+      } catch (createError) {
+        logger.error(`There was an error creating packages: ${createError}`);
+      }
+      try {
+        const promiseResults = await dispatchsimulator.updatepackage(
+          response[1],
+        ); // Update Package In BlockChain
+        promiseResults.forEach(result => {
+          if (result instanceof Error) {
+            logger.error('reject reason', result.rejectErr);
+          } else {
+            // fulfilled value
+            logger.info('Package updated in blockchain and saved in database');
+          }
+        });
+      } catch (updateError) {
+        logger.error(
+          `There was an error updating packages during simulation. ${updateError}`,
+        );
+      }
+      res.status(200).end('Simulation complete.');
     }
-    res.status(200).end('Simulation complete.');
   } catch (error) {
     logger.error(
       `There was an error retrieving a response from SIMULATE DISPATH`,
