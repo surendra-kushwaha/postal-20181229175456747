@@ -10,7 +10,7 @@ const server = app.listen(config.port, config.host, () => {
     `Node.js server is listening on http://${config.host}:${config.port}/`,
   );
 });
-server.timeout = 960000; //by default 120000ms(2 min)
+server.timeout = 600000; //by default 120000ms(2 min)
 
 // Shutdown Node.js app gracefully
 function handleExit(options, err) {

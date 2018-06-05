@@ -193,16 +193,16 @@ class Postal {
           ) {
             postalData.dispatchId = 'none';
           }
-          logger.debug(
+          /*logger.debug(
             `PostalData to save in DB::${JSON.stringify(postalData)}`,
-          );
+          );*/
           const postal = new PostalPackage(postalData);
           postal.save((err, result) => {
             if (err) {
               logger.info(`Unable to save created package in database: ${err}`);
               reject(err);
             } else {
-              logger.info('package data saved successfully to mongodb');
+              //logger.info('package data saved successfully to mongodb');
               resolve(result);
               // logger.info({ status: 'success', data: result });
             }
