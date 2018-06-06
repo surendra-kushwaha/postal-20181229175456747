@@ -10,34 +10,34 @@ const timestampFormat = () => new Date().toLocaleTimeString();
 const prettyprintFormat = obj => JSON.stringify(obj, null, 2);
 
 if (!fs.existsSync(logDirectory)) {
-    fs.mkdirSync(logDirectory);
+  fs.mkdirSync(logDirectory);
 }
 
 const logger = new winston.Logger({
-    transports: [
-        new winston.transports.Console({
-            timestamp: timestampFormat,
-            colorize: true,
-            level: 'debug',
-            prettyPrint: prettyprintFormat,
-        }),
-        new WinstonRotateFile({
-            filename: logFilename,
-            timestamp: timestampFormat,
-            datePattern: 'yyyy-MM-dd',
-            prepend: true,
-            level: 'info',
-            json: false,
-            prettyprint: prettyprintFormat,
-        }),
-    ],
+  transports: [
+    new winston.transports.Console({
+      timestamp: timestampFormat,
+      colorize: true,
+      level: 'debug',
+      prettyPrint: prettyprintFormat,
+    }),
+    new WinstonRotateFile({
+      filename: logFilename,
+      timestamp: timestampFormat,
+      datePattern: 'yyyy-MM-dd',
+      prepend: true,
+      level: 'info',
+      json: false,
+      prettyprint: prettyprintFormat,
+    }),
+  ],
 });
 
 logger.stream = {
-    /* eslint-disable no-unused-vars */
-    write: (message, encoding) => {
-        // logger.info(message);
-    },
+  /* eslint-disable no-unused-vars */
+  write: (message, encoding) => {
+    // logger.info(message);
+  },
 };
 
 module.exports = logger;
