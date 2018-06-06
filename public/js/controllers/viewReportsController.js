@@ -1,5 +1,5 @@
 mainApp.controller('ViewReportsController', function ($scope, $window, $http) {
-
+	$scope.userCountry=$rootScope.userCountry;
   if (!('countryName' in sessionStorage)) {
     $window.location.href='/';
     return;

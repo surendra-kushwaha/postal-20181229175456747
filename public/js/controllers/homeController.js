@@ -1,9 +1,5 @@
-mainApp.controller('HomeController', function ($scope, $window, $http, $timeout) {
-
-   var countryNamesList = ["UK", "USA", "China", "Germany", "Canada", "Japan", "France"];
-   var countryCodesList = ["GB", "US", "CN", "DE", "CA", "JP", "FR"]
-
-   $scope.userCountry=countryNamesList[countryCodesList.indexOf(sessionStorage.getItem('countryName'))];
+mainApp.controller('HomeController', function ($scope, $window, $http, $timeout, $rootScope) {
+  $scope.userCountry=$rootScope.userCountry;
   $scope.simulate = function () {
     $scope.originCountry=$scope.originCountry.split("(")[1].slice(0,-1).trim();
     $scope.destinationCountry= $scope.destinationCountry.split("(")[1].slice(0,-1).trim();
