@@ -16,8 +16,8 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http) 
     }
     $scope.originPost = sessionStorage.getItem('originPost');
     $scope.destinationPost = sessionStorage.getItem('destinationPost');
-    $scope.startDate =  $scope.convertToUTC(sessionStorage.getItem('startDate'));
-    $scope.endDate =  $scope.convertToUTC(sessionStorage.getItem('endDate'));
+    $scope.startDate = $scope.convertToUTC(sessionStorage.getItem('startDate'));
+    $scope.endDate = $scope.convertToUTC(sessionStorage.getItem('endDate'));
     $scope.dispatchView = true;
     $scope.dispatches = [];
     $scope.packages = [];
@@ -78,7 +78,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http) 
             }
         }).then(
             function(response) {
-                console.log(response);
+                // console.log(response);
                 $scope.allDispatches = response.data.data;
                 if (response.data.data.length == 0) {
                     $scope.parcelType = "Express";
@@ -260,7 +260,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http) 
             }
         }).then(
             function(response) {
-                console.log(response);
+                // console.log(response);
                 $scope.searchBy = "Package ID";
                 $scope.dispatchId = dispatchId;
 
@@ -328,13 +328,14 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http) 
 
 
                 $scope.dispatchView = false;
-               
-                if (sessionStorage.getItem('typeOfData') === 'reconcile')
-                   {  $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
-                       $scope.packages = $scope.reconciledPackages;}
-                else{
+
+                if (sessionStorage.getItem('typeOfData') === 'reconcile') {
+                    $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+                    $scope.packages = $scope.reconciledPackages;
+                } else {
                     $scope.tableColumns = ["PACKAGE ID", "UNRECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
-                    $scope.packages = $scope.unreconciledPackages;}
+                    $scope.packages = $scope.unreconciledPackages;
+                }
 
 
 
