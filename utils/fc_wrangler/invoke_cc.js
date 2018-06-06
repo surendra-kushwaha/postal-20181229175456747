@@ -66,7 +66,7 @@ module.exports = function (g_options, logger) {
 
 			// All good
 			if (response.status === 'SUCCESS') {
-				logger.debug('[fcw] Successfully ordered endorsement transaction.');
+				//logger.debug('[fcw] Successfully ordered endorsement transaction.');
 
 				// Call optional order hook
 				if (options.ordered_hook) options.ordered_hook(null, request.txId.toString());
