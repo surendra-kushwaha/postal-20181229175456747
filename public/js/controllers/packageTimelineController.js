@@ -1,5 +1,5 @@
 mainApp
-  .controller('PackageTimelineController', function($scope,$window, $http,$sce) {
+  .controller('PackageTimelineController', function($scope,$window, $http,$sce, $rootScope) {
 	$scope.userCountry=$rootScope.userCountry;
     if (!('countryName' in sessionStorage)) {
         $window.location.href='/';
