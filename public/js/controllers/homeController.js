@@ -1,4 +1,4 @@
-mainApp.controller('HomeController', function ($scope, $window, $http) {
+mainApp.controller('HomeController', function ($scope, $window, $http, $timeout) {
 
    var countryNamesList = ["UK", "USA", "China", "Germany", "Canada", "Japan", "France"];
    var countryCodesList = ["GB", "US", "CN", "DE", "CA", "JP", "FR"]
@@ -54,7 +54,16 @@ mainApp.controller('HomeController', function ($scope, $window, $http) {
           }
           var today = mm + '/' + dd + '/' + yyyy;
           sessionStorage.setItem('dateCreated', today);
-          $window.location.href = '/dispatchReport.html';
+          
+          if($scope.simulationSize=='large')
+          {
+	          $timeout(function() {
+	             $window.location.href = '/dispatchReport.html';
+	           }, 300000); //3000 to 24000 (wait for 5 minuts)
+          }else{
+        	  $window.location.href = '/dispatchReport.html';
+          }
+          //$window.location.href = '/dispatchReport.html';
         },
         function (response) {
           console.log(response);
