@@ -31,7 +31,7 @@ const updatePackageSettlement = async (req, res) => {
         if (error) {
           res.sendStatus(400);
         } else {
-          logger.debug(`NewData: ${JSON.stringify(newData)}`);
+          //logger.debug(`NewData: ${JSON.stringify(newData)}`);
           res.status(200).json(newData[0]); // need to add returned data transformation logic
         }
       },
@@ -58,7 +58,7 @@ const packageHistory = async (req, res) => {
     } else {
       const historyArray = [];
       response.forEach(transax => {
-        logger.info(`Transax: ${JSON.stringify(transax, null, 2)}`);
+        //logger.info(`Transax: ${JSON.stringify(transax, null, 2)}`);
         const historyData = {
           date: transax.value.LastUpdated,
         };
@@ -81,7 +81,7 @@ const packageHistory = async (req, res) => {
           historyData.statusType = 'Shipment Status';
         }
 
-        logger.info(`History data: ${JSON.stringify(historyData)}`);
+        //logger.info(`History data: ${JSON.stringify(historyData)}`);
         historyArray.push(historyData);
       });
       res.status(200).send(historyArray);

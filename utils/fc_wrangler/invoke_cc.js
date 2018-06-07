@@ -42,7 +42,7 @@ module.exports = function (g_options, logger) {
 			args: options.cc_args,
 			txId: client.newTransactionID(),
 		};
-		logger.debug('[fcw] Sending invoke req', request);
+		//logger.debug('[fcw] Sending invoke req', request);
 
 		// Setup EventHub
 		if (options.event_url) {
@@ -84,7 +84,7 @@ module.exports = function (g_options, logger) {
 								return cb(null);						//timeout pass it back
 							}
 							else return;
-						}, g_options.block_delay + 20000);              //increasing timeout from 2000 to 10000 to 20000
+						}, g_options.block_delay + 90000);              //increasing timeout from 2000 to 90000
 
 						// Wait for tx committed event
 						eventHub.registerTxEvent(request.txId.getTransactionID(), (tx, code) => {
@@ -124,7 +124,7 @@ module.exports = function (g_options, logger) {
 					setTimeout(function () {
 						if (cb) return cb(null);
 						else return;
-					}, g_options.block_delay + 2000);
+					}, g_options.block_delay + 90000); //increasing timeout from 2000 to 90000
 				}
 			}
 

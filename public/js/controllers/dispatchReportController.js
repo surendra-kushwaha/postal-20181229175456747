@@ -1,4 +1,5 @@
-mainApp.controller('DispatchReportController', function($scope, $window, $http) {
+mainApp.controller('DispatchReportController', function($scope, $window, $http, $rootScope) {
+	$scope.userCountry=$rootScope.userCountry;
     if (!('countryName' in sessionStorage)) {
         $window.location.href = '/';
         return;

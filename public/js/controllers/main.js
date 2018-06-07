@@ -15,3 +15,8 @@ factory('httpq', function ($http, $q) {
 mainApp.config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.timeout = 5000;
 }]);
+mainApp.run(function($rootScope) {
+	var countryNamesList = ["UK", "USA", "China", "Germany", "Canada", "Japan", "France"];
+	var countryCodesList = ["GB", "US", "CN", "DE", "CA", "JP", "FR"]
+	$rootScope.userCountry = countryNamesList[countryCodesList.indexOf(sessionStorage.getItem('countryName'))];
+});
