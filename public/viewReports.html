@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>View Reports</title>
+  <title>View Simulation Results</title>
 
   <!-- Bootstrap core CSS -->
 
@@ -25,7 +25,7 @@
         </a>
       </li>
       <li>
-        <a href="/viewReports.html">View Reports
+        <a href="/viewReports.html">View Simulation Results
           <img src="Icon/Chevron Blue@2x.png" class="float-right">
         </a>
       </li>
@@ -57,7 +57,7 @@
       <table class="table" style="font-family:IBMPlexSans-Bold;">
         <thead>
           <tr>
-            <th scope="col">DATE RANGE</i>
+            <th scope="col">SIMULATION DATES</i>
             </th>
             <th scope="col">DATE CREATED</i>
             </th>
@@ -65,7 +65,7 @@
             </th>
             <th scope="col">DESTINATION COUNTRY</i>
             </th>
-            <th scope="col">LINK TO REPORT</i>
+            <th scope="col">LINK TO SIMULATION RESULTS</i>
             </th>
           </tr>
         </thead>
@@ -76,7 +76,7 @@
             <td>{{data.originPost}}</td>
             <td>{{data.destinationPost}}</td>
             <td>
-              <a href="#" ng-click="moveToDispatchReportScreen(data)">View report ></a>
+              <a href="#" ng-click="moveToDispatchReportScreen(data)">View  Simulation Results ></a>
             </td>
           </tr>
 
