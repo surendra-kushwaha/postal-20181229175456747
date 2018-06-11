@@ -2,7 +2,7 @@ import logger from '../../../logger';
 import config from '../../../config';
 
 const login = async (req, res) => {
-  logger.info('Entered login');
+  // logger.info('Entered login');
   // const data = {
   //   name: req.body.credentials.user_name,
   // };

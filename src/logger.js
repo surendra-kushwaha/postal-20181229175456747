@@ -36,7 +36,7 @@ const logger = new winston.Logger({
 logger.stream = {
   /* eslint-disable no-unused-vars */
   write: (message, encoding) => {
-    logger.info(message);
+    // logger.info(message);
   },
 };
 
