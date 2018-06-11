@@ -1,16 +1,9 @@
 mainApp
-<<<<<<< HEAD
   .controller('PackageTimelineController', function($scope,$window, $http,$sce, $rootScope) {
 	$scope.userCountry=$rootScope.userCountry;
     if (!('countryName' in sessionStorage)) {
         $window.location.href='/';
         return;
-=======
-    .controller('PackageTimelineController', function($scope, $window, $http, $sce) {
-        if (!('countryName' in sessionStorage)) {
-            $window.location.href = '/';
-            return;
->>>>>>> c3107a84ee7b0a1cd1d377c741f4072dd52ad3ab
         }
         $scope.getDateTime = function(date) {
             var dd = date.getDate();

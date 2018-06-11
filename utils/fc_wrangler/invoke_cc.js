@@ -87,20 +87,11 @@ module.exports = function(g_options, logger) {
                 );
                 eventHub.disconnect();
 
-<<<<<<< HEAD
-							if (cb && !cbCalled) {
-								cbCalled = true;
-								return cb(null);						//timeout pass it back
-							}
-							else return;
-						}, g_options.block_delay + 90000);              //increasing timeout from 2000 to 90000
-=======
                 if (cb && !cbCalled) {
                   cbCalled = true;
                   return cb(null); // timeout pass it back
                 }
-              }, g_options.block_delay + 60000); // increasing timeout from 2000 to 90000
->>>>>>> c3107a84ee7b0a1cd1d377c741f4072dd52ad3ab
+              }, g_options.block_delay + 90000); // increasing timeout from 2000 to 90000
 
               // Wait for tx committed event
               eventHub.registerTxEvent(
@@ -141,24 +132,13 @@ module.exports = function(g_options, logger) {
               }
             }
 
-<<<<<<< HEAD
-					// ------- [B] Wait xxxx ms for Block  ------- // option B
-				} else {
-					setTimeout(function () {
-						if (cb) return cb(null);
-						else return;
-					}, g_options.block_delay + 90000); //increasing timeout from 2000 to 90000
-				}
-			}
-=======
             // ------- [B] Wait xxxx ms for Block  ------- // option B
           } else {
             setTimeout(() => {
               if (cb) return cb(null);
-            }, g_options.block_delay + 60000); // increasing timeout from 2000 to 90000
+            }, g_options.block_delay + 90000); // increasing timeout from 2000 to 90000
           }
         }
->>>>>>> c3107a84ee7b0a1cd1d377c741f4072dd52ad3ab
 
         // ordering failed, No good
         else {
