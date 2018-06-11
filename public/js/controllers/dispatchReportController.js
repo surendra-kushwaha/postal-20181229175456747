@@ -27,6 +27,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
     $scope.totalReconciledPackages = 0;
     $scope.totalUnreconciledPackages = 0;
     $scope.activeMenuHeading = ["Summary View", "Reconciled Packages", "Unreconciled Packages"];
+    $scope.packageAllAction = '';
 
     $scope.updateOutput = function() {
 
@@ -292,10 +293,14 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
 
                     } else if (package.settlementStatus === "Unreconciled") {
                         package.displayPackageActionDropdown = false;
-                        if (sessionStorage.getItem('location') === "destination")
+                        if (sessionStorage.getItem('location') === "destination"){
                             package.packageUpdateAction = "Request Settlement";
-                        else
+                            $scope.packageAllAction = "SETTLE ALL";
+                        }
+                        else{
                             package.packageUpdateAction = "NA";
+                            $scope.packageAllAction = "DISPUTE ALL";
+                        }
 
                         $scope.unreconciledPackages.push(package);
 
