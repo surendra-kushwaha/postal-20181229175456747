@@ -96,7 +96,7 @@ const report = async (req, res) => {
     endDate: req.body.endDate,
     dateCreated: req.body.dateCreated,
   };
-  //logger.info(`Input Params:${JSON.stringify(queryObj)}`);
+  // logger.info(`Input Params:${JSON.stringify(queryObj)}`);
 
   PostalPackage.find(queryObj, (err, postalData) => {
     if (err) {
@@ -104,7 +104,7 @@ const report = async (req, res) => {
     } else {
       const dispatchIds = createDispatchIdArray(postalData);
       const dispatches = createArrayOfDispatches(dispatchIds, postalData);
-      //logger.debug(`Dispatches: ${JSON.stringify(dispatches)}`);
+      // logger.debug(`Dispatches: ${JSON.stringify(dispatches)}`);
       const reportData = performDispatchCalculations(dispatches, queryObj); // final array to push completed dispatch data
       res.send({ status: 'success', data: reportData });
     }
@@ -113,7 +113,7 @@ const report = async (req, res) => {
 
 // Get package details for dispatch
 const packageReport = (req, res) => {
-  //logger.info(`Req.query: ${JSON.stringify(req.query)}`);
+  // logger.info(`Req.query: ${JSON.stringify(req.query)}`);
   const queryObj = {
     dispatchId: req.query.dispatchId,
   };
@@ -125,7 +125,7 @@ const packageReport = (req, res) => {
   ) {
     queryObj.dispatchId = 'none';
   }
-  //logger.info(JSON.stringify(queryObj));
+  // logger.info(JSON.stringify(queryObj));
   PostalPackage.find(queryObj, (err, postalData) => {
     if (err) {
       res.send({ status: 'fail', data: { msg: err } });
@@ -186,7 +186,7 @@ const viewReports = (req, res) => {
       } else {
         // need to filter any duplicate results
         const filteredData = filterViewReports(postalData);
-        //logger.info(`Filtered data: ${JSON.stringify(filteredData, null, 2)}`);
+        // logger.info(`Filtered data: ${JSON.stringify(filteredData, null, 2)}`);
         res.send({ status: 'success', data: filteredData });
       }
     },
@@ -208,13 +208,13 @@ const getPackage = (req, res) => {
 };
 
 const clearData = (req, res) => {
-  //   PostalPackage.remove({}, (err, postalData) => {
-  //     if (err) {
-  //       res.send({ status: 'fail', data: { msg: err } });
-  //     } else {
-  res.send({ status: 'success' /* , data: postalData  */ });
-  //     }
-  //   })
+  PostalPackage.remove({}, (err, postalData) => {
+    if (err) {
+      res.send({ status: 'fail', data: { msg: err } });
+    } else {
+      res.send({ status: 'success', data: postalData });
+    }
+  });
 };
 
 export { viewReports, report, packageReport, getPackage, clearData };
