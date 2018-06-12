@@ -54,6 +54,10 @@ const simulate = async (req: $Request, res: $Response) => {
         startDate,
         endDate,
       );
+      
+      if(size=='large') {
+          res.send('Simulation complete For Create Packages.');
+        }
 
       try {
         const promiseResults = await dispatchsimulator.createpackage(
@@ -61,10 +65,6 @@ const simulate = async (req: $Request, res: $Response) => {
           startDate,
           endDate,
         ); // CreatePackage In BlockChain - also need to include startDate and endDate
-        
-        if(size=='large') {
-            res.send('Simulation complete For Create Packages.');
-          }
         
         promiseResults.forEach(result => {
           if (result instanceof Error) {
