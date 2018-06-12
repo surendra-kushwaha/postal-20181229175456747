@@ -70,7 +70,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr dir-paginate="data in tableData| orderBy:'data.dateCreated':true |filter:searchText |itemsPerPage:10 " style="font-family:IBMPlexSans-Regular;">
+          <tr dir-paginate="data in tableData| orderBy:'data.dateCreated':true |filter:searchText |itemsPerPage:25 " style="font-family:IBMPlexSans-Regular;">
             <td> {{convertToUTC(data.startDate) | date : "mediumDate" }} – {{convertToUTC(data.endDate) | date : "mediumDate" }}</td>
             <td>{{convertToUTC(data.dateCreated) | date : "mediumDate" }}</td>
             <td>{{data.originPost}}</td>

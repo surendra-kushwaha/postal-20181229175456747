@@ -153,7 +153,7 @@
             </tr>
           </thead>
           <tbody ng-if="dispatchView" id="dispatch-table">
-            <tr dir-paginate="dispatch in dispatches  | filter: parcelType |itemsPerPage:5 ">
+            <tr dir-paginate="dispatch in dispatches  | filter: parcelType |itemsPerPage:25 ">
               <td>
                 <a href="#" ng-click="moveToPackageScreen(dispatch.dispatchId)">{{dispatch.dispatchId}}</a>
               </td>
@@ -168,7 +168,7 @@ Action
             </tr>
           </tbody>
           <tbody ng-if="!dispatchView" id="package-table">
-            <tr dir-paginate="package in packages |orderBy:'package.dateCreated':true |filter: query |itemsPerPage:5">
+            <tr dir-paginate="package in packages |orderBy:'package.dateCreated':true |filter: query |itemsPerPage:25">
               <td>
                 <a href="#" ng-click="moveToPackageTimeLineScreen(package)">{{package.packageId}}</a>
               </td>
@@ -218,7 +218,7 @@ Action
        {{noPackagesMsg}}
       </div>
       <div ng-if="!dispatchView" class="dispute-btn my-5" id="dispute-all">
-        <button type="button" class="btn">DISPUTE ALL</button>
+        <button type="button" class="btn">{{packageAllAction}}</button>
       </div>
     </div>
 

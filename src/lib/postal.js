@@ -22,7 +22,7 @@ const ws_server = require('../../utils/websocket_server_side.js')(
 const opts = helper.makeSharedAccumsLibOptions();
 
 enroll_admin(1, e => {
-  logger.info('hiaaaa');
+  // logger.info('hiaaaa');
   if (e == null) {
     // logger.info("hiaaaa###");
     setup_postalscm_lib();
@@ -38,14 +38,14 @@ let postalscm_lib = require('../../utils/postalscm_cc_lib.js')(
 
 ws_server.setup(wss.broadcast);
 
-logger.debug('Checking if chaincode is already deployed or not');
+// logger.debug('Checking if chaincode is already deployed or not');
 /* var options = {
 peer_urls: [helper.getPeersUrl(0)],
 }; */
 const channel = helper.getChannelId();
 const first_peer = helper.getFirstPeerName(channel);
 
-logger.info(`first_peer::${first_peer}`);
+// logger.info(`first_peer::${first_peer}`);
 
 const options = {
   peer_urls: [helper.getPeersUrl(first_peer)],
@@ -56,7 +56,7 @@ const options = {
 };
 
 function setup_postalscm_lib() {
-  logger.debug('Setup postal scm Lib...');
+  // logger.debug('Setup postal scm Lib...');
 
   const opts = helper.makeSharedAccumsLibOptions();
   postalscm_lib = require('../../utils/postalscm_cc_lib.js')(
@@ -67,14 +67,14 @@ function setup_postalscm_lib() {
   );
   ws_server.setup(wss.broadcast);
 
-  logger.debug('Checking if chaincode is already deployed or not');
+  // logger.debug('Checking if chaincode is already deployed or not');
   /* var options = {
 	peer_urls: [helper.getPeersUrl(0)],
 }; */
 
   const channel = helper.getChannelId();
   const first_peer = helper.getFirstPeerName(channel);
-  logger.info(`first_peer::${first_peer}`);
+  // logger.info(`first_peer::${first_peer}`);
 }
 
 // enroll an admin with the CA for this peer/channel
@@ -108,8 +108,8 @@ class Postal {
    */
 
   async createPackage(payload, startDate, endDate) {
-    logger.info('Postal:<createPackage>');
-    logger.debug('Payload received', payload);
+    // logger.info('Postal:<createPackage>');
+    // logger.debug('Payload received', payload);
     /* const factory = this.businessNetworkDefinition.getFactory();
 
     const packageConcept = factory.newConcept(workspace, 'Package');
@@ -160,8 +160,8 @@ class Postal {
           const blockchainPackage = JSON.parse(response.data);
           // create today's date
           /* const todayTimestamp = new Date();
-          const today = `${todayTimestamp.getFullYear()}/${todayTimestamp.getMonth() +
-            1}/${todayTimestamp.getDate()}`; */
+                              const today = `${todayTimestamp.getFullYear()}/${todayTimestamp.getMonth() +
+                                1}/${todayTimestamp.getDate()}`; */
           const todateTimeStamp = new Date();
           let today = `${todateTimeStamp.getMonth() +
             1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
@@ -193,16 +193,16 @@ class Postal {
           ) {
             postalData.dispatchId = 'none';
           }
-          /*logger.debug(
-            `PostalData to save in DB::${JSON.stringify(postalData)}`,
-          );*/
+          /* logger.debug(
+                                `PostalData to save in DB::${JSON.stringify(postalData)}`,
+                              ); */
           const postal = new PostalPackage(postalData);
           postal.save((err, result) => {
             if (err) {
               logger.info(`Unable to save created package in database: ${err}`);
               reject(err);
             } else {
-              //logger.info('package data saved successfully to mongodb');
+              logger.info('Create Package data saved successfully to mongodb');
               resolve(result);
               // logger.info({ status: 'success', data: result });
             }
@@ -241,20 +241,20 @@ class Postal {
   }
 
   async updateShipmentStatus(payload) {
-    logger.info('Postal:<updateShipmentStatus>');
+    // logger.info('Postal:<updateShipmentStatus>');
     /* var packageId="EX103456792US";
-    var settlementStatus="Reconciled1"
-    updateShipmentTransaction.packageIDs = payload.packageIDs;
-      updateShipmentTransaction.lastUpdated = payload.lastUpdated;
-      updateShipmentTransaction.newShipmentStatus = payload.newShipmentStatus;
-  
-      o String [] packageIDs
-     o ShipmentStatus [] newShipmentStatus
-     o DateTime [] lastUpdated
-     o SettlementStatus [] newSettlementStatus
-     o String [] receptacleId optional
-     o String [] dispatchId optional
-    */
+            var settlementStatus="Reconciled1"
+            updateShipmentTransaction.packageIDs = payload.packageIDs;
+              updateShipmentTransaction.lastUpdated = payload.lastUpdated;
+              updateShipmentTransaction.newShipmentStatus = payload.newShipmentStatus;
+
+              o String [] packageIDs
+             o ShipmentStatus [] newShipmentStatus
+             o DateTime [] lastUpdated
+             o SettlementStatus [] newSettlementStatus
+             o String [] receptacleId optional
+             o String [] dispatchId optional
+            */
     const {
       packageId,
       shipmentStatus,
