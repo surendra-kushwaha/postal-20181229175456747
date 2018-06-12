@@ -91,7 +91,7 @@ module.exports = function(g_options, logger) {
                   cbCalled = true;
                   return cb(null); // timeout pass it back
                 }
-              }, g_options.block_delay + 90000); // increasing timeout from 2000 to 90000
+              }, g_options.block_delay + 300000); // increasing timeout from 2000 to 300000
 
               // Wait for tx committed event
               eventHub.registerTxEvent(
@@ -136,7 +136,7 @@ module.exports = function(g_options, logger) {
           } else {
             setTimeout(() => {
               if (cb) return cb(null);
-            }, g_options.block_delay + 90000); // increasing timeout from 2000 to 90000
+            }, g_options.block_delay + 300000); // increasing timeout from 2000 to 300000
           }
         }
 

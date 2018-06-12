@@ -55,7 +55,7 @@ mainApp.controller('HomeController', function ($scope, $window, $http, $timeout,
           {
 	          $timeout(function() {
 	             $window.location.href = '/dispatchReport.html';
-	           }, 300000); //3000 to 24000 (wait for 5 minuts)
+	           }, 120000); //3000 to 24000 (wait for 2 minuts)
           }else{
         	  $window.location.href = '/dispatchReport.html';
           }
