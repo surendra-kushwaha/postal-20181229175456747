@@ -82,12 +82,15 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
             function(response) {
                 // console.log(response);
                 $scope.allDispatches = response.data.data;
-                if (response.data.data.length == 0) {
-                    $scope.parcelType = "Express";
-                    return;
-                }
-                $scope.parcelType = response.data.data[0].packageType;
-
+                 if (response.data.data.length == 0) {
+          $scope.parcelType = "Express";
+          return;
+        }
+        if($scope.parcelType==undefined && !('parcelType' in sessionStorage)) 
+       $scope.parcelType = response.data.data[0].packageType;
+       else if(('parcelType' in sessionStorage)){
+       $scope.parcelType = sessionStorage.getItem('parcelType');
+      sessionStorage.removeItem('parcelType');}
                 $('.select-styled').text($scope.parcelType);
 
 
@@ -421,6 +424,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
         sessionStorage.setItem('selectedPackageshipmentStatus', package.shipmentStatus);
         sessionStorage.setItem('selectedPackageSettlementStatus', package.settlementStatus);
         sessionStorage.setItem('back', true);
+          sessionStorage.setItem('parcelType',$scope.parcelType);
         //sessionStorage.getItem('')
         $window.location.href = '/packageTimeline.html';
 
