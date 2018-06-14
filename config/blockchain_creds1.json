@@ -20,7 +20,7 @@
                 }
             },
             "chaincodes": {
-                "postal-scm-v15": "1.0"
+                "postal-scm-v3": "1.0"
             }
         }
     },
@@ -38,7 +38,7 @@
     },
     "orderers": {
         "fabric-orderer": {
-            "url": "grpc://173.193.106.68:31010",
+            "url": "grpc://169.61.102.226:31010",
             "grpcOptions": {
                 "ssl-target-name-override": null,
                 "grpc.http2.keepalive_time": 15
@@ -47,8 +47,8 @@
     },
     "peers": {
         "fabric-peer-org1": {
-            "url": "grpc://173.193.106.68:30110",
-            "eventUrl": "grpc://173.193.106.68:30111",
+            "url": "grpc://169.61.102.238:30110",
+            "eventUrl": "grpc://169.61.102.238:30111",
             "grpcOptions": {
                 "ssl-target-name-override": null,
                 "grpc.http2.keepalive_time": 15
@@ -57,7 +57,7 @@
     },
     "certificateAuthorities": {
         "fabric-ca-Org1": {
-            "url": "http://173.193.106.68:30054",
+            "url": "http://169.61.102.230:30054",
             "httpOptions": {
                 "verify": true
             },
