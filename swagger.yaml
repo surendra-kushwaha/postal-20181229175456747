@@ -161,8 +161,10 @@ paths:
           name: updateSettlementObject
           description: parameters to update settlement status
           required: true
-          schema:
-            $ref: '#/definitions/updateSettlement'
+          schema: 
+            type: array
+            items:
+                $ref: '#/definitions/Package'
       responses:
         '200':
           description: Updated Dispatch settlement type. Returning updated dispatch object
