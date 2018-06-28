@@ -94,7 +94,6 @@ const updateDispatchSettlement = async (req, res) => {
         );
       } else {
         logger.error('The new settlement status is not recognized!');
-        res.sendStatus(400);
       }
       try {
         if (filteredPackages.length > 0) {
