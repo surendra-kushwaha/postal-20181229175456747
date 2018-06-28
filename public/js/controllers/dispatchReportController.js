@@ -275,12 +275,20 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
 
                 $scope.reconciledPackages = [];
                 $scope.unreconciledPackages = [];
-
+              //set default value
+                if (sessionStorage.getItem('location') === "destination"){
+                    $scope.packageAllAction = "SETTLE ALL";
+                    $scope.packageAllConfirmAction = "CONFIRM ALL DISPUTE";
+                }
+                else{
+                    $scope.packageAllAction = "DISPUTE ALL";
+                    $scope.packageAllConfirmAction = "CONFIRM ALL SETTLEMENT";
+                }
 
                 // packagesData
                 (response.data.data).forEach(package => {
                     package.dateCreated = new Date(package.dateCreated);
-                    
+                                      
                     if(package.settlementStatus==="Settlement Disputed"){
                         if (sessionStorage.getItem('location') === "destination"){
                             $scope.packageSettlementStatusCount.push(1);
@@ -431,17 +439,15 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
         }
     }
     
-    $scope.updateDispatchAction = function(dispatchAction, dispachId) {
-        //alert("dispatchAction::"+dispatchAction)
-        var action='DEFAULT';
+    $scope.updateDispatchAction = function(action) {
         if (action != null && action != "NA") {
-            if (dispatchAction === "DISPUTE ALL")
+            if (action === "DISPUTE ALL")
             action = "Settlement Disputed";
-            else if (dispatchAction === "SETTLE ALL")
+            else if (action === "SETTLE ALL")
             action = "Settlement Requested";
-            else if (dispatchAction === "CONFIRM ALL DISPUTE")
+            else if (action === "CONFIRM ALL DISPUTE")
             action = "Dispute Confirmed";
-            else if (dispatchAction === "CONFIRM ALL SETTLEMENT")
+            else if (action === "CONFIRM ALL SETTLEMENT")
             action = "Settlement Agreed";
 
             let updateDispatchObject = JSON.stringify({

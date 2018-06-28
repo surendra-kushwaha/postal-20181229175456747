@@ -219,7 +219,7 @@ Action
       </div>
       <div ng-if="!dispatchView" class="dispute-btn my-5"id="dispute-all" colspan='2'>
         <button type="button" class="btn" style="margin-right:10px"   ng-click="updateDispatchAction(packageAllAction)">{{packageAllAction}}</button>&nbsp; 
-        <button type="button" class="btn" ng-if="packageSettlementStatusCount.length>1"  style="margin-left:40px"   ng-click="updateDispatchAction(packageAllConfirmAction)">{{packageAllConfirmAction}}</button>
+        <button type="button" class="btn" ng-if="packageSettlementStatusCount.length>=1"  style="margin-left:40px"   ng-click="updateDispatchAction(packageAllConfirmAction)">{{packageAllConfirmAction}}</button>
       </div>
     </div>
 
