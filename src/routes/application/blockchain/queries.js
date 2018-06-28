@@ -62,7 +62,7 @@ const updateDispatchSettlement = async (req, res) => {
         ];
         filteredPackages.push(
           packages.filter(pack =>
-            allowedSettlementStatuses.contains(pack.settlementStatus),
+            allowedSettlementStatuses.includes(pack.settlementStatus),
           ),
         );
       } else if (newSettlementStatus === 'Settlement Requested') {
@@ -73,21 +73,21 @@ const updateDispatchSettlement = async (req, res) => {
         ];
         filteredPackages.push(
           packages.filter(pack =>
-            allowedSettlementStatuses.contains(pack.settlementStatus),
+            allowedSettlementStatuses.includes(pack.settlementStatus),
           ),
         );
       } else if (newSettlementStatus === 'Settlement Agreed') {
         const allowedSettlementStatuses = ['Settlement Requested'];
         filteredPackages.push(
           packages.filter(pack =>
-            allowedSettlementStatuses.contains(pack.settlementStatus),
+            allowedSettlementStatuses.includes(pack.settlementStatus),
           ),
         );
       } else if (newSettlementStatus === 'Dispute Confirmed') {
         const allowedSettlementStatuses = ['Settlement Disputed'];
         filteredPackages.push(
           packages.filter(pack =>
-            allowedSettlementStatuses.contains(pack.settlementStatus),
+            allowedSettlementStatuses.includes(pack.settlementStatus),
           ),
         );
       } else {
