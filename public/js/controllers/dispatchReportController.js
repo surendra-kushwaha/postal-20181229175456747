@@ -251,6 +251,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
     }
 
     $scope.packageDispatchId='';
+    $scope.packageSettlementStatusCount = [];
     $scope.moveToPackageScreen = function(dispatchId) {
     	$scope.packageDispatchId=dispatchId;
         $scope.packages = [];
@@ -279,6 +280,20 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                 // packagesData
                 (response.data.data).forEach(package => {
                     package.dateCreated = new Date(package.dateCreated);
+                    
+                    if(package.settlementStatus==="Settlement Disputed"){
+                        if (sessionStorage.getItem('location') === "destination"){
+                            $scope.packageSettlementStatusCount.push(1);
+                        }
+                        //Confirm All Dispute
+                    }
+                    if(package.settlementStatus==="Settlement Requested"){
+                        if (sessionStorage.getItem('location') === "origin"){
+                            $scope.packageSettlementStatusCount.push(1);
+                        }
+                        //Confirm All Settlement
+                    }
+                    
                     if (package.settlementStatus === "Reconciled") {
                         package.displayPackageActionDropdown = false;
                         if (sessionStorage.getItem('location') === "origin")
