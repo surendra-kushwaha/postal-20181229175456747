@@ -28,7 +28,8 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
     $scope.totalUnreconciledPackages = 0;
     $scope.activeMenuHeading = ["Summary View", "Reconciled Packages", "Unreconciled Packages"];
     $scope.packageAllAction = '';
-
+    $scope.packageAllConfirmAction = '';
+    
     $scope.updateOutput = function() {
 
         $scope.query = $('#searchBox').val();
@@ -249,9 +250,10 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
 
     }
 
-
+    $scope.packageDispatchId='';
+    $scope.packageSettlementStatusCount = [];
     $scope.moveToPackageScreen = function(dispatchId) {
-
+    	$scope.packageDispatchId=dispatchId;
         $scope.packages = [];
         $("#summary-container").css("display", "none");
         $("#table-container").css("display", "block");
@@ -278,6 +280,20 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                 // packagesData
                 (response.data.data).forEach(package => {
                     package.dateCreated = new Date(package.dateCreated);
+                    
+                    if(package.settlementStatus==="Settlement Disputed"){
+                        if (sessionStorage.getItem('location') === "destination"){
+                            $scope.packageSettlementStatusCount.push(1);
+                        }
+                        //Confirm All Dispute
+                    }
+                    if(package.settlementStatus==="Settlement Requested"){
+                        if (sessionStorage.getItem('location') === "origin"){
+                            $scope.packageSettlementStatusCount.push(1);
+                        }
+                        //Confirm All Settlement
+                    }
+                    
                     if (package.settlementStatus === "Reconciled") {
                         package.displayPackageActionDropdown = false;
                         if (sessionStorage.getItem('location') === "origin")
@@ -299,10 +315,12 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                         if (sessionStorage.getItem('location') === "destination"){
                             package.packageUpdateAction = "Request Settlement";
                             $scope.packageAllAction = "SETTLE ALL";
+                            $scope.packageAllConfirmAction = "CONFIRM ALL DISPUTE";
                         }
                         else{
                             package.packageUpdateAction = "NA";
                             $scope.packageAllAction = "DISPUTE ALL";
+                            $scope.packageAllConfirmAction = "CONFIRM ALL SETTLEMENT";
                         }
 
                         $scope.unreconciledPackages.push(package);
@@ -410,8 +428,46 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
 
                 }
             );
+        }
+    }
+    
+    $scope.updateDispatchAction = function(dispatchAction, dispachId) {
+        //alert("dispatchAction::"+dispatchAction)
+        var action='DEFAULT';
+        if (action != null && action != "NA") {
+            if (dispatchAction === "DISPUTE ALL")
+            action = "Settlement Disputed";
+            else if (dispatchAction === "SETTLE ALL")
+            action = "Settlement Requested";
+            else if (dispatchAction === "CONFIRM ALL DISPUTE")
+            action = "Dispute Confirmed";
+            else if (dispatchAction === "CONFIRM ALL SETTLEMENT")
+            action = "Settlement Agreed";
 
+            let updateDispatchObject = JSON.stringify({
+                'type': 'dispatch',
+                'id': $scope.packageDispatchId,
+                'newStatus': action,
+                'post': sessionStorage.getItem('location'),
+                'country': sessionStorage.getItem('countryName')
 
+            });
+            console.log(updateDispatchObject);
+            $http.post('/update-dispatch-settlement', updateDispatchObject, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(
+                function(response) {
+                    $('#exampleModalCenter').modal('show');
+                    $scope.getAllDispatches();
+                    $scope.moveToPackageScreen($scope.dispatchId);
+
+                },
+                function(response) {
+
+                }
+            );
         }
     }
 
