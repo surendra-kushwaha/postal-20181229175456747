@@ -30,9 +30,19 @@ Promise.settle = function(promises) {
 };
 
 const updateAllPackages = (packages: Array, newSettlementStatus: String) => {
+  logger.debug(
+    `Update All Packages called. ${JSON.stringify(
+      packages,
+    )},${newSettlementStatus}`,
+  );
   const lastUpdated = new Date();
   const promises = [];
   packages.forEach(pack => {
+    logger.debug(
+      `Updating settlement status for one of many packages: ${JSON.stringify(
+        pack,
+      )}`,
+    );
     const updateSettlementPayload = {
       packageId: pack.packageId,
       newSettlementStatus,
@@ -49,7 +59,7 @@ const updateDispatchSettlement = async (req, res) => {
     dispatchId: req.body.id,
   };
   const newSettlementStatus = req.body.newStatus;
-  const filteredPackages = [];
+  let filteredPackages = [];
   PostalPackage.find(queryObj, async (error, packages) => {
     if (error) {
       res.sendStatus(400);
@@ -60,10 +70,8 @@ const updateDispatchSettlement = async (req, res) => {
           'Settlement Agreed',
           'Settlement Requested',
         ];
-        filteredPackages.push(
-          packages.filter(pack =>
-            allowedSettlementStatuses.includes(pack.settlementStatus),
-          ),
+        filteredPackages = packages.filter(pack =>
+          allowedSettlementStatuses.includes(pack.settlementStatus),
         );
       } else if (newSettlementStatus === 'Settlement Requested') {
         const allowedSettlementStatuses = [
@@ -71,31 +79,27 @@ const updateDispatchSettlement = async (req, res) => {
           'Settlement Disputed',
           'Dispute Confirmed',
         ];
-        filteredPackages.push(
-          packages.filter(pack =>
-            allowedSettlementStatuses.includes(pack.settlementStatus),
-          ),
+        filteredPackages = packages.filter(pack =>
+          allowedSettlementStatuses.includes(pack.settlementStatus),
         );
       } else if (newSettlementStatus === 'Settlement Agreed') {
         const allowedSettlementStatuses = ['Settlement Requested'];
-        filteredPackages.push(
-          packages.filter(pack =>
-            allowedSettlementStatuses.includes(pack.settlementStatus),
-          ),
+        filteredPackages = packages.filter(pack =>
+          allowedSettlementStatuses.includes(pack.settlementStatus),
         );
       } else if (newSettlementStatus === 'Dispute Confirmed') {
         const allowedSettlementStatuses = ['Settlement Disputed'];
-        filteredPackages.push(
-          packages.filter(pack =>
-            allowedSettlementStatuses.includes(pack.settlementStatus),
-          ),
+        filteredPackages = packages.filter(pack =>
+          allowedSettlementStatuses.includes(pack.settlementStatus),
         );
       } else {
         logger.error('The new settlement status is not recognized!');
         res.sendStatus(400);
       }
       try {
-        await updateAllPackages(packages, newSettlementStatus);
+        if (filteredPackages.length > 0) {
+          await updateAllPackages(filteredPackages, newSettlementStatus);
+        }
       } catch (err) {
         logger.error(
           'Error updating packages in the dispatch to new Settlement Status',
