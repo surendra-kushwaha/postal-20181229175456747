@@ -20,7 +20,7 @@
                 }
             },
             "chaincodes": {
-                "postal-scm-dev": "1.0"
+                "postal-scm-v3": "1.0"
             }
         }
     },
