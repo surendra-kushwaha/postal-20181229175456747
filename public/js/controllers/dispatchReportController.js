@@ -28,7 +28,8 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
     $scope.totalUnreconciledPackages = 0;
     $scope.activeMenuHeading = ["Summary View", "Reconciled Packages", "Unreconciled Packages"];
     $scope.packageAllAction = '';
-
+    $scope.packageAllConfirmAction = '';
+    
     $scope.updateOutput = function() {
 
         $scope.query = $('#searchBox').val();
@@ -82,12 +83,15 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
             function(response) {
                 // console.log(response);
                 $scope.allDispatches = response.data.data;
-                if (response.data.data.length == 0) {
-                    $scope.parcelType = "Express";
-                    return;
-                }
-                $scope.parcelType = response.data.data[0].packageType;
-
+                 if (response.data.data.length == 0) {
+          $scope.parcelType = "Express";
+          return;
+        }
+        if($scope.parcelType==undefined && !('parcelType' in sessionStorage)) 
+       $scope.parcelType = response.data.data[0].packageType;
+       else if(('parcelType' in sessionStorage)){
+       $scope.parcelType = sessionStorage.getItem('parcelType');
+      sessionStorage.removeItem('parcelType');}
                 $('.select-styled').text($scope.parcelType);
 
 
@@ -246,9 +250,10 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
 
     }
 
-
+    $scope.packageDispatchId='';
+    $scope.packageSettlementStatusCount = [];
     $scope.moveToPackageScreen = function(dispatchId) {
-
+    	$scope.packageDispatchId=dispatchId;
         $scope.packages = [];
         $("#summary-container").css("display", "none");
         $("#table-container").css("display", "block");
@@ -270,11 +275,33 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
 
                 $scope.reconciledPackages = [];
                 $scope.unreconciledPackages = [];
-
+              //set default value
+                if (sessionStorage.getItem('location') === "destination"){
+                    $scope.packageAllAction = "SETTLE ALL";
+                    $scope.packageAllConfirmAction = "CONFIRM ALL DISPUTE";
+                }
+                else{
+                    $scope.packageAllAction = "DISPUTE ALL";
+                    $scope.packageAllConfirmAction = "CONFIRM ALL SETTLEMENT";
+                }
 
                 // packagesData
                 (response.data.data).forEach(package => {
                     package.dateCreated = new Date(package.dateCreated);
+                                      
+                    if(package.settlementStatus==="Settlement Disputed"){
+                        if (sessionStorage.getItem('location') === "destination"){
+                            $scope.packageSettlementStatusCount.push(1);
+                        }
+                        //Confirm All Dispute
+                    }
+                    if(package.settlementStatus==="Settlement Requested"){
+                        if (sessionStorage.getItem('location') === "origin"){
+                            $scope.packageSettlementStatusCount.push(1);
+                        }
+                        //Confirm All Settlement
+                    }
+                    
                     if (package.settlementStatus === "Reconciled") {
                         package.displayPackageActionDropdown = false;
                         if (sessionStorage.getItem('location') === "origin")
@@ -296,10 +323,12 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                         if (sessionStorage.getItem('location') === "destination"){
                             package.packageUpdateAction = "Request Settlement";
                             $scope.packageAllAction = "SETTLE ALL";
+                            $scope.packageAllConfirmAction = "CONFIRM ALL DISPUTE";
                         }
                         else{
                             package.packageUpdateAction = "NA";
                             $scope.packageAllAction = "DISPUTE ALL";
+                            $scope.packageAllConfirmAction = "CONFIRM ALL SETTLEMENT";
                         }
 
                         $scope.unreconciledPackages.push(package);
@@ -407,8 +436,44 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
 
                 }
             );
+        }
+    }
+    
+    $scope.updateDispatchAction = function(action) {
+        if (action != null && action != "NA") {
+            if (action === "DISPUTE ALL")
+            action = "Settlement Disputed";
+            else if (action === "SETTLE ALL")
+            action = "Settlement Requested";
+            else if (action === "CONFIRM ALL DISPUTE")
+            action = "Dispute Confirmed";
+            else if (action === "CONFIRM ALL SETTLEMENT")
+            action = "Settlement Agreed";
 
+            let updateDispatchObject = JSON.stringify({
+                'type': 'dispatch',
+                'id': $scope.packageDispatchId,
+                'newStatus': action,
+                'post': sessionStorage.getItem('location'),
+                'country': sessionStorage.getItem('countryName')
 
+            });
+            console.log(updateDispatchObject);
+            $http.post('/update-dispatch-settlement', updateDispatchObject, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(
+                function(response) {
+                    $('#exampleModalCenter').modal('show');
+                    $scope.getAllDispatches();
+                    $scope.moveToPackageScreen($scope.dispatchId);
+
+                },
+                function(response) {
+
+                }
+            );
         }
     }
 
@@ -421,6 +486,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
         sessionStorage.setItem('selectedPackageshipmentStatus', package.shipmentStatus);
         sessionStorage.setItem('selectedPackageSettlementStatus', package.settlementStatus);
         sessionStorage.setItem('back', true);
+          sessionStorage.setItem('parcelType',$scope.parcelType);
         //sessionStorage.getItem('')
         $window.location.href = '/packageTimeline.html';
 

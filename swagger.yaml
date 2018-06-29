@@ -162,12 +162,14 @@ paths:
           description: parameters to update settlement status
           required: true
           schema:
-            $ref: '#/definitions/updateSettlement'
+            $ref: '#/definitions/UpdateSettlement'
       responses:
         '200':
           description: Updated Dispatch settlement type. Returning updated dispatch object
           schema: 
-            $ref: '#/definitions/Dispatch'
+            type: array
+            items:
+                $ref: '#/definitions/Package'
         '405':
           description: Was not able to get simulated data
 
@@ -187,7 +189,7 @@ paths:
           description: parameters to update settlement status. Fill in the type variable of the updateSettlement object as 'package'
           required: true
           schema:
-            $ref: '#/definitions/updateSettlement'
+            $ref: '#/definitions/UpdateSettlement'
       responses:
         '200':
           description: Updated package settlement status. Returning updated package object
@@ -296,14 +298,14 @@ definitions:
   UpdateSettlement:
     type: object
     properties:
-      type: # dispatch or package
+      type:
         type: string
       id:
         type: string
       newStatus:
         type: string
       post:
-        type: string # origin or destination
+        type: string 
       country:
         type: string
 
