@@ -92,7 +92,7 @@ To run your application on IBM Cloud do the following (deploying on other cloud 
     random-route: true
     memory: 128M
     ```
-    2. [Download] (https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html#install_use) the ibmcloud cli 
+    2. [Download](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html#install_use) the ibmcloud cli 
     3. Target the org and space where you created the application in step 6. `ibmcloud target --cf`
     4. From the working directory `ibmcloud cf push`
 
@@ -101,7 +101,8 @@ To run your application on IBM Cloud do the following (deploying on other cloud 
 1. [Install Node.js][]
 2. cd into this project's root directory
 3. Run `npm install` to install the app's dependencies
-4. Run `npm run build` to build the app's artifacts
-5. Run `npm run start` to start the app
+4. Run `npm install -g yarn` to download the yarn package manager
+4. Run `yarn build` to build the app's artifacts
+5. Run `yarn start` to start the app
 6. Access the running app in a browser at <http://localhost:3000>
 [Install Node.js]: https://nodejs.org/en/download/
