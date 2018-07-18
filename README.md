@@ -92,7 +92,7 @@ To run your application on IBM Cloud do the following (deploying on other cloud 
     random-route: true
     memory: 128M
     ```
-    2. [Download](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html#install_use) the ibmcloud cli 
+    2. [Download](https://console.bluemix.net/docs/cli/reference/bluemix_cli/download_cli.html#install_use) the ibmcloud cli. More info on the ibmcloud CLI can be found [here](https://console.bluemix.net/docs/cli/reference/bluemix_cli/bx_cli.html#bluemix_cli)
     3. Target the org and space where you created the application in step 6. `ibmcloud target --cf`
     4. From the working directory `ibmcloud cf push`
 
