@@ -27,7 +27,7 @@
                 }
             },
             "chaincodes": {
-                "postal-scm:1.0"
+                "postal-scm":"1.0"
             }
                    }
     },
