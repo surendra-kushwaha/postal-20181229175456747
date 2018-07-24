@@ -1,5 +1,5 @@
 {
-    "name": "swvm-blockchain",
+    "name":"swvm-blockchain",
     "x-type": "hlfv1",
     "description": "Connection Profile for an IBM Blockchain Network",
     "version": "1.0.0",
