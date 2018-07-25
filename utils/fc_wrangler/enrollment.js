@@ -11,7 +11,7 @@ module.exports = function (logger) {
 	var CaService = require('fabric-ca-client/lib/FabricCAClientImpl.js');
 	var Orderer = require('fabric-client/lib/Orderer.js');
 	var Peer = require('fabric-client/lib/Peer.js');
-	FabricClient.setConfigSetting('request-timeout', 90000);
+	FabricClient.setConfigSetting('request-timeout', 300000);//90000 to 300000
 
 	//-----------------------------------------------------------------
 	// Enroll an enrollId with the ca - use this for query/invoke chaincode
