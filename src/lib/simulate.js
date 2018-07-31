@@ -36,8 +36,20 @@ function randomNumber(long) {
 }
 
 // return package ID
-function generatepackage(country, packagetype) {
-  return packagetype + randomNumber(9) + country;
+function generatepackage(country, packagetype, typeofpatch) {
+  let ninecharnum;
+  if (typeofpatch === 'receivedExcess') {
+    ninecharnum = `1111${randomNumber(5)}`;
+  } else if (typeofpatch === 'lostParcel') {
+    ninecharnum = `2222${randomNumber(5)}`;
+  } else if (typeofpatch === 'seizedorReturned') {
+    ninecharnum = `3333${randomNumber(5)}`;
+  } else if (typeofpatch === 'nopredes') {
+    ninecharnum = `4444${randomNumber(5)}`;
+  } else {
+    ninecharnum = randomNumber(9);
+  }
+  return packagetype + ninecharnum + country;
 }
 
 // return a value between Min and Max (Kg Format)
@@ -160,14 +172,14 @@ function generatedispatch(origin, destination, packagetype) {
 }
 
 // return the receipt ID
-function generatereceipt(dispatch, weight) {
+function generatereceipt(dispatch, weight, receptacleSerialNum) {
   const finalbag = randomArray([0, 1, 9]);
   let weightstring = parseInt(weight * 10, 10).toString();
   while (weightstring.length < 4) {
     // fill 4 char with zeros
     weightstring = `0${weightstring}`;
   }
-  return `${dispatch + randomNumber(3) + finalbag}0${weightstring}`;
+  return `${dispatch + receptacleSerialNum + finalbag}0${weightstring}`;
 }
 
 // return the packageUUID
@@ -188,12 +200,12 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
   let actualStatus = [''];
   switch (step) {
     default:
-      // actualStatus = ['EMA']; // Posting / Collection
+      actualStatus = ['EMA']; // Posting / Collection
       break;
     case 0:
-      // if (typeofpatch !== 'receivedExcess') {
-      actualStatus = ['EMA']; // Posting / Collection
-      // }
+      if (typeofpatch !== 'receivedExcess') {
+        actualStatus = ['EMA']; // Posting / Collection
+      }
       datestatus.setDate(datestatus.getDate() + config.simulate.days[0]);
       break;
     case 1:
@@ -231,7 +243,7 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
       }
       break;
     case 6:
-      if (typeofpatch !== 'receivedExcess') {
+      if (typeofpatch !== 'receivedExcess' && typeofpatch !== 'nopredes') {
         // begin directdespatch status - Operator of transits
         actualStatus = ['EMC', 'PREDES']; // Left Origin (Originally called Item Left)
       }
@@ -415,11 +427,19 @@ class DispatchSimulator {
     logger.info(
       ` Packets with rate NumOfSeizedorReturned ${rateNumOfSeizedorReturned} - ${SeizedorReturnedArray}`,
     );
+    const rateNumOfNoPreDes = Math.round(
+      (repeatpackage * config.simulate.NoPreDes_rate) / 100,
+    );
+    const NoPreDesArray = rateArray(repeatpackage, rateNumOfNoPreDes);
+    logger.info(
+      ` Packets with rate NumOfNoPreDes         ${rateNumOfNoPreDes} - ${NoPreDesArray}`,
+    );
+
+    let receptacleSerialNum = randomNumber(3);
 
     // sum the array for calculate rates in each dispatch
     let countDispatch = -1;
     let sumofrates;
-    console.log(sumofrates);
     let minvalue;
 
     // REPEAT X PACKAGE FROM SIZE
@@ -439,14 +459,76 @@ class DispatchSimulator {
         sumofrates =
           NumOfRecInExcessArray[countDispatch] +
           LostParcelArray[countDispatch] +
-          SeizedorReturnedArray[countDispatch];
+          SeizedorReturnedArray[countDispatch] +
+          NoPreDesArray;
         minvalue = 50 * countDispatch;
       }
+      logger.debug(`Total number of unhappy paths: ${sumofrates}`);
+      // receptacles contain 10 packages so need to update serial number
+      if (j % 10 === 0) {
+        receptacleSerialNum = randomNumber(3);
+      }
       const EDIpackageParams = getPackageParams(EDIpackagetype[0]);
-      const EDIpackageid = generatepackage(EDIorigin, EDIpackagetype);
+
       const EDIreceptacleId = generatereceipt(
         EDIdispatchid,
         EDIpackageParams[1],
+        receptacleSerialNum,
+      );
+
+      // type o patch: happypatch, lost, seized or returned and received in excess
+      let typeofpatch;
+      if (
+        minvalue <= j &&
+        j < minvalue + SeizedorReturnedArray[countDispatch]
+      ) {
+        // Seized or Returned by Customs
+        typeofpatch = 'seizedorReturned';
+      } else if (
+        minvalue + SeizedorReturnedArray[countDispatch] <= j &&
+        j <
+          minvalue +
+            SeizedorReturnedArray[countDispatch] +
+            LostParcelArray[countDispatch]
+      ) {
+        // Lost Parcel
+        typeofpatch = 'lostParcel';
+      } else if (
+        minvalue +
+          SeizedorReturnedArray[countDispatch] +
+          LostParcelArray[countDispatch] <=
+          j &&
+        j <
+          minvalue +
+            SeizedorReturnedArray[countDispatch] +
+            LostParcelArray[countDispatch] +
+            NumOfRecInExcessArray[countDispatch]
+      ) {
+        // Received In Excess
+        typeofpatch = 'receivedExcess';
+      } else if (
+        minvalue +
+          SeizedorReturnedArray[countDispatch] +
+          LostParcelArray[countDispatch] +
+          NumOfRecInExcessArray[countDispatch] <=
+          j &&
+        j <
+          minvalue +
+            SeizedorReturnedArray[countDispatch] +
+            LostParcelArray[countDispatch] +
+            NumOfRecInExcessArray[countDispatch] +
+            NoPreDesArray[countDispatch]
+      ) {
+        // No PREDES
+        typeofpatch = 'nopredes';
+      } else {
+        typeofpatch = 'happypatch';
+      }
+
+      const EDIpackageid = generatepackage(
+        EDIorigin,
+        EDIpackagetype,
+        typeofpatch,
       );
 
       // generate sum date for status
@@ -479,14 +561,17 @@ class DispatchSimulator {
       let dispatchId;
       let deliverybyday;
       let settlementStatus = 'Unreconciled';
-      let typeofpatch;
       const randomreceivedExcess = Math.floor(Math.random() * 4);
       const randomlostpackage = randomArray(lostpackagestatus); // random lost status
       // let rememberhourlostpackage; //remember last date for repeat lost status
 
       do {
         // dispatch empty or not
-        if (i < 1) {
+        if (
+          i < 4 ||
+          typeofpatch === 'receivedExcess' ||
+          typeofpatch === 'nopredes'
+        ) {
           dispatchId = '';
           originReceptacleId = '';
         } else {
@@ -494,7 +579,11 @@ class DispatchSimulator {
           originReceptacleId = EDIreceptacleId;
         }
         // receptacleId empty or not
-        if (i < 4) {
+        if (
+          i < 4 ||
+          typeofpatch === 'receivedExcess' ||
+          typeofpatch === 'nopredes'
+        ) {
           receptacleId = '';
         } else {
           receptacleId = EDIreceptacleId;
@@ -513,39 +602,6 @@ class DispatchSimulator {
           settlementStatus = 'Unreconciled';
         }
 
-        // type o patch: happypatch, lost, seized or returned and received in excess
-        if (
-          minvalue <= j &&
-          j < minvalue + SeizedorReturnedArray[countDispatch]
-        ) {
-          // Seized or Returned by Customs
-          typeofpatch = 'seizedorReturned';
-        } else if (
-          minvalue + SeizedorReturnedArray[countDispatch] <= j &&
-          j <
-            minvalue +
-              SeizedorReturnedArray[countDispatch] +
-              LostParcelArray[countDispatch]
-        ) {
-          // Lost Parcel
-          typeofpatch = 'lostParcel';
-        } else if (
-          minvalue +
-            SeizedorReturnedArray[countDispatch] +
-            LostParcelArray[countDispatch] <=
-            j &&
-          j <
-            minvalue +
-              SeizedorReturnedArray[countDispatch] +
-              LostParcelArray[countDispatch] +
-              NumOfRecInExcessArray[countDispatch]
-        ) {
-          // Received In Excess
-          typeofpatch = 'receivedExcess';
-        } else {
-          typeofpatch = 'happypatch';
-        }
-
         const data = generateEDI(
           EDIpackageid,
           dispatchId,
@@ -561,7 +617,7 @@ class DispatchSimulator {
           deliverybyday,
         );
         if (!statusfinished && data.shipmentStatus !== '') {
-          if (i < 1) {
+          if (i < 1 || (i === 8 && typeofpatch === 'receivedExcess')) {
             // createpackage
             EDICreatePackage.push(data);
           } else if (typeofpatch === 'lostParcel' && randomlostpackage === i) {
@@ -601,7 +657,7 @@ class DispatchSimulator {
         } // end scape if error status
         i += 1;
       } while (!statusfinished);
-      logger.info(
+      logger.debug(
         ` DISPATCHID: ${EDIdispatchid}------PACKAGEID:  ${EDIpackageid}------STATUS:  ${countstatus}  ${typeofpatch}`,
       );
     }

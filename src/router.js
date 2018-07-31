@@ -9,7 +9,8 @@ import {
 import {
   viewReports,
   report,
-  packageReport,
+  postPackageReport,
+  getPackageReport,
   getPackage,
   clearData,
 } from './routes/application/database/queries';
@@ -38,7 +39,9 @@ router.get('/view-reports', viewReports);
 
 router.post('/report', report);
 
-router.get('/package-report', packageReport);
+router.get('/package-report', getPackageReport);
+
+router.post('/package-report', postPackageReport);
 
 router.get('/get-package', getPackage);
 
