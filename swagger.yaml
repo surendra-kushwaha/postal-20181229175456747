@@ -335,6 +335,8 @@ definitions:
         type: date
       packageType:
         type: string
+      dispatchId:
+        type: string
 
   UpdateSettlement:
     type: object

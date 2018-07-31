@@ -144,8 +144,19 @@ const postPackageReport = async (req, res) => {
     endDate: req.body.endDate,
     dateCreated: req.body.dateCreated,
     packageType: req.body.packageType,
+    dispatchId: req.body.dispatchId,
   };
   // logger.info(`Input Params:${JSON.stringify(queryObj)}`);
+
+  if (
+    queryObj.dispatchId === undefined ||
+    queryObj.dispatchId === '""' ||
+    queryObj.dispatchId === '' ||
+    queryObj.dispatchId === '"none"' ||
+    queryObj.dispatchId === '"NONE"'
+  ) {
+    queryObj.dispatchId = 'none';
+  }
 
   PostalPackage.find(queryObj, (err, postalData) => {
     if (err) {
