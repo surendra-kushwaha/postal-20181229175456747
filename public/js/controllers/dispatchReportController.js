@@ -252,26 +252,48 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
 
     $scope.packageDispatchId='';
     $scope.packageSettlementStatusCount = [];
+    var responseData="";
     $scope.moveToPackageScreen = function(dispatchId) {
     	$scope.packageDispatchId=dispatchId;
         $scope.packages = [];
         $("#summary-container").css("display", "none");
         $("#table-container").css("display", "block");
         $scope.displayAction = true;
-        if (dispatchId === "NONE")
+        if (dispatchId === "NONE"){
             dispatchId = "";
+            let data = JSON.stringify({
+                startDate: sessionStorage.getItem('startDate'),
+                endDate: sessionStorage.getItem('endDate'),
+                originPost: sessionStorage.getItem('originPost'),
+                destinationPost: sessionStorage.getItem('destinationPost'),
+                dateCreated: sessionStorage.getItem('dateCreated'),
+                packageType: $scope.parcelType,
+                dispatchId: dispatchId
+            });
 
-        $http.get('/package-report?dispatchId=' + dispatchId, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(
-            function(response) {
-                // console.log(response);
+            //console.log(JSON.stringify(data));
+
+            $http.post('/package-report', data, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function(response){
+                responseData=response;
+                //alert('got response post');
+            })
+        }else{
+            $http.get('/package-report?dispatchId=' + dispatchId, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function(response){
+                //alert('got response get');
+                responseData=response;
+            })
+        }
+        
                 $scope.searchBy = "Package ID";
                 $scope.dispatchId = dispatchId;
-
-
 
                 $scope.reconciledPackages = [];
                 $scope.unreconciledPackages = [];
@@ -284,10 +306,14 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                     $scope.packageAllAction = "DISPUTE ALL";
                     $scope.packageAllConfirmAction = "CONFIRM ALL SETTLEMENT";
                 }
-
+                console.log(responseData);
                 // packagesData
-                (response.data.data).forEach(package => {
+                (responseData.data.data).forEach(package => {
                     package.dateCreated = new Date(package.dateCreated);
+
+                    if(package.receptacleId==null || package.receptacleId==''){
+                        package.receptacleId='NONE';  
+                    }
                                       
                     if(package.settlementStatus==="Settlement Disputed"){
                         if (sessionStorage.getItem('location') === "destination"){
@@ -365,26 +391,16 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                 $scope.dispatchView = false;
 
                 if (sessionStorage.getItem('typeOfData') === 'reconcile') {
-                    $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+                    $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "RECEPTACLE ID", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
                     $scope.packages = $scope.reconciledPackages;
                 } else {
-                    $scope.tableColumns = ["PACKAGE ID", "UNRECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+                    $scope.tableColumns = ["PACKAGE ID", "UNRECONCILED WEIGHT FOR PACKAGE", "RECEPTACLE ID", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
                     $scope.packages = $scope.unreconciledPackages;
                 }
-
-
-
-
-
             },
             function(response) {
                 console.log(response);
             }
-        );
-
-
-
-    }
     if (!('back' in sessionStorage)) {
         $scope.getAllDispatches();
     } else {
@@ -495,9 +511,4 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
         $scope.callback(sessionStorage.getItem('typeOfData') + "-link");
 
     }
-
-
-
-
-
 });
