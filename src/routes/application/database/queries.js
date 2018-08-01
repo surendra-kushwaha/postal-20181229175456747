@@ -151,11 +151,12 @@ const postPackageReport = async (req, res) => {
   if (
     queryObj.dispatchId === undefined ||
     queryObj.dispatchId === '""' ||
-    queryObj.dispatchId === '' ||
+    queryObj.dispatchId === 'none' ||
+    queryObj.dispatchId === 'NONE' ||
     queryObj.dispatchId === '"none"' ||
     queryObj.dispatchId === '"NONE"'
   ) {
-    queryObj.dispatchId = 'none';
+    queryObj.dispatchId = '';
   }
 
   PostalPackage.find(queryObj, (err, postalData) => {
