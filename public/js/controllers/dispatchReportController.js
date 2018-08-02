@@ -466,12 +466,19 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
             else if (action === "CONFIRM ALL SETTLEMENT")
             action = "Settlement Agreed";
 
+
             let updateDispatchObject = JSON.stringify({
                 'type': 'dispatch',
-                'id': $scope.packageDispatchId,
+                'dispatchId': $scope.packageDispatchId,
                 'newStatus': action,
                 'post': sessionStorage.getItem('location'),
-                'country': sessionStorage.getItem('countryName')
+                'country': sessionStorage.getItem('countryName'),
+                "startDate": sessionStorage.getItem('startDate'),
+                "endDate": sessionStorage.getItem('endDate'),
+                "originPost": sessionStorage.getItem('originPost'),
+                "destinationPost": sessionStorage.getItem('destinationPost'),
+                "dateCreated": sessionStorage.getItem('dateCreated'),
+                "packageType": $scope.parcelType
 
             });
             console.log(updateDispatchObject);
