@@ -112,7 +112,7 @@ const report = async (req, res) => {
 };
 
 // Get package details for dispatch
-const packageReport = (req, res) => {
+const getPackageReport = (req, res) => {
   // logger.info(`Req.query: ${JSON.stringify(req.query)}`);
   const queryObj = {
     dispatchId: req.query.dispatchId,
@@ -126,6 +126,39 @@ const packageReport = (req, res) => {
     queryObj.dispatchId = 'none';
   }
   // logger.info(JSON.stringify(queryObj));
+  PostalPackage.find(queryObj, (err, postalData) => {
+    if (err) {
+      res.send({ status: 'fail', data: { msg: err } });
+    } else {
+      res.send({ status: 'success', data: postalData });
+    }
+  });
+};
+
+// Get package details for packages with no dispatchId
+const postPackageReport = async (req, res) => {
+  const queryObj = {
+    originPost: req.body.originPost,
+    destinationPost: req.body.destinationPost,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    dateCreated: req.body.dateCreated,
+    packageType: req.body.packageType,
+    dispatchId: req.body.dispatchId,
+  };
+  // logger.info(`Input Params:${JSON.stringify(queryObj)}`);
+
+  if (
+    queryObj.dispatchId === undefined ||
+    queryObj.dispatchId === '""' ||
+    queryObj.dispatchId === 'none' ||
+    queryObj.dispatchId === 'NONE' ||
+    queryObj.dispatchId === '"none"' ||
+    queryObj.dispatchId === '"NONE"'
+  ) {
+    queryObj.dispatchId = '';
+  }
+
   PostalPackage.find(queryObj, (err, postalData) => {
     if (err) {
       res.send({ status: 'fail', data: { msg: err } });
@@ -217,4 +250,11 @@ const clearData = (req, res) => {
   });
 };
 
-export { viewReports, report, packageReport, getPackage, clearData };
+export {
+  viewReports,
+  report,
+  postPackageReport,
+  getPackageReport,
+  getPackage,
+  clearData,
+};

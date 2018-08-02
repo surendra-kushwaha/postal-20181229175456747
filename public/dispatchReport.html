@@ -173,6 +173,7 @@ Action
                 <a href="#" ng-click="moveToPackageTimeLineScreen(package)">{{package.packageId}}</a>
               </td>
               <td>{{package.weight | number:2}}</td>
+              <td>{{package.receptacleId}}</td>
               <td>{{package.shipmentStatus}}</td>
               <td>{{package.settlementStatus}}</td>
               <td ng-if="displayAction">
