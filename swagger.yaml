@@ -187,7 +187,7 @@ paths:
           description: parameters to update settlement status
           required: true
           schema:
-            $ref: '#/definitions/UpdateSettlement'
+            $ref: '#/definitions/UpdateDispatchSettlement'
       responses:
         '200':
           description: Updated Dispatch settlement type. Returning updated dispatch object
@@ -344,6 +344,38 @@ definitions:
       type:
         type: string
       id:
+        type: string
+      newStatus:
+        type: string
+      post:
+        type: string 
+      country:
+        type: string
+  
+  UpdateDispatchSettlement:
+    type: object
+    properties:
+      type:
+        type: string
+      startDate:
+        type: date
+        required: false
+      endDate:
+        type: date
+        required: false
+      originPost: 
+        type: string
+        required: false
+      destinationPost:
+        type: string
+        required: false
+      dateCreated:
+        type: date
+        required: false
+      packageType:
+        type: string
+        required: false
+      dispatchId:
         type: string
       newStatus:
         type: string
