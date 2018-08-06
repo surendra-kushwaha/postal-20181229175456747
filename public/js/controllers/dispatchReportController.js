@@ -393,7 +393,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                     package.dateCreated = new Date(package.dateCreated);
 
                     if(package.receptacleId==null || package.receptacleId==''){
-                        package.receptacleId='NONE';  
+                        package.receptacleId='None';  
                     }
                                       
                     if(package.settlementStatus==="Settlement Disputed"){
