@@ -472,15 +472,15 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                 $scope.dispatchView = false;
 
                 if (sessionStorage.getItem('typeOfData') === 'reconcile') {
-                    $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+                    $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE",  "RECEPTACLE ID", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
                     $scope.packages = $scope.reconciledPackages;
                 } else {
-                    $scope.tableColumns = ["PACKAGE ID", "UNRECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+                    $scope.tableColumns = ["PACKAGE ID", "UNRECONCILED WEIGHT FOR PACKAGE",  "RECEPTACLE ID", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
                     $scope.packages = $scope.unreconciledPackages;
                 }
             },
             function(response) {
-                console.log(response);
+                //console.log(response);
             }
         );
 
