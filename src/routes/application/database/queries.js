@@ -9,6 +9,9 @@ const { PostalPackage } = require('../../../models/postalPackageData');
   endDate: req.body.endDate,
   dateCreated: req.body.dateCreated,
 }; */
+
+const noneArray = [undefined, '""', 'none', 'NONE', '"none"', '"NONE"', ''];
+
 const initializeDispatchObject = (dispatchId, packageType, queryObj) => ({
   dispatchId,
   packageType,
@@ -37,11 +40,30 @@ const createArrayOfDispatches = (dispatchIds, postalPackageData) => {
     const dispatchPackageArray = postalPackageData.filter(
       packageObject => packageObject.dispatchId === dispatchId,
     );
-    const dispatch = {
-      dispatchId,
-      dispatchPackageArray,
-    };
-    dispatches.push(dispatch);
+    if (noneArray.includes(dispatchId)) {
+      const packageTypes = [];
+      dispatchPackageArray.forEach(noDispatchIdPackage => {
+        if (!packageTypes.includes(noDispatchIdPackage.packageType)) {
+          packageTypes.push(noDispatchIdPackage.packageType);
+        }
+      });
+      packageTypes.forEach(packageType => {
+        const packageTypePackageArray = dispatchPackageArray.filter(
+          dispatchPackage => dispatchPackage.packageType === packageType,
+        );
+        const dispatch = {
+          dispatchId,
+          dispatchPackageArray: packageTypePackageArray,
+        };
+        dispatches.push(dispatch);
+      });
+    } else {
+      const dispatch = {
+        dispatchId,
+        dispatchPackageArray,
+      };
+      dispatches.push(dispatch);
+    }
   });
   return dispatches;
 };
@@ -117,13 +139,8 @@ const getPackageReport = (req, res) => {
   const queryObj = {
     dispatchId: req.query.dispatchId,
   };
-  if (
-    queryObj.dispatchId === undefined ||
-    queryObj.dispatchId === '""' ||
-    queryObj.dispatchId === '' ||
-    queryObj.dispatchId === '"none"'
-  ) {
-    queryObj.dispatchId = 'none';
+  if (noneArray.includes(queryObj.dispatchId)) {
+    queryObj.dispatchId = '';
   }
   // logger.info(JSON.stringify(queryObj));
   PostalPackage.find(queryObj, (err, postalData) => {
@@ -148,14 +165,7 @@ const postPackageReport = async (req, res) => {
   };
   // logger.info(`Input Params:${JSON.stringify(queryObj)}`);
 
-  if (
-    queryObj.dispatchId === undefined ||
-    queryObj.dispatchId === '""' ||
-    queryObj.dispatchId === 'none' ||
-    queryObj.dispatchId === 'NONE' ||
-    queryObj.dispatchId === '"none"' ||
-    queryObj.dispatchId === '"NONE"'
-  ) {
+  if (noneArray.includes(queryObj.dispatchId)) {
     queryObj.dispatchId = '';
   }
 
