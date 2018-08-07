@@ -235,7 +235,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
         $("#summary-container").css("display", "none");
         $("#table-container").css("display", "block");
         $scope.displayAction = true;
-        if (dispatchId === "NONE" || dispatchId === "None"){
+        if (dispatchId === "NONE" || dispatchId === "None"  || dispatchId === ""){
             dispatchId = "";
             var dispatchPackageType=$scope.parcelType;
             if($scope.parcelType==='' || $scope.parcelType===undefined){
