@@ -127,7 +127,7 @@ function generatedispatch(origin, destination, packagetype) {
   if (origin === 'CN') {
     originAirport = randomArray(AirportsCN);
   }
-  if (origin === 'UK') {
+  if (origin === 'GB') {
     originAirport = randomArray(AirportsUK);
   }
   if (origin === 'DE') {
@@ -149,7 +149,7 @@ function generatedispatch(origin, destination, packagetype) {
   if (destination === 'CN') {
     destinationAirport = randomArray(AirportsCN);
   }
-  if (destination === 'UK') {
+  if (destination === 'GB') {
     destinationAirport = randomArray(AirportsUK);
   }
   if (destination === 'DE') {
