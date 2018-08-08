@@ -56,8 +56,27 @@ const updateAllPackages = (packages: Array, newSettlementStatus: String) => {
 const updateDispatchSettlement = async (req, res) => {
   // logger.trace('Entered updateDispatchSettlement');
   const queryObj = {
-    dispatchId: req.body.id,
+    dispatchId: req.body.dispatchId,
   };
+  if (
+    queryObj.dispatchId === undefined ||
+    queryObj.dispatchId === '""' ||
+    queryObj.dispatchId === 'none' ||
+    queryObj.dispatchId === 'NONE' ||
+    queryObj.dispatchId === '"none"' ||
+    queryObj.dispatchId === '"NONE"' ||
+    queryObj.dispatchId === ''
+  ) {
+    queryObj.originPost = req.body.originPost;
+    queryObj.destinationPost = req.body.destinationPost;
+    queryObj.startDate = req.body.startDate;
+    queryObj.endDate = req.body.endDate;
+    queryObj.dateCreated = req.body.dateCreated;
+    queryObj.packageType = req.body.packageType;
+    queryObj.dispatchId = '';
+  } else {
+    queryObj.dispatchId = req.body.dispatchId;
+  }
   const newSettlementStatus = req.body.newStatus;
   let filteredPackages = [];
   PostalPackage.find(queryObj, async (error, packages) => {
