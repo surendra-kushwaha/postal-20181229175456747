@@ -9,6 +9,9 @@ const { PostalPackage } = require('../../../models/postalPackageData');
   endDate: req.body.endDate,
   dateCreated: req.body.dateCreated,
 }; */
+
+const noneArray = [undefined, '""', 'none', 'NONE', '"none"', '"NONE"', ''];
+
 const initializeDispatchObject = (dispatchId, packageType, queryObj) => ({
   dispatchId,
   packageType,
@@ -37,11 +40,30 @@ const createArrayOfDispatches = (dispatchIds, postalPackageData) => {
     const dispatchPackageArray = postalPackageData.filter(
       packageObject => packageObject.dispatchId === dispatchId,
     );
-    const dispatch = {
-      dispatchId,
-      dispatchPackageArray,
-    };
-    dispatches.push(dispatch);
+    if (noneArray.includes(dispatchId)) {
+      const packageTypes = [];
+      dispatchPackageArray.forEach(noDispatchIdPackage => {
+        if (!packageTypes.includes(noDispatchIdPackage.packageType)) {
+          packageTypes.push(noDispatchIdPackage.packageType);
+        }
+      });
+      packageTypes.forEach(packageType => {
+        const packageTypePackageArray = dispatchPackageArray.filter(
+          dispatchPackage => dispatchPackage.packageType === packageType,
+        );
+        const dispatch = {
+          dispatchId,
+          dispatchPackageArray: packageTypePackageArray,
+        };
+        dispatches.push(dispatch);
+      });
+    } else {
+      const dispatch = {
+        dispatchId,
+        dispatchPackageArray,
+      };
+      dispatches.push(dispatch);
+    }
   });
   return dispatches;
 };
@@ -112,20 +134,41 @@ const report = async (req, res) => {
 };
 
 // Get package details for dispatch
-const packageReport = (req, res) => {
+const getPackageReport = (req, res) => {
   // logger.info(`Req.query: ${JSON.stringify(req.query)}`);
   const queryObj = {
     dispatchId: req.query.dispatchId,
   };
-  if (
-    queryObj.dispatchId === undefined ||
-    queryObj.dispatchId === '""' ||
-    queryObj.dispatchId === '' ||
-    queryObj.dispatchId === '"none"'
-  ) {
-    queryObj.dispatchId = 'none';
+  if (noneArray.includes(queryObj.dispatchId)) {
+    queryObj.dispatchId = '';
   }
   // logger.info(JSON.stringify(queryObj));
+  PostalPackage.find(queryObj, (err, postalData) => {
+    if (err) {
+      res.send({ status: 'fail', data: { msg: err } });
+    } else {
+      res.send({ status: 'success', data: postalData });
+    }
+  });
+};
+
+// Get package details for packages with no dispatchId
+const postPackageReport = async (req, res) => {
+  const queryObj = {
+    originPost: req.body.originPost,
+    destinationPost: req.body.destinationPost,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    dateCreated: req.body.dateCreated,
+    packageType: req.body.packageType,
+    dispatchId: req.body.dispatchId,
+  };
+  // logger.info(`Input Params:${JSON.stringify(queryObj)}`);
+
+  if (noneArray.includes(queryObj.dispatchId)) {
+    queryObj.dispatchId = '';
+  }
+
   PostalPackage.find(queryObj, (err, postalData) => {
     if (err) {
       res.send({ status: 'fail', data: { msg: err } });
@@ -217,4 +260,11 @@ const clearData = (req, res) => {
   });
 };
 
-export { viewReports, report, packageReport, getPackage, clearData };
+export {
+  viewReports,
+  report,
+  postPackageReport,
+  getPackageReport,
+  getPackage,
+  clearData,
+};

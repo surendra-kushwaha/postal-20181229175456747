@@ -123,6 +123,31 @@ paths:
                 $ref: '#/definitions/Package'
         '405':
           description: Was not able to get history
+    post:
+      tags:
+        - Mongo Database
+      summary: Gets all packages that do not have a dispatchId
+      description: >-
+        This endpoint can be used when wanting to get the packages that do not have a dispatchId for a simulation
+      operationId: noDispatchPackages
+      produces:
+        - application/json
+      parameters:
+          - in: body
+            name: packageParamters
+            description: package parameters to send to db for query
+            required: true
+            schema:
+              $ref: '#/definitions/PackageQuery'
+      responses:
+        '200':
+          description: Got Packages.
+          schema: 
+            type: array
+            items:
+                $ref: '#/definitions/Package'
+        '405':
+          description: Was not able to get history
   /simulate:
     post:
       tags:
@@ -162,7 +187,7 @@ paths:
           description: parameters to update settlement status
           required: true
           schema:
-            $ref: '#/definitions/UpdateSettlement'
+            $ref: '#/definitions/UpdateDispatchSettlement'
       responses:
         '200':
           description: Updated Dispatch settlement type. Returning updated dispatch object
@@ -295,12 +320,62 @@ definitions:
       dateCreated:
         type: date
 
+  PackageQuery:
+    type: object
+    properties: 
+      startDate:
+        type: date
+      endDate:
+        type: date
+      originPost: 
+        type: string
+      destinationPost:
+        type: string
+      dateCreated:
+        type: date
+      packageType:
+        type: string
+      dispatchId:
+        type: string
+
   UpdateSettlement:
     type: object
     properties:
       type:
         type: string
       id:
+        type: string
+      newStatus:
+        type: string
+      post:
+        type: string 
+      country:
+        type: string
+  
+  UpdateDispatchSettlement:
+    type: object
+    properties:
+      type:
+        type: string
+      startDate:
+        type: date
+        required: false
+      endDate:
+        type: date
+        required: false
+      originPost: 
+        type: string
+        required: false
+      destinationPost:
+        type: string
+        required: false
+      dateCreated:
+        type: date
+        required: false
+      packageType:
+        type: string
+        required: false
+      dispatchId:
         type: string
       newStatus:
         type: string

@@ -131,13 +131,13 @@ class Postal {
       settlementStatus,
       shipmentStatus,
       packageType,
-      originReceptacleId,
+      receptacleId,
       dispatchId,
       lastUpdated,
     } = payload;
 
     const argsValue = [
-      `{"PackageID":"${packageId}", "Weight":"${weight}" , "OriginCountry":"${originCountry}" , "DestinationCountry":"${destinationCountry}", "SettlementStatus":"${settlementStatus}" , "ShipmentStatus":"${shipmentStatus}", "OriginReceptacleID":"${originReceptacleId}",  "PackageType":"${packageType}", "DispatchID":"${dispatchId}" , "LastUpdated":"${lastUpdated}"}`,
+      `{"PackageID":"${packageId}", "Weight":"${weight}" , "OriginCountry":"${originCountry}" , "DestinationCountry":"${destinationCountry}", "SettlementStatus":"${settlementStatus}" , "ShipmentStatus":"${shipmentStatus}", "OriginReceptacleID":"${receptacleId}",  "PackageType":"${packageType}", "DispatchID":"${dispatchId}" , "LastUpdated":"${lastUpdated}"}`,
     ];
     // const options = {
     //   peer_urls: peerUrls,
@@ -189,9 +189,13 @@ class Postal {
           };
           if (
             postalData.dispatchId === undefined ||
-            postalData.dispatchId === ''
+            postalData.dispatchId === '""' ||
+            postalData.dispatchId === 'none' ||
+            postalData.dispatchId === 'NONE' ||
+            postalData.dispatchId === '"none"' ||
+            postalData.dispatchId === '"NONE"'
           ) {
-            postalData.dispatchId = 'none';
+            postalData.dispatchId = '';
           }
           /* logger.debug(
                                 `PostalData to save in DB::${JSON.stringify(postalData)}`,
@@ -258,7 +262,7 @@ class Postal {
     const {
       packageId,
       shipmentStatus,
-      originReceptacleId,
+      receptacleId,
       dispatchId,
       lastUpdated,
     } = payload;
@@ -266,7 +270,7 @@ class Postal {
     const argsValue = [
       String(packageId),
       String(shipmentStatus),
-      String(originReceptacleId),
+      String(receptacleId),
       String(dispatchId),
       String(lastUpdated),
     ];
@@ -288,11 +292,10 @@ class Postal {
         } else if (!err) {
           logger.info(`Package (${response.data}) updated on blockchain.`);
           const updateConditions = { packageId: response.data };
-          const date = new Date();
 
           const updateObj = {
             shipmentStatus,
-            receptacleId: originReceptacleId,
+            receptacleId,
             dispatchId,
             lastUpdated,
           };
