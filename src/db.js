@@ -29,6 +29,25 @@ mongoose.Promise = global.Promise;
 
 const db = mongoose.connection;
 
-db.on('error', logger.error('MongoDB connection error'));
+db.on('connection', () => logger.info('Connected to the database.'));
+
+db.on('error', err => {
+  logger.error(`MongoDB connection error: ${err}`);
+});
+
+// When the connection is disconnected
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose default connection disconnected');
+});
+
+// If the Node process ends, close the Mongoose connection
+process.on('SIGINT', () => {
+  mongoose.connection.close(() => {
+    console.log(
+      'Mongoose default connection disconnected through app termination',
+    );
+    process.exit(0);
+  });
+});
 
 export default db;
