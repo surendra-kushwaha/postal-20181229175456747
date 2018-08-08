@@ -189,9 +189,13 @@ class Postal {
           };
           if (
             postalData.dispatchId === undefined ||
-            postalData.dispatchId === ''
+            postalData.dispatchId === '""' ||
+            postalData.dispatchId === 'none' ||
+            postalData.dispatchId === 'NONE' ||
+            postalData.dispatchId === '"none"' ||
+            postalData.dispatchId === '"NONE"'
           ) {
-            postalData.dispatchId = 'none';
+            postalData.dispatchId = '';
           }
           /* logger.debug(
                                 `PostalData to save in DB::${JSON.stringify(postalData)}`,
