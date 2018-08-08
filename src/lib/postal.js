@@ -22,9 +22,7 @@ const ws_server = require('../../utils/websocket_server_side.js')(
 const opts = helper.makeSharedAccumsLibOptions();
 
 enroll_admin(1, e => {
-  // logger.info('hiaaaa');
   if (e == null) {
-    // logger.info("hiaaaa###");
     setup_postalscm_lib();
   }
 });
@@ -39,9 +37,6 @@ let postalscm_lib = require('../../utils/postalscm_cc_lib.js')(
 ws_server.setup(wss.broadcast);
 
 // logger.debug('Checking if chaincode is already deployed or not');
-/* var options = {
-peer_urls: [helper.getPeersUrl(0)],
-}; */
 const channel = helper.getChannelId();
 const first_peer = helper.getFirstPeerName(channel);
 
@@ -49,15 +44,10 @@ const first_peer = helper.getFirstPeerName(channel);
 
 const options = {
   peer_urls: [helper.getPeersUrl(first_peer)],
-  args: {
-    // marble_owner: username,
-    // owners_company: process.env.marble_company
-  },
+  args: {},
 };
 
 function setup_postalscm_lib() {
-  // logger.debug('Setup postal scm Lib...');
-
   const opts = helper.makeSharedAccumsLibOptions();
   postalscm_lib = require('../../utils/postalscm_cc_lib.js')(
     enrollObj,
@@ -68,10 +58,6 @@ function setup_postalscm_lib() {
   ws_server.setup(wss.broadcast);
 
   // logger.debug('Checking if chaincode is already deployed or not');
-  /* var options = {
-	peer_urls: [helper.getPeersUrl(0)],
-}; */
-
   const channel = helper.getChannelId();
   const first_peer = helper.getFirstPeerName(channel);
   // logger.info(`first_peer::${first_peer}`);
@@ -108,21 +94,7 @@ class Postal {
    */
 
   async createPackage(payload, startDate, endDate) {
-    // logger.info('Postal:<createPackage>');
-    // logger.debug('Payload received', payload);
-    /* const factory = this.businessNetworkDefinition.getFactory();
-
-    const packageConcept = factory.newConcept(workspace, 'Package');
-    packageConcept.packageId = payload.packageId;
-    packageConcept.dispatchId = payload.dispatchId;
-    packageConcept.receptacleId = payload.receptacleId;
-    packageConcept.weight = payload.weight;
-    packageConcept.packageType = payload.packageType;
-    packageConcept.shipmentStatus = payload.shipmentStatus;
-    packageConcept.lastUpdated = payload.lastUpdated;
-    packageConcept.settlementStatus = payload.settlementStatus;
-*/
-
+    logger.trace('Postal:<createPackage>')
     const {
       packageId,
       weight,
@@ -139,12 +111,7 @@ class Postal {
     const argsValue = [
       `{"PackageID":"${packageId}", "Weight":"${weight}" , "OriginCountry":"${originCountry}" , "DestinationCountry":"${destinationCountry}", "SettlementStatus":"${settlementStatus}" , "ShipmentStatus":"${shipmentStatus}", "OriginReceptacleID":"${receptacleId}",  "PackageType":"${packageType}", "DispatchID":"${dispatchId}" , "LastUpdated":"${lastUpdated}"}`,
     ];
-    // const options = {
-    //   peer_urls: peerUrls,
-    //   method_type: 'invoke',
-    //   func: 'createPostalPackage',
-    //   args: argsValue,
-    // };
+
     options.method_type = 'invoke';
     options.func = 'createPostalPackage';
     options.args = argsValue;
@@ -158,10 +125,8 @@ class Postal {
         } else if (!err) {
           logger.debug({ status: 'success', data: response });
           const blockchainPackage = JSON.parse(response.data);
+
           // create today's date
-          /* const todayTimestamp = new Date();
-                              const today = `${todayTimestamp.getFullYear()}/${todayTimestamp.getMonth() +
-                                1}/${todayTimestamp.getDate()}`; */
           const todateTimeStamp = new Date();
           let today = `${todateTimeStamp.getMonth() +
             1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
@@ -169,7 +134,6 @@ class Postal {
             today = `0${todateTimeStamp.getMonth() +
               1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
           }
-          // logger.info("response data111:::"+blockchainPackage.PackageID);
           // Save the data to DB start
           const postalData = {
             dispatchId: blockchainPackage.DispatchID,
@@ -184,7 +148,6 @@ class Postal {
             shipmentStatus: blockchainPackage.ShipmentStatus,
             startDate,
             endDate,
-            // dateCreated: blockchainPackage.LastUpdated,
             dateCreated: today,
           };
           if (
@@ -197,9 +160,7 @@ class Postal {
           ) {
             postalData.dispatchId = '';
           }
-          /* logger.debug(
-                                `PostalData to save in DB::${JSON.stringify(postalData)}`,
-                              ); */
+          // saving data in database NOTE: would like to make this asyncronous through an event at some point
           const postal = new PostalPackage(postalData);
           postal.save((err, result) => {
             if (err) {
@@ -208,7 +169,6 @@ class Postal {
             } else {
               logger.info('Create Package data saved successfully to mongodb');
               resolve(result);
-              // logger.info({ status: 'success', data: result });
             }
           });
           // Save the data to DB end
@@ -224,8 +184,8 @@ class Postal {
   }
 
   async getPackageHistory(packageId) {
-    logger.info('Postal:<getPackageHistory>');
-    // const packageId=payload;
+    logger.trace('Postal:<getPackageHistory>');
+
     const argsValue = [packageId];
     options.method_type = 'query';
     options.func = 'getPackageHistory';
@@ -238,27 +198,14 @@ class Postal {
           resolve(response.parsed);
         } else {
           // eslint-disable-line prefer-promise-reject-errors
-          reject('Something went wrong. Please try again');
+          reject('Something went wrong getting the package history. Please try again');
         }
       }),
     );
   }
 
   async updateShipmentStatus(payload) {
-    // logger.info('Postal:<updateShipmentStatus>');
-    /* var packageId="EX103456792US";
-            var settlementStatus="Reconciled1"
-            updateShipmentTransaction.packageIDs = payload.packageIDs;
-              updateShipmentTransaction.lastUpdated = payload.lastUpdated;
-              updateShipmentTransaction.newShipmentStatus = payload.newShipmentStatus;
-
-              o String [] packageIDs
-             o ShipmentStatus [] newShipmentStatus
-             o DateTime [] lastUpdated
-             o SettlementStatus [] newSettlementStatus
-             o String [] receptacleId optional
-             o String [] dispatchId optional
-            */
+    // logger.trace('Postal:<updateShipmentStatus>');
     const {
       packageId,
       shipmentStatus,
@@ -274,12 +221,7 @@ class Postal {
       String(dispatchId),
       String(lastUpdated),
     ];
-    // const options = {
-    //   peer_urls: peerUrls,
-    //   method_type: 'invoke',
-    //   func: 'updateShipmentStatus',
-    //   args: argsValue,
-    // }
+
     options.method_type = 'invoke';
     options.func = 'updateShipmentStatus';
     options.args = argsValue;
@@ -321,7 +263,7 @@ class Postal {
         } else {
           reject(
             new Error(
-              `There was an unknown error while updating the package (${
+              `There was an unknown error while updating the shipment status (${
                 response.data
               }).`,
             ),
@@ -376,7 +318,7 @@ class Postal {
         } else {
           logger.debug({
             status: 'fail',
-            data: { msg: 'Something went wrong. Please try again' },
+            data: { msg: 'Something went wrong updating settlement status. Please try again' },
           });
           reject();
         }
