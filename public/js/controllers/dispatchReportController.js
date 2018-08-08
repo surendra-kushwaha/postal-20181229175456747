@@ -258,7 +258,7 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
         }).then(
             function(response) {
                 $scope.searchBy = "Package ID";
-                $scope.dispatchId = dispatchId;
+                $scope.dispatchId = "None";
                 $scope.reconciledPackages = [];
                 $scope.unreconciledPackages = [];
               //set default value
