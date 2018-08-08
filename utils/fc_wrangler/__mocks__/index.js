@@ -1,7 +1,9 @@
+/* eslint-disable */
+
 module.exports = () => {
   const fcw = {};
-  fcw.enroll = jest.fn();
-  fcw.query_chaincode = jest.fn();
   fcw.invoke_chaincode = jest.fn();
+  fcw.query_chaincode = jest.fn();
+  fcw.enroll = jest.fn();
   return fcw;
-}
+};

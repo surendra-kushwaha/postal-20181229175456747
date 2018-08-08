@@ -94,7 +94,7 @@ class Postal {
    */
 
   async createPackage(payload, startDate, endDate) {
-    logger.trace('Postal:<createPackage>')
+    logger.debug('Postal:<createPackage>');
     const {
       packageId,
       weight,
@@ -184,7 +184,7 @@ class Postal {
   }
 
   async getPackageHistory(packageId) {
-    logger.trace('Postal:<getPackageHistory>');
+    logger.debug('Postal:<getPackageHistory>');
 
     const argsValue = [packageId];
     options.method_type = 'query';
@@ -198,14 +198,16 @@ class Postal {
           resolve(response.parsed);
         } else {
           // eslint-disable-line prefer-promise-reject-errors
-          reject('Something went wrong getting the package history. Please try again');
+          reject(
+            'Something went wrong getting the package history. Please try again',
+          );
         }
       }),
     );
   }
 
   async updateShipmentStatus(payload) {
-    // logger.trace('Postal:<updateShipmentStatus>');
+    // logger.debug('Postal:<updateShipmentStatus>');
     const {
       packageId,
       shipmentStatus,
@@ -318,7 +320,10 @@ class Postal {
         } else {
           logger.debug({
             status: 'fail',
-            data: { msg: 'Something went wrong updating settlement status. Please try again' },
+            data: {
+              msg:
+                'Something went wrong updating settlement status. Please try again',
+            },
           });
           reject();
         }
