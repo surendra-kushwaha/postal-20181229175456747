@@ -379,30 +379,14 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         );
 
         // scroll through all the message for
-        expect(
-          shipmentStatuses[0].includes(response[1][0].shipmentStatus),
-        ).toBe(true);
-        expect(
-          shipmentStatuses[1].includes(response[1][1].shipmentStatus),
-        ).toBe(true);
-        expect(
-          shipmentStatuses[2].includes(response[1][2].shipmentStatus),
-        ).toBe(true);
-        expect(
-          shipmentStatuses[3].includes(response[1][3].shipmentStatus),
-        ).toBe(true);
-        expect(
-          shipmentStatuses[4].includes(response[1][4].shipmentStatus),
-        ).toBe(true);
-        expect(
-          shipmentStatuses[5].includes(response[1][5].shipmentStatus),
-        ).toBe(true);
-        expect(
-          shipmentStatuses[6].includes(response[1][6].shipmentStatus),
-        ).toBe(true);
-        expect(
-          shipmentStatuses[7].includes(response[1][7].shipmentStatus),
-        ).toBe(true);
+        expect(shipmentStatuses[0]).toContain(response[1][0].shipmentStatus);
+        expect(shipmentStatuses[1]).toContain(response[1][1].shipmentStatus);
+        expect(shipmentStatuses[2]).toContain(response[1][2].shipmentStatus);
+        expect(shipmentStatuses[3]).toContain(response[1][3].shipmentStatus);
+        expect(shipmentStatuses[4]).toContain(response[1][4].shipmentStatus);
+        expect(shipmentStatuses[5]).toContain(response[1][5].shipmentStatus);
+        expect(shipmentStatuses[6]).toContain(response[1][6].shipmentStatus);
+        expect(shipmentStatuses[7]).toContain(response[1][7].shipmentStatus);
       });
 
       test('make sure the settlement statuses are correct', async () => {
@@ -416,16 +400,286 @@ describe('test the functionality of the simulator for creating the EDI Messages'
           '06/30/2018',
         );
 
-        expect(response[1][0].settlementStatus === 'Unreconciled').toBe(true);
-        expect(response[1][1].settlementStatus === 'Unreconciled').toBe(true);
-        expect(response[1][2].settlementStatus === 'Unreconciled').toBe(true);
-        expect(response[1][3].settlementStatus === 'Unreconciled').toBe(true);
-        expect(response[1][4].settlementStatus === 'Unreconciled').toBe(true);
-        expect(response[1][5].settlementStatus === 'Unreconciled').toBe(true);
-        expect(response[1][6].settlementStatus === 'Unreconciled').toBe(true);
+        expect(response[1][0].settlementStatus).toBe('Unreconciled');
+        expect(response[1][1].settlementStatus).toBe('Unreconciled');
+        expect(response[1][2].settlementStatus).toBe('Unreconciled');
+        expect(response[1][3].settlementStatus).toBe('Unreconciled');
+        expect(response[1][4].settlementStatus).toBe('Unreconciled');
+        expect(response[1][5].settlementStatus).toBe('Unreconciled');
+        expect(response[1][6].settlementStatus).toBe('Unreconciled');
 
-        expect(response[1][7].settlementStatus === 'Reconciled').toBe(true);
+        expect(response[1][7].settlementStatus).toBe('Reconciled');
       });
+    });
+  });
+  describe('test cases for messages with no PREDES', () => {
+    beforeAll(() => {
+      config.simulate = {
+        size: {
+          small: 1,
+        },
+        days: [1, 2, 1, 1, 3, 1, 1, 1, 2],
+        ReceivedinExcess_rate: 0,
+        LostParcel_rate: 0, // over 100 %
+        SeizedorReturned_rate: 0, // over 100 %
+        NoPreDes_rate: 100, // over 100 %
+      };
+    });
+    test('make sure the packageId follows the right format', async () => {
+      expect.assertions(8);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      const [[{ packageId }]] = response;
+      const [[{ packageType }]] = response;
+      const expectedPackageId = new RegExp(
+        `${getPackageTypeCode(packageType)}4444[0-9]{5}${origin}`,
+      );
+      expect(packageId).toMatch(expectedPackageId);
+
+      expect(response[1][0].packageId).toBe(packageId);
+      expect(response[1][1].packageId).toBe(packageId);
+      expect(response[1][2].packageId).toBe(packageId);
+      expect(response[1][3].packageId).toBe(packageId);
+      expect(response[1][4].packageId).toBe(packageId);
+      expect(response[1][5].packageId).toBe(packageId);
+      expect(response[1][6].packageId).toBe(packageId);
+    });
+    test('confirm the correct shipment statuses are assigned', async () => {
+      expect.assertions(9);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      // only 7 update messages since there is no PREDES message
+      expect(response[1].length).toBe(7);
+
+      expect(response[0][0].shipmentStatus).toBe('EMA');
+      expect(response[1][0].shipmentStatus).toBe('EXA');
+      expect(response[1][1].shipmentStatus).toBe('EXC');
+      // shipmentStatuses[2] is the PREDES message so we skip it
+      expect(shipmentStatuses[3]).toContain(response[1][2].shipmentStatus);
+      expect(shipmentStatuses[4]).toContain(response[1][3].shipmentStatus);
+      expect(shipmentStatuses[5]).toContain(response[1][4].shipmentStatus);
+      expect(shipmentStatuses[6]).toContain(response[1][5].shipmentStatus);
+      expect(shipmentStatuses[7]).toContain(response[1][6].shipmentStatus);
+    });
+    test('test the settlementStatuses of the messages', async () => {
+      expect.assertions(9);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      // only 7 update messages since there is no PREDES message
+      expect(response[1].length).toBe(7);
+
+      expect(response[0][0].settlementStatus).toBe('Unreconciled');
+      expect(response[1][0].settlementStatus).toBe('Unreconciled');
+      expect(response[1][1].settlementStatus).toBe('Unreconciled');
+      expect(response[1][2].settlementStatus).toBe('Unreconciled');
+      expect(response[1][3].settlementStatus).toBe('Unreconciled');
+      expect(response[1][4].settlementStatus).toBe('Unreconciled');
+      expect(response[1][5].settlementStatus).toBe('Unreconciled');
+      // we still expect to see NO PREDES messages to become reconciled
+      expect(response[1][6].settlementStatus).toBe('Reconciled');
+    });
+  });
+  describe('test cases for messages with lost parcel', () => {
+    beforeAll(() => {
+      config.simulate = {
+        size: {
+          small: 4,
+        },
+        days: [1, 2, 1, 1, 3, 1, 1, 1, 2],
+        ReceivedinExcess_rate: 0,
+        LostParcel_rate: 100, // over 100 %
+        SeizedorReturned_rate: 0, // over 100 %
+        NoPreDes_rate: 0, // over 100 %
+      };
+    });
+    test('make sure the packageId follows the right format', async () => {
+      expect.assertions(1);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      const [[{ packageId }]] = response;
+      const [[{ packageType }]] = response;
+      const expectedPackageId = new RegExp(
+        `${getPackageTypeCode(packageType)}2222[0-9]{5}${origin}`,
+      );
+      expect(packageId).toMatch(expectedPackageId);
+    });
+    test('make sure that the parcel gets created properly', async () => {
+      expect.assertions(5);
+
+      // we have 4 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      expect(response[0].length).toBe(4);
+
+      // we still expect all packages to be created normally
+      expect(response[0][0].shipmentStatus).toBe('EMA');
+      expect(response[0][1].shipmentStatus).toBe('EMA');
+      expect(response[0][2].shipmentStatus).toBe('EMA');
+      expect(response[0][3].shipmentStatus).toBe('EMA');
+    });
+  });
+  describe('test cases for messages with seized or returned', () => {
+    beforeAll(() => {
+      config.simulate = {
+        size: {
+          small: 1,
+        },
+        days: [1, 2, 1, 1, 3, 1, 1, 1, 2],
+        ReceivedinExcess_rate: 0,
+        LostParcel_rate: 0, // over 100 %
+        SeizedorReturned_rate: 100, // over 100 %
+        NoPreDes_rate: 0, // over 100 %
+      };
+    });
+    test('make sure the packageId follows the right format', async () => {
+      expect.assertions(1);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      const [[{ packageId }]] = response;
+      const [[{ packageType }]] = response;
+      const expectedPackageId = new RegExp(
+        `${getPackageTypeCode(packageType)}3333[0-9]{5}${origin}`,
+      );
+      expect(packageId).toMatch(expectedPackageId);
+    });
+    test('make sure that the package have the correct shipment statuses', async () => {
+      expect.assertions(3);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // we still expect package to be created normally
+      expect(response[0][0].shipmentStatus).toBe('EMA');
+
+      const indexLastPackage = response[1].length - 1;
+
+      const seizedByCustomsStatuses = ['EME', 'EXB', 'EDX', 'EXX'];
+
+      expect(seizedByCustomsStatuses).toContain(
+        response[1][indexLastPackage].shipmentStatus,
+      );
+      expect(response[1][indexLastPackage].settlementStatus).toBe(
+        'Unreconciled',
+      );
+    });
+  });
+  describe('test cases for messages with received in excess', () => {
+    beforeAll(() => {
+      config.simulate = {
+        size: {
+          small: 1,
+        },
+        days: [1, 2, 1, 1, 3, 1, 1, 1, 2],
+        ReceivedinExcess_rate: 100,
+        LostParcel_rate: 0, // over 100 %
+        SeizedorReturned_rate: 0, // over 100 %
+        NoPreDes_rate: 0, // over 100 %
+      };
+    });
+    test('make sure the packageId follows the right format', async () => {
+      expect.assertions(5);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      const [[{ packageId }]] = response;
+      const [[{ packageType }]] = response;
+      const expectedPackageId = new RegExp(
+        `${getPackageTypeCode(packageType)}1111[0-9]{5}${origin}`,
+      );
+      expect(packageId).toMatch(expectedPackageId);
+
+      expect(response[1][0].packageId).toBe(packageId);
+      expect(response[1][1].packageId).toBe(packageId);
+      expect(response[1][2].packageId).toBe(packageId);
+      expect(response[1][3].packageId).toBe(packageId);
+    });
+    test('make sure that packages do not have any origin scans', async () => {
+      expect.assertions(6);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      expect(response[1].length).toBe(4);
+      // shipmentStatuses[3] is the first set of scans done in the destination
+      expect(shipmentStatuses[3]).toContain(response[0][0].shipmentStatus);
+
+      expect(shipmentStatuses[4]).toContain(response[1][0].shipmentStatus);
+      expect(shipmentStatuses[5]).toContain(response[1][1].shipmentStatus);
+      expect(shipmentStatuses[6]).toContain(response[1][2].shipmentStatus);
+      expect(shipmentStatuses[7]).toContain(response[1][3].shipmentStatus);
+    });
+    test('make sure the settlement statuses are correct', async () => {
+      expect.assertions(5);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      expect(response[0][0].settlementStatus).toBe('Unreconciled');
+
+      expect(response[1][0].settlementStatus).toBe('Unreconciled');
+      expect(response[1][1].settlementStatus).toBe('Unreconciled');
+      expect(response[1][2].settlementStatus).toBe('Unreconciled');
+      expect(response[1][3].settlementStatus).toBe('Reconciled');
     });
   });
 });
