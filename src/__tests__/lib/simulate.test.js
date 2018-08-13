@@ -211,7 +211,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
 
         const [[{ dispatchId }]] = response;
 
-        expect(dispatchId).toBeFalsy();
+        expect(dispatchId).toBe('');
       });
       test('make sure first scan does not include receptacleId', async () => {
         expect.assertions(1);
@@ -226,7 +226,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
 
         const receptacleId = response[0][0].recepatacleId;
 
-        expect(receptacleId).toBeFalsy();
+        expect(receptacleId).toBeUndefined();
       });
       test('check that the weight makes sense', async () => {
         expect.assertions(10);
@@ -294,8 +294,8 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         expect(dispatchId).toMatch(expectedDispatchId);
 
         // the dispatchId is set at PREDES/EMC it should not be set before that
-        expect(response[1][0].dispatchId).toBeFalsy();
-        expect(response[1][1].dispatchId).toBeFalsy();
+        expect(response[1][0].dispatchId).toBe('');
+        expect(response[1][1].dispatchId).toBe('');
         expect(response[1][2].dispatchId).toBe(dispatchId);
         expect(response[1][3].dispatchId).toBe(dispatchId);
         expect(response[1][4].dispatchId).toBe(dispatchId);
@@ -330,8 +330,8 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         expect(receptacleId).toMatch(expectedReceptacleId);
 
         // the receptacleId is set at PREDES/EMC it should not be set before that
-        expect(response[1][0].receptacleId).toBeFalsy();
-        expect(response[1][1].receptacleId).toBeFalsy();
+        expect(response[1][0].receptacleId).toBe('');
+        expect(response[1][1].receptacleId).toBe('');
         expect(response[1][2].receptacleId).toBe(receptacleId);
         expect(response[1][3].receptacleId).toBe(receptacleId);
         expect(response[1][4].receptacleId).toBe(receptacleId);
@@ -496,6 +496,48 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(response[1][5].settlementStatus).toBe('Unreconciled');
       // we still expect to see NO PREDES messages to become reconciled
       expect(response[1][6].settlementStatus).toBe('Reconciled');
+    });
+    test('confirm that updates do not have dispatchId', async () => {
+      expect.assertions(8);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      expect(response[0][0].dispatchId).toBe('');
+
+      expect(response[1][0].dispatchId).toBe('');
+      expect(response[1][1].dispatchId).toBe('');
+      expect(response[1][2].dispatchId).toBe('');
+      expect(response[1][3].dispatchId).toBe('');
+      expect(response[1][4].dispatchId).toBe('');
+      expect(response[1][5].dispatchId).toBe('');
+      expect(response[1][6].dispatchId).toBe('');
+    });
+    test('confirm that updates do not have receptacleId', async () => {
+      expect.assertions(8);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      expect(response[0][0].receptacleId).toBe('');
+
+      expect(response[1][0].receptacleId).toBe('');
+      expect(response[1][1].receptacleId).toBe('');
+      expect(response[1][2].receptacleId).toBe('');
+      expect(response[1][3].receptacleId).toBe('');
+      expect(response[1][4].receptacleId).toBe('');
+      expect(response[1][5].receptacleId).toBe('');
+      expect(response[1][6].receptacleId).toBe('');
     });
   });
   describe('test cases for messages with lost parcel', () => {
@@ -680,6 +722,42 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(response[1][1].settlementStatus).toBe('Unreconciled');
       expect(response[1][2].settlementStatus).toBe('Unreconciled');
       expect(response[1][3].settlementStatus).toBe('Reconciled');
+    });
+    test('confirm that updates do not have dispatchId', async () => {
+      expect.assertions(5);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      expect(response[0][0].dispatchId).toBe('');
+
+      expect(response[1][0].dispatchId).toBe('');
+      expect(response[1][1].dispatchId).toBe('');
+      expect(response[1][2].dispatchId).toBe('');
+      expect(response[1][3].dispatchId).toBe('');
+    });
+    test('confirm that updates do not have receptacleId', async () => {
+      expect.assertions(5);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      expect(response[0][0].receptacleId).toBe('');
+
+      expect(response[1][0].receptacleId).toBe('');
+      expect(response[1][1].receptacleId).toBe('');
+      expect(response[1][2].receptacleId).toBe('');
+      expect(response[1][3].receptacleId).toBe('');
     });
   });
 });
