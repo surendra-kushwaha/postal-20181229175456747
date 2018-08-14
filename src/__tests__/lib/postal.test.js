@@ -3,7 +3,6 @@
 // import toBeType from 'jest-tobetype';
 
 import postal from '../../lib/postal';
-import postalscmCcLib from '../../../utils/postalscm_cc_lib';
 
 /**
  * Mock the postalscm_cc_lib implementation
@@ -19,12 +18,14 @@ jest.mock('../../../utils/websocket_server_side.js');
 
 jest.mock('../../../utils/postalscm_cc_lib.js');
 
+jest.mock('../../models/postalPackageData.js');
+
 const todateTimeStamp = new Date();
 const today =
   todateTimeStamp.getMonth() + 1 < 10
-    ? `${todateTimeStamp.getMonth() +
+    ? `0${todateTimeStamp.getMonth() +
         1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`
-    : `0${todateTimeStamp.getMonth() +
+    : `${todateTimeStamp.getMonth() +
         1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
 
 beforeEach(() => {});
@@ -38,18 +39,18 @@ describe('smoke test', () => {
 });
 
 describe('tests for create package', async () => {
-  /*  test('confirm that blockchain is invoked with correct parameters', async () => {
-    expect.assertions(1);
+  test('confirm that blockchain is invoked with correct parameters', async () => {
+    expect.assertions(12);
 
     const packageId = 'packageId';
-    const weight = 1.0;
+    const weight = '1.0';
     const originCountry = 'US';
     const destinationCountry = 'GB';
     const settlementStatus = 'Unreconciled';
     const shipmentStatus = 'EMA';
     const packageType = 'Express';
-    const receptacleId = 'receptacleId';
-    const dispatchId = 'dispatchId';
+    const receptacleId = '';
+    const dispatchId = '';
     const lastUpdated = today;
 
     const payload = {
@@ -68,19 +69,19 @@ describe('tests for create package', async () => {
     const startDate = '04/01/2018';
     const endDate = '06/30/2018';
 
-    const argsValue = [
-      `{"PackageID":"${packageId}", "Weight":"${weight}" , "OriginCountry":"${originCountry}" , "DestinationCountry":"${destinationCountry}", "SettlementStatus":"${settlementStatus}" , "ShipmentStatus":"${shipmentStatus}", "OriginReceptacleID":"${receptacleId}",  "PackageType":"${packageType}", "DispatchID":"${dispatchId}" , "LastUpdated":"${lastUpdated}"}`,
-    ];
-    const expectedCall = {
-      method_type: 'invoke',
-      func: 'createPostalPackage',
-      args: argsValue,
-    };
+    const response = await postal.createPackage(payload, startDate, endDate);
 
-    postal.createPackage(payload, startDate, endDate);
-
-    expect(
-      postalscmCcLib.mock.instances[0].call_chaincode.mock.calls[0][0],
-    ).toBe(expectedCall);
-  }); */
+    expect(response.destinationPost).toBe(payload.destinationCountry);
+    expect(response.originPost).toBe(payload.originCountry);
+    expect(response.weight).toEqual(payload.weight);
+    expect(response.settlementStatus).toBe(payload.settlementStatus);
+    expect(response.shipmentStatus).toBe(payload.shipmentStatus);
+    expect(response.packageId).toBe(payload.packageId);
+    expect(response.packageType).toBe(payload.packageType);
+    expect(response.dispatchId).toBe(payload.dispatchId);
+    expect(response.receptacleId).toBe(payload.receptacleId);
+    expect(response.dateCreated).toBe(payload.lastUpdated);
+    expect(response.startDate).toBe(startDate);
+    expect(response.endDate).toBe(endDate);
+  });
 });
