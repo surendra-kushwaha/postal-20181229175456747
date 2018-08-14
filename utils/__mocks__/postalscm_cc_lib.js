@@ -8,6 +8,12 @@ module.exports = () => {
     const response = {};
     if (functionName === 'createPostalPackage') {
       response.data = options.args;
+    } else if (functionName === 'getPackageHistory') {
+      response.parsed = options.args;
+    } else if (functionName === 'updateShipmentStatus') {
+      response.data = options.args[0];
+    } else if (functionName === 'updateSettlementStatus') {
+      response.data = options.args[0];
     }
     callback(err, response);
   });

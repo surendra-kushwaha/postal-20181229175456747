@@ -10,6 +10,13 @@ class PostalPackage {
   async save(cb) {
     cb(undefined, this.data);
   }
+  static findOneAndUpdate(updateConditions, updateObject, cb) {
+    const response = {
+      updateConditions,
+      updateObject,
+    };
+    cb(undefined, response);
+  }
 }
 
 module.exports = { PostalPackage };

@@ -39,7 +39,7 @@ describe('smoke test', () => {
 });
 
 describe('tests for create package', async () => {
-  test('confirm that blockchain is invoked with correct parameters', async () => {
+  test('confirm that the correct object is returned from postal.js which would indicate the field conversion worked as expected', async () => {
     expect.assertions(12);
 
     const packageId = 'packageId';
@@ -83,5 +83,64 @@ describe('tests for create package', async () => {
     expect(response.dateCreated).toBe(payload.lastUpdated);
     expect(response.startDate).toBe(startDate);
     expect(response.endDate).toBe(endDate);
+  });
+});
+describe('tests for getPackageHistory', () => {
+  test('test that the proper parameters are sent to the blockchain', async () => {
+    expect.assertions(1);
+
+    const packageId = 'testPackageId';
+
+    const response = await postal.getPackageHistory(packageId);
+
+    expect(response).toEqual([packageId]);
+  });
+});
+describe('tests for update shipment status', () => {
+  test('test that the proper update conditions and object are sent', async () => {
+    expect.assertions(2);
+
+    const packageId = 'testPackageId';
+    const shipmentStatus = 'EMC';
+    const receptacleId = '';
+    const dispatchId = '';
+    const lastUpdated = today;
+    const payload = {
+      packageId,
+      shipmentStatus,
+      receptacleId,
+      dispatchId,
+      lastUpdated,
+    };
+
+    const response = await postal.updateShipmentStatus(payload);
+    expect(response.updateConditions).toEqual({
+      packageId,
+    });
+    expect(response.updateObject).toEqual({
+      shipmentStatus,
+      receptacleId,
+      dispatchId,
+      lastUpdated,
+    });
+  });
+});
+describe('tests for update settlement status', () => {
+  test('test that the proper update conditions are sent', async () => {
+    expect.assertions(1);
+
+    const packageId = 'testPackageId';
+    const settlementStatus = 'Reconciled';
+    const lastUpdated = today;
+    const payload = {
+      packageId,
+      settlementStatus,
+      lastUpdated,
+    };
+
+    const response = await postal.updateSettlementStatus(payload);
+    expect(response).toEqual({
+      data: packageId,
+    });
   });
 });
