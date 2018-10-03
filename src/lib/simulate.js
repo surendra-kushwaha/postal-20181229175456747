@@ -568,7 +568,7 @@ class DispatchSimulator {
       do {
         // dispatch empty or not
         if (
-          i < 4 ||
+          i < 6 ||
           typeofpatch === 'receivedExcess' ||
           typeofpatch === 'nopredes'
         ) {
@@ -580,7 +580,7 @@ class DispatchSimulator {
         }
         // receptacleId empty or not
         if (
-          i < 4 ||
+          i < 6 ||
           typeofpatch === 'receivedExcess' ||
           typeofpatch === 'nopredes'
         ) {
