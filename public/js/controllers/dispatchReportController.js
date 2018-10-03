@@ -93,15 +93,10 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
        $scope.parcelType = sessionStorage.getItem('parcelType');
       sessionStorage.removeItem('parcelType');}
                 $('.select-styled').text($scope.parcelType);
-
-
-
-
                 //  $('.select-styled').text($scope.parcelType);
                 //(response.data.data)
 
                 $scope.updateSummaryData();
-
             },
             function(response) {
                 console.log(response);
@@ -109,12 +104,10 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
         );
     }
 
-
-
     $scope.callback = function(containerType) {
         $scope.dispatchView = true;
         $scope.searchBy = "Dispatch ID";
-
+        
         if (($('#origin-img').attr('src')).includes("Active"))
             sessionStorage.setItem('location', 'origin');
         else
@@ -137,22 +130,20 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
             if (!('back' in sessionStorage))
                 $scope.getReconciledDispatches();
         } else {
-
             sessionStorage.setItem('typeOfData', 'unreconcile');
             $('#summary-link').removeClass("active");
             $('#reconcile-link').removeClass("active");
             $('#unreconcile-link').addClass("active");
-            if (!('back' in sessionStorage))
+            if (!('back' in sessionStorage)){
                 $scope.getUnreconciledDispatches();
+            }
+                
         }
-
     }
 
     $scope.destinationDispatches = function() {
-
         $scope.dispatchView = true;
         $scope.searchBy = "Dispatch ID";
-
         $('#origin-img').attr('src', 'Icon/Unactive.png');
         $('#destination-img').attr('src', 'Icon/Active.png');
         sessionStorage.setItem('location', 'destination');
@@ -179,28 +170,17 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
             else if (sessionStorage.getItem("typeOfData") === "unreconcile")
                 $scope.getUnreconciledDispatches();
         }
-
-
     }
-
-
 
     $scope.getSummary = function() {
-
-
         $("#table-container").css("display", "none");
         $("#summary-container").css("display", "block");
-
-
     }
-
 
     $scope.TestAngularMethod = function(val) {
         $scope.parcelType = val;
-
         $scope.packages = [];
         $scope.dispatches = [];
-
         $scope.updateSummaryData();
     }
 
@@ -228,7 +208,6 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
     $scope.getUnreconciledDispatches = function() {
         $scope.dispatches = [];
         $scope.packages = [];
-
         $scope.noPackagesMsg = "Sorry, We could not find any Unreconciled Packages for This Time Period!!";
         //$scope.activeMenuHeading=["Summary View","Reconciled Dispatches","Unreconciled Dispatches"];
         $scope.dispatchType = sessionStorage.getItem('typeOfData');
@@ -246,8 +225,6 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
             $scope.tableColumns = ["DISPATCH ID", "TOTAL UNRECONCILED WEIGHT", "TOTAL UNRECONCILED PACKAGES", "SETTLEMENT STATUS"];
             $scope.displayAction = true;
         }
-
-
     }
 
     $scope.packageDispatchId='';
@@ -258,21 +235,30 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
         $("#summary-container").css("display", "none");
         $("#table-container").css("display", "block");
         $scope.displayAction = true;
-        if (dispatchId === "NONE")
+        if (dispatchId === "NONE" || dispatchId === "None"  || dispatchId === ""){
             dispatchId = "";
+            var dispatchPackageType=$scope.parcelType;
+            if($scope.parcelType==='' || $scope.parcelType===undefined){
+                dispatchPackageType=sessionStorage.getItem('parcelType');
+            }
+            let data = JSON.stringify({
+                startDate: sessionStorage.getItem('startDate'),
+                endDate: sessionStorage.getItem('endDate'),
+                originPost: sessionStorage.getItem('originPost'),
+                destinationPost: sessionStorage.getItem('destinationPost'),
+                dateCreated: sessionStorage.getItem('dateCreated'),
+                packageType: dispatchPackageType,
+                dispatchId: dispatchId
+            });
 
-        $http.get('/package-report?dispatchId=' + dispatchId, {
+            $http.post('/package-report', data, {
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(
             function(response) {
-                // console.log(response);
                 $scope.searchBy = "Package ID";
-                $scope.dispatchId = dispatchId;
-
-
-
+                $scope.dispatchId = "None";
                 $scope.reconciledPackages = [];
                 $scope.unreconciledPackages = [];
               //set default value
@@ -288,6 +274,10 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                 // packagesData
                 (response.data.data).forEach(package => {
                     package.dateCreated = new Date(package.dateCreated);
+
+                    if(package.receptacleId==null || package.receptacleId==''){
+                        package.receptacleId='None';  
+                    }
                                       
                     if(package.settlementStatus==="Settlement Disputed"){
                         if (sessionStorage.getItem('location') === "destination"){
@@ -365,25 +355,136 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                 $scope.dispatchView = false;
 
                 if (sessionStorage.getItem('typeOfData') === 'reconcile') {
-                    $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+                    $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE",  "RECEPTACLE ID", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
                     $scope.packages = $scope.reconciledPackages;
                 } else {
-                    $scope.tableColumns = ["PACKAGE ID", "UNRECONCILED WEIGHT FOR PACKAGE", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+                    $scope.tableColumns = ["PACKAGE ID", "UNRECONCILED WEIGHT FOR PACKAGE",  "RECEPTACLE ID", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
                     $scope.packages = $scope.unreconciledPackages;
                 }
-
-
-
-
-
             },
             function(response) {
                 console.log(response);
             }
         );
 
+        }else{
+            $http.get('/package-report?dispatchId=' + dispatchId, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(
+            function(response) {
+                $scope.searchBy = "Package ID";
+                $scope.dispatchId = dispatchId;
+                $scope.reconciledPackages = [];
+                $scope.unreconciledPackages = [];
+              //set default value
+                if (sessionStorage.getItem('location') === "destination"){
+                    $scope.packageAllAction = "SETTLE ALL";
+                    $scope.packageAllConfirmAction = "CONFIRM ALL DISPUTE";
+                }
+                else{
+                    $scope.packageAllAction = "DISPUTE ALL";
+                    $scope.packageAllConfirmAction = "CONFIRM ALL SETTLEMENT";
+                }
+
+                // packagesData
+                (response.data.data).forEach(package => {
+                    package.dateCreated = new Date(package.dateCreated);
+
+                    if(package.receptacleId==null || package.receptacleId==''){
+                        package.receptacleId='None';  
+                    }
+                                      
+                    if(package.settlementStatus==="Settlement Disputed"){
+                        if (sessionStorage.getItem('location') === "destination"){
+                            $scope.packageSettlementStatusCount.push(1);
+                        }
+                        //Confirm All Dispute
+                    }
+                    if(package.settlementStatus==="Settlement Requested"){
+                        if (sessionStorage.getItem('location') === "origin"){
+                            $scope.packageSettlementStatusCount.push(1);
+                        }
+                        //Confirm All Settlement
+                    }
+                    
+                    if (package.settlementStatus === "Reconciled") {
+                        package.displayPackageActionDropdown = false;
+                        if (sessionStorage.getItem('location') === "origin")
+                            package.packageUpdateAction = "Dispute Package";
+                        else
+                            package.packageUpdateAction = "NA"
+
+                        $scope.reconciledPackages.push(package);
 
 
+                    } else if (package.settlementStatus === "Settlement Agreed") {
+                        package.displayPackageActionDropdown = false;
+                        package.packageUpdateAction = "NA";
+
+                        $scope.reconciledPackages.push(package);
+
+                    } else if (package.settlementStatus === "Unreconciled") {
+                        package.displayPackageActionDropdown = false;
+                        if (sessionStorage.getItem('location') === "destination"){
+                            package.packageUpdateAction = "Request Settlement";
+                            $scope.packageAllAction = "SETTLE ALL";
+                            $scope.packageAllConfirmAction = "CONFIRM ALL DISPUTE";
+                        }
+                        else{
+                            package.packageUpdateAction = "NA";
+                            $scope.packageAllAction = "DISPUTE ALL";
+                            $scope.packageAllConfirmAction = "CONFIRM ALL SETTLEMENT";
+                        }
+
+                        $scope.unreconciledPackages.push(package);
+
+                    } else if (package.settlementStatus === "Settlement Disputed") {
+
+                        package.packageUpdateAction = "NA";
+                        if (sessionStorage.getItem('location') === "destination") {
+                            package.actionRegistry = ["Confirm Dispute", "Request Settlement"];
+                            package.displayPackageActionDropdown = true;
+                        } else {
+                            package.displayPackageActionDropdown = false;
+                        }
+                        $scope.unreconciledPackages.push(package);
+
+                    } else if (package.settlementStatus === "Settlement Requested") {
+
+                        package.packageUpdateAction = "NA";
+                        if (sessionStorage.getItem('location') === "origin") {
+                            package.actionRegistry = ["Settlement Agreed", "Dispute Settlement"];
+                            package.displayPackageActionDropdown = true;
+                        } else
+                            package.displayPackageActionDropdown = false;
+                        $scope.unreconciledPackages.push(package);
+
+                    } else if (package.settlementStatus === "Dispute Confirmed") {
+                        package.displayPackageActionDropdown = false;
+                        package.packageUpdateAction = "NA";
+                        $scope.unreconciledPackages.push(package);
+                    }
+                });
+
+
+                $scope.dispatchView = false;
+
+                if (sessionStorage.getItem('typeOfData') === 'reconcile') {
+                    $scope.tableColumns = ["PACKAGE ID", "RECONCILED WEIGHT FOR PACKAGE",  "RECEPTACLE ID", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+                    $scope.packages = $scope.reconciledPackages;
+                } else {
+                    $scope.tableColumns = ["PACKAGE ID", "UNRECONCILED WEIGHT FOR PACKAGE",  "RECEPTACLE ID", "SHIPMENT STATUS", "SETTLEMENT STATUS", "ACTION"];
+                    $scope.packages = $scope.unreconciledPackages;
+                }
+            },
+            function(response) {
+                //console.log(response);
+            }
+        );
+
+        }
     }
     if (!('back' in sessionStorage)) {
         $scope.getAllDispatches();
@@ -452,10 +553,16 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
 
             let updateDispatchObject = JSON.stringify({
                 'type': 'dispatch',
-                'id': $scope.packageDispatchId,
+                'dispatchId': $scope.packageDispatchId,
                 'newStatus': action,
                 'post': sessionStorage.getItem('location'),
-                'country': sessionStorage.getItem('countryName')
+                'country': sessionStorage.getItem('countryName'),
+                "startDate": sessionStorage.getItem('startDate'),
+                "endDate": sessionStorage.getItem('endDate'),
+                "originPost": sessionStorage.getItem('originPost'),
+                "destinationPost": sessionStorage.getItem('destinationPost'),
+                "dateCreated": sessionStorage.getItem('dateCreated'),
+                "packageType": $scope.parcelType
 
             });
             console.log(updateDispatchObject);
@@ -468,10 +575,8 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
                     $('#exampleModalCenter').modal('show');
                     $scope.getAllDispatches();
                     $scope.moveToPackageScreen($scope.dispatchId);
-
                 },
                 function(response) {
-
                 }
             );
         }
@@ -495,9 +600,4 @@ mainApp.controller('DispatchReportController', function($scope, $window, $http, 
         $scope.callback(sessionStorage.getItem('typeOfData') + "-link");
 
     }
-
-
-
-
-
 });

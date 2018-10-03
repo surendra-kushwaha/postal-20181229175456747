@@ -1,7 +1,4 @@
 module.exports = {
-  // Server values
-  port: process.env.PORT || 3000,
-  host: process.env.VCAP_APP_HOST || 'localhost',
   simulate: {
     size: {
       small: 10,
@@ -13,9 +10,5 @@ module.exports = {
     LostParcel_rate: 3, // over 100 %
     SeizedorReturned_rate: 4, // over 100 %
     NoPreDes_rate: 6, // over 100 %
-  },
-  users: {
-    username: ['US', 'GB', 'CN', 'CA', 'FR', 'DE', 'JP'],
-    password: 'acit@1234',
   },
 };
