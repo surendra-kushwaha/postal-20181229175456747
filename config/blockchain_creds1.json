@@ -19,7 +19,8 @@
         "x-organizationName": "Company A"
     },
     "channels": {
-        "channel1": {
+        "postal-scm": {
+            "x-status": "membership_valid",
             "orderers": [
                 "orderer"
             ],
@@ -34,7 +35,7 @@
                 }
             },
             "chaincodes": {
-                "postal-scm-v3": "1.0"
+                "postal-cc":"1.0"
             }
         } 
     },
@@ -130,7 +131,8 @@
                 }
             ],
             "caName": "org1CA",
-            "x-mspid": "org1"
+            "x-mspid": "org1",
+            "x-type": "hlfv1"
         }
     }
 }
