@@ -131,8 +131,8 @@
                 }
             ],
             "caName": "org1CA",
-            "x-mspid": "org1",
-            "x-type": "hlfv1"
+            "x-mspid": "org1"
         }
-    }
+    },
+    "x-type": "hlfv1"
 }
