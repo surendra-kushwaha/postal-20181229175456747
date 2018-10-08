@@ -14,19 +14,19 @@ module.exports = function(g_options, logger) {
   // Invoke Chaincode - aka write to the ledger
   //-------------------------------------------------------------------
   /*
-		options: {
-					chaincode_id: "chaincode id",
-					event_url: "peers event url",			<optional>
-					endorsed_hook: function(error, res){},	<optional>
-					ordered_hook: function(error, res){},	<optional>
-					cc_function: "function_name",
-					cc_args: ["argument 1"],
-					peer_tls_opts: {
-						pem: 'complete tls certificate',					<required if using ssl>
-						common_name: 'common name used in pem certificate' 	<required if using ssl>
-					}
-		}
-	*/
+    options: {
+          chaincode_id: "chaincode id",
+          event_url: "peers event url",     <optional>
+          endorsed_hook: function(error, res){},  <optional>
+          ordered_hook: function(error, res){}, <optional>
+          cc_function: "function_name",
+          cc_args: ["argument 1"],
+          peer_tls_opts: {
+            pem: 'complete tls certificate',          <required if using ssl>
+            common_name: 'common name used in pem certificate'  <required if using ssl>
+          }
+    }
+  */
   invoke_cc.invoke_chaincode = function(obj, options, cb) {
     logger.debug(`[fcw] Invoking Chaincode: ${options.cc_function}()`);
     let eventHub;
@@ -43,20 +43,12 @@ module.exports = function(g_options, logger) {
       txId: client.newTransactionID(),
     };
     // logger.debug('[fcw] Sending invoke req', request);
-
-    // Setup EventHub
-    if (options.event_url) {
-      logger.debug('[fcw] listening to event url', options.event_url);
-      eventHub = client.newEventHub();
-      eventHub.setPeerAddr(options.event_url, {
-        pem: options.peer_tls_opts.pem,
-        'ssl-target-name-override': options.peer_tls_opts.common_name, // can be null if cert matches hostname
-        'grpc.http2.keepalive_time': 15,
-      });
-      eventHub.connect();
-    } else {
-      logger.debug('[fcw] will not use tx event');
-    }
+    // Setup ChannelEventHub
+    const peer = client.newPeer(options.peer_url, {
+      pem: options.peer_tls_opts.pem,
+      'ssl-target-name-override': options.peer_tls_opts.common_name, // can be null if cert matches hostname
+      'grpc.http2.keepalive_time': 15,
+    });
     // Send Proposal
     channel
       .sendTransactionProposal(request)
@@ -85,16 +77,20 @@ module.exports = function(g_options, logger) {
                 logger.error(
                   '[fcw] Failed to receive block event within the timeout period',
                 );
-                eventHub.disconnect();
+                // eh.disconnect();
 
                 if (cb && !cbCalled) {
                   cbCalled = true;
                   return cb(null); // timeout pass it back
                 }
               }, g_options.block_delay + 300000); // increasing timeout from 2000 to 300000
-
               // Wait for tx committed event
-              eventHub.registerTxEvent(
+              const transactionId = request.txId.getTransactionID();
+              const channelEventHub = channel.newChannelEventHub(peer);
+              // register the listeners before calling "connect()" so there
+              // is an error callback ready to process an error in case the
+              // connect() call fails
+              channelEventHub.registerTxEvent(
                 request.txId.getTransactionID(),
                 (tx, code) => {
                   const elapsed = `${Date.now() - startTime}ms`;
@@ -104,7 +100,7 @@ module.exports = function(g_options, logger) {
                     elapsed,
                   );
                   clearTimeout(watchdog);
-                  eventHub.disconnect();
+                  channelEventHub.disconnect();
 
                   if (code !== 'VALID') {
                     if (cb && !cbCalled) {
@@ -121,10 +117,12 @@ module.exports = function(g_options, logger) {
                   }
                 },
               );
+              channelEventHub.connect();
             } catch (e) {
               logger.error('[fcw] Illusive event error: ', e); // not sure why this happens, seems rare 3/27/2017
               try {
-                eventHub.disconnect();
+                channelEventHub.disconnect();
+                // eventHub.disconnect();
               } catch (e) {}
               if (cb && !cbCalled) {
                 cbCalled = true;

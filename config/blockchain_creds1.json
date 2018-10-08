@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "name": "Blockchain-Postal-Practice-QA",
     "description": "Connection Profile for an IBM Blockchain Platform Network",
     "x-networkId": "n6d9ed6fba11447429280bcc43cfb6361",
@@ -17,11 +18,19 @@
             }
         },
         "x-organizationName": "Company A"
+=======
+    "name": "swvm-blockchain",
+    "x-type": "hlfv1",
+    "description": "Connection Profile for an IBM Blockchain Network",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Org1"
+>>>>>>> dev
     },
     "channels": {
-        "postal-scm": {
-            "x-status": "membership_valid",
+        "channel1": {
             "orderers": [
+<<<<<<< HEAD
                 "orderer"
             ],
             "peers": {
@@ -32,11 +41,22 @@
                             "path": "ibm-bcs-n6d9ed6fba11447429280bcc43cfb6361-postal-cc-1.0"
                         }
                     }
+=======
+                "fabric-orderer"
+            ],
+            "peers": {
+                "fabric-peer-org1": {
+                    "endorsingPeer": true,
+                    "chaincodeQuery": true,
+                    "ledgerQuery": true,
+                    "eventSource": true
+>>>>>>> dev
                 }
             },
             "chaincodes": {
-                "postal-cc":"1.0"
+                "postal-scm-v3": "1.0"
             }
+<<<<<<< HEAD
         } 
     },
     "organizations": {
@@ -53,9 +73,24 @@
                 "x-name": "default"
             },
             "x-uploadedSignedCerts": []
+=======
         }
     },
+    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "fabric-peer-org1"
+            ],
+            "certificateAuthorities": [
+                "fabric-ca-Org1"
+            ]
+>>>>>>> dev
+        }
+
+    },
     "orderers": {
+<<<<<<< HEAD
         "orderer": {
             "url": "grpcs://n6d9ed6fba11447429280bcc43cfb6361-orderer.us04.blockchain.ibm.com:31001",
             "grpcOptions": {
@@ -131,7 +166,40 @@
             ],
             "caName": "org1CA",
             "x-mspid": "org1"
+=======
+        "fabric-orderer": {
+            "url": "grpc://169.61.102.226:31010",
+            "grpcOptions": {
+                "ssl-target-name-override": null,
+                "grpc.http2.keepalive_time": 15
+            }
         }
     },
-    "x-type": "hlfv1"
+    "peers": {
+        "fabric-peer-org1": {
+            "url": "grpc://169.61.102.238:30110",
+            "eventUrl": "grpc://169.61.102.238:30111",
+            "grpcOptions": {
+                "ssl-target-name-override": null,
+                "grpc.http2.keepalive_time": 15
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "fabric-ca-Org1": {
+            "url": "http://169.61.102.230:30054",
+            "httpOptions": {
+                "verify": true
+            },
+            "registrar": [
+                {
+                    "affiliation": "org1",
+                    "enrollId": "admin",
+                    "enrollSecret": "adminpw"
+                }
+            ],
+            "caName": "CA1"
+>>>>>>> dev
+        }
+    }
 }
