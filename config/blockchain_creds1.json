@@ -54,6 +54,7 @@
             },
             "x-uploadedSignedCerts": []
         }
+
     },
     "orderers": {
         "orderer": {
