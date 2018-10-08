@@ -66,6 +66,36 @@ const findOnePackage = async (packageId: String) => {
   });
 };
 
+/**
+ * @param queryObj : queryObj that defines the packages to read from database
+ *
+ * Examples:
+ * {
+ *   dispatchId: 'exampleDispatchId',
+ * }
+ *
+ * {
+ *   originPost: 'US',
+ *   destinationPost: 'CN',
+ *   packageType: 'EX',
+ * }
+ */
+const findPackages = async (queryObj: Object) => {
+  const findConditions = queryObj;
+  logger.debug(`Looking for package: ${JSON.stringify(findConditions)}`);
+  return new Promise((resolve, reject) => {
+    PostalPackage.find(findConditions, (err, result) => {
+      if (err) {
+        logger.error(`Unable to save update to package in mongoDb. ${err}`);
+        reject(err);
+      } else {
+        logger.debug(`Found package (${queryObj}) successfully`);
+        resolve(result);
+      }
+    });
+  });
+};
+
 const removePackages = async removeCondition =>
   new Promise((resolve, reject) => {
     PostalPackage.remove(removeCondition, (err, data) => {
@@ -77,4 +107,10 @@ const removePackages = async removeCondition =>
     });
   });
 
-export { createPackage, updateOnePackage, findOnePackage, removePackages };
+export {
+  createPackage,
+  updateOnePackage,
+  findOnePackage,
+  findPackages,
+  removePackages,
+};
