@@ -1,7 +1,16 @@
 import logger from '../../../logger';
 
-const { PostalPackage } = require('../../../models/postalPackageData');
+const {
+  createArrayOfDispatches,
+  createDispatchIdArray,
+  performDispatchCalculations,
+} = require('./utilities');
 
+const {
+  findOnePackage,
+  findPackages,
+  removePackages,
+} = require('../../../lib/postalPackageDataController');
 /* const queryObj = {
   originPost: req.body.originPost,
   destinationPost: req.body.destinationPost,
@@ -11,103 +20,6 @@ const { PostalPackage } = require('../../../models/postalPackageData');
 }; */
 
 const noneArray = [undefined, '""', 'none', 'NONE', '"none"', '"NONE"', ''];
-
-const initializeDispatchObject = (dispatchId, packageType, queryObj) => ({
-  dispatchId,
-  packageType,
-  originPost: queryObj.originPost,
-  destinationPost: queryObj.destinationPost,
-  startDate: queryObj.startDate,
-  endDate: queryObj.endDate,
-  dateCreated: queryObj.dateCreated,
-});
-
-// helper function to get an array of dispatchIds from all returned package data objects
-const createDispatchIdArray = postalPackageData => {
-  const dispatchIdArray = [];
-  postalPackageData.forEach(packageObject => {
-    if (!dispatchIdArray.includes(packageObject.dispatchId)) {
-      dispatchIdArray.push(packageObject.dispatchId);
-    }
-  });
-  return dispatchIdArray;
-};
-
-// helper function that creates array of dispatch arrays. Each dispatch array contains all packages with that dispatchId
-const createArrayOfDispatches = (dispatchIds, postalPackageData) => {
-  const dispatches = [];
-  dispatchIds.forEach(dispatchId => {
-    const dispatchPackageArray = postalPackageData.filter(
-      packageObject => packageObject.dispatchId === dispatchId,
-    );
-    if (noneArray.includes(dispatchId)) {
-      const packageTypes = [];
-      dispatchPackageArray.forEach(noDispatchIdPackage => {
-        if (!packageTypes.includes(noDispatchIdPackage.packageType)) {
-          packageTypes.push(noDispatchIdPackage.packageType);
-        }
-      });
-      packageTypes.forEach(packageType => {
-        const packageTypePackageArray = dispatchPackageArray.filter(
-          dispatchPackage => dispatchPackage.packageType === packageType,
-        );
-        const dispatch = {
-          dispatchId,
-          dispatchPackageArray: packageTypePackageArray,
-        };
-        dispatches.push(dispatch);
-      });
-    } else {
-      const dispatch = {
-        dispatchId,
-        dispatchPackageArray,
-      };
-      dispatches.push(dispatch);
-    }
-  });
-  return dispatches;
-};
-
-// Perform all necessary calculations for front end application
-const performDispatchCalculations = (dispatches, queryObj) => {
-  const reconciledStatus = ['Reconciled', 'Settlement Agreed'];
-  const resultArray = [];
-  dispatches.forEach(dispatch => {
-    // initialize variables that we will return
-    const dispatchObject = initializeDispatchObject(
-      dispatch.dispatchId,
-      dispatch.dispatchPackageArray[0].packageType,
-      queryObj,
-    );
-    let reconciledPackages = 0;
-    let reconciledWeight = 0;
-    let unreconciledPackages = 0;
-    let unreconciledWeight = 0;
-    dispatch.dispatchPackageArray.forEach(packageObject => {
-      logger.debug(
-        `Package settlement status is ${packageObject.settlementStatus}`,
-      );
-      if (reconciledStatus.includes(packageObject.settlementStatus)) {
-        reconciledPackages += 1;
-        reconciledWeight += packageObject.weight;
-      } else {
-        unreconciledPackages += 1;
-        unreconciledWeight += packageObject.weight;
-      }
-    });
-    dispatchObject.totalReconciledPackages = reconciledPackages;
-    dispatchObject.totalReconciledWeight = reconciledWeight;
-    dispatchObject.totalUnreconciledPackages = unreconciledPackages;
-    dispatchObject.totalUnreconciledWeight = unreconciledWeight;
-    if (unreconciledPackages > 0) {
-      dispatchObject.settlementStatus = 'Unreconciled';
-    } else {
-      dispatchObject.settlementStatus = 'Reconciled';
-    }
-    resultArray.push(dispatchObject);
-  });
-  return resultArray;
-};
 
 // Get dispatch level report
 const report = async (req, res) => {
@@ -120,21 +32,20 @@ const report = async (req, res) => {
   };
   // logger.info(`Input Params:${JSON.stringify(queryObj)}`);
 
-  PostalPackage.find(queryObj, (err, postalData) => {
-    if (err) {
-      res.send({ status: 'fail', data: { msg: err } });
-    } else {
-      const dispatchIds = createDispatchIdArray(postalData);
-      const dispatches = createArrayOfDispatches(dispatchIds, postalData);
-      // logger.debug(`Dispatches: ${JSON.stringify(dispatches)}`);
-      const reportData = performDispatchCalculations(dispatches, queryObj); // final array to push completed dispatch data
-      res.send({ status: 'success', data: reportData });
-    }
-  });
+  try {
+    const postalData = await findPackages(queryObj);
+    const dispatchIds = createDispatchIdArray(postalData);
+    const dispatches = createArrayOfDispatches(dispatchIds, postalData);
+    // logger.debug(`Dispatches: ${JSON.stringify(dispatches)}`);
+    const reportData = performDispatchCalculations(dispatches, queryObj); // final array to push completed dispatch data
+    res.send({ status: 'success', data: reportData });
+  } catch (err) {
+    res.send({ status: 'fail', data: { msg: err } });
+  }
 };
 
 // Get package details for dispatch
-const getPackageReport = (req, res) => {
+const getPackageReport = async (req, res) => {
   // logger.info(`Req.query: ${JSON.stringify(req.query)}`);
   const queryObj = {
     dispatchId: req.query.dispatchId,
@@ -143,13 +54,12 @@ const getPackageReport = (req, res) => {
     queryObj.dispatchId = '';
   }
   // logger.info(JSON.stringify(queryObj));
-  PostalPackage.find(queryObj, (err, postalData) => {
-    if (err) {
-      res.send({ status: 'fail', data: { msg: err } });
-    } else {
-      res.send({ status: 'success', data: postalData });
-    }
-  });
+  try {
+    const postalData = await findPackages(queryObj);
+    res.send({ status: 'success', data: postalData });
+  } catch (err) {
+    res.send({ status: 'fail', data: { msg: err } });
+  }
 };
 
 // Get package details for packages with no dispatchId
@@ -169,13 +79,12 @@ const postPackageReport = async (req, res) => {
     queryObj.dispatchId = '';
   }
 
-  PostalPackage.find(queryObj, (err, postalData) => {
-    if (err) {
-      res.send({ status: 'fail', data: { msg: err } });
-    } else {
-      res.send({ status: 'success', data: postalData });
-    }
-  });
+  try {
+    const postalData = await findPackages(queryObj);
+    res.send({ status: 'success', data: postalData });
+  } catch (err) {
+    res.send({ status: 'fail', data: { msg: err } });
+  }
 };
 
 // Mongo DB changes end here
@@ -215,49 +124,43 @@ const filterViewReports = (packages: []) => {
   return filteredArray;
 };
 
-const viewReports = (req, res) => {
+const viewReports = async (req, res) => {
   const { country } = req.query;
   const queryObj = {
     $or: [{ originPost: country }, { destinationPost: country }],
   };
-  PostalPackage.find(
-    queryObj,
-    'startDate endDate originPost destinationPost dateCreated',
-    (err, postalData) => {
-      if (err) {
-        res.send({ status: 'fail', data: { msg: err } });
-      } else {
-        // need to filter any duplicate results
-        const filteredData = filterViewReports(postalData);
-        // logger.info(`Filtered data: ${JSON.stringify(filteredData, null, 2)}`);
-        res.send({ status: 'success', data: filteredData });
-      }
-    },
-  );
+
+  try {
+    const postalData = await findPackages(
+      queryObj,
+      'startDate endDate originPost destinationPost dateCreated',
+    );
+    // need to filter any duplicate results
+    const filteredData = filterViewReports(postalData);
+    // logger.info(`Filtered data: ${JSON.stringify(filteredData, null, 2)}`);
+    res.send({ status: 'success', data: filteredData });
+  } catch (err) {
+    res.send({ status: 'fail', data: { msg: err } });
+  }
   // res.status(200).json('');
 };
 
-const getPackage = (req, res) => {
-  const queryObj = {
-    packageId: req.query.packageId,
-  };
-  PostalPackage.find(queryObj, (err, postalData) => {
-    if (err) {
-      res.send({ status: 'fail', data: { msg: err } });
-    } else {
-      res.send({ status: 'success', data: postalData });
-    }
-  });
+const getPackage = async (req, res) => {
+  try {
+    const postalData = await findOnePackage(req.query.packageId);
+    res.send({ status: 'success', data: postalData });
+  } catch (err) {
+    res.send({ status: 'fail', data: { msg: err } });
+  }
 };
 
-const clearData = (req, res) => {
-  PostalPackage.remove({}, (err, postalData) => {
-    if (err) {
-      res.send({ status: 'fail', data: { msg: err } });
-    } else {
-      res.send({ status: 'success', data: postalData });
-    }
-  });
+const clearData = async (req, res) => {
+  try {
+    const postalData = await removePackages({});
+    res.send({ status: 'success', data: postalData });
+  } catch (err) {
+    res.send({ status: 'fail', data: { msg: err } });
+  }
 };
 
 export {

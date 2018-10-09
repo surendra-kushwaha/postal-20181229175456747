@@ -80,11 +80,12 @@ const findOnePackage = async (packageId: String) => {
  *   packageType: 'EX',
  * }
  */
-const findPackages = async (queryObj: Object) => {
+const findPackages = async (queryObj: Object, queryString: String) => {
   const findConditions = queryObj;
   logger.debug(`Looking for package: ${JSON.stringify(findConditions)}`);
+  // if (queryString === undefined) queryString = '';
   return new Promise((resolve, reject) => {
-    PostalPackage.find(findConditions, (err, result) => {
+    PostalPackage.find(findConditions, queryString, (err, result) => {
       if (err) {
         logger.error(`Unable to save update to package in mongoDb. ${err}`);
         reject(err);

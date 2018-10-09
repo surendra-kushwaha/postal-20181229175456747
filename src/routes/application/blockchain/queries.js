@@ -1,57 +1,11 @@
 import logger from '../../../logger';
 import postal from '../../../lib/postal';
 
-const { PostalPackage } = require('../../../models/postalPackageData');
-
-/**
- * Promise.settle is a way to take an array of Promises, executing in parallel,
- * and wait until they are all complete regardless of failure or success.
- * It is also possible to tell which promises failed and which were successful
- *
- * This differs from Promise.all since Promise.all will stop executing
- * if any of the promises in the array fail
- */
-// eslint-disable-next-line func-names
-Promise.settle = function(promises) {
-  return Promise.all(
-    promises.map(p =>
-      // make sure any values or foreign promises are wrapped in a promise
-      Promise.resolve(p).catch(err => {
-        // make sure error is wrapped in Error object so we can reliably detect which promises rejected
-        if (err instanceof Error) {
-          return err;
-        }
-        const errObject = new Error();
-        errObject.rejectErr = err;
-        return errObject;
-      }),
-    ),
-  );
-};
-
-const updateAllPackages = (packages: Array, newSettlementStatus: String) => {
-  logger.debug(
-    `Update All Packages called. ${JSON.stringify(
-      packages,
-    )},${newSettlementStatus}`,
-  );
-  const lastUpdated = new Date();
-  const promises = [];
-  packages.forEach(pack => {
-    logger.debug(
-      `Updating settlement status for one of many packages: ${JSON.stringify(
-        pack,
-      )}`,
-    );
-    const updateSettlementPayload = {
-      packageId: pack.packageId,
-      newSettlementStatus,
-      lastUpdated,
-    };
-    promises.push(postal.updateSettlementStatus(updateSettlementPayload));
-  });
-  return Promise.settle(promises);
-};
+const {
+  findOnePackage,
+  findPackages,
+} = require('../../../lib/postalPackageDataController');
+const { updateAllPackages } = require('./utilities');
 
 const updateDispatchSettlement = async (req, res) => {
   // logger.trace('Entered updateDispatchSettlement');
@@ -79,61 +33,61 @@ const updateDispatchSettlement = async (req, res) => {
   }
   const newSettlementStatus = req.body.newStatus;
   let filteredPackages = [];
-  PostalPackage.find(queryObj, async (error, packages) => {
-    if (error) {
-      res.sendStatus(400);
-    } else {
-      if (newSettlementStatus === 'Settlement Disputed') {
-        const allowedSettlementStatuses = [
-          'Reconciled',
-          'Settlement Agreed',
-          'Settlement Requested',
-        ];
-        filteredPackages = packages.filter(pack =>
-          allowedSettlementStatuses.includes(pack.settlementStatus),
-        );
-      } else if (newSettlementStatus === 'Settlement Requested') {
-        const allowedSettlementStatuses = [
-          'Unreconciled',
-          'Settlement Disputed',
-          'Dispute Confirmed',
-        ];
-        filteredPackages = packages.filter(pack =>
-          allowedSettlementStatuses.includes(pack.settlementStatus),
-        );
-      } else if (newSettlementStatus === 'Settlement Agreed') {
-        const allowedSettlementStatuses = ['Settlement Requested'];
-        filteredPackages = packages.filter(pack =>
-          allowedSettlementStatuses.includes(pack.settlementStatus),
-        );
-      } else if (newSettlementStatus === 'Dispute Confirmed') {
-        const allowedSettlementStatuses = ['Settlement Disputed'];
-        filteredPackages = packages.filter(pack =>
-          allowedSettlementStatuses.includes(pack.settlementStatus),
-        );
-      } else {
-        logger.error('The new settlement status is not recognized!');
-      }
-      try {
-        if (filteredPackages.length > 0) {
-          await updateAllPackages(filteredPackages, newSettlementStatus);
-        }
-      } catch (err) {
-        logger.error(
-          'Error updating packages in the dispatch to new Settlement Status',
-        );
-        res.sendStaus(400);
-      }
 
-      PostalPackage.find(queryObj, (updateError, updatedPackages) => {
-        if (updateError) {
-          res.sendStatus(400);
-        } else {
-          res.status(200).json(updatedPackages);
-        }
-      });
+  try {
+    const packages = findPackages(queryObj);
+    if (newSettlementStatus === 'Settlement Disputed') {
+      const allowedSettlementStatuses = [
+        'Reconciled',
+        'Settlement Agreed',
+        'Settlement Requested',
+      ];
+      filteredPackages = packages.filter(pack =>
+        allowedSettlementStatuses.includes(pack.settlementStatus),
+      );
+    } else if (newSettlementStatus === 'Settlement Requested') {
+      const allowedSettlementStatuses = [
+        'Unreconciled',
+        'Settlement Disputed',
+        'Dispute Confirmed',
+      ];
+      filteredPackages = packages.filter(pack =>
+        allowedSettlementStatuses.includes(pack.settlementStatus),
+      );
+    } else if (newSettlementStatus === 'Settlement Agreed') {
+      const allowedSettlementStatuses = ['Settlement Requested'];
+      filteredPackages = packages.filter(pack =>
+        allowedSettlementStatuses.includes(pack.settlementStatus),
+      );
+    } else if (newSettlementStatus === 'Dispute Confirmed') {
+      const allowedSettlementStatuses = ['Settlement Disputed'];
+      filteredPackages = packages.filter(pack =>
+        allowedSettlementStatuses.includes(pack.settlementStatus),
+      );
+    } else {
+      logger.error('The new settlement status is not recognized!');
     }
-  });
+    try {
+      if (filteredPackages.length > 0) {
+        await updateAllPackages(filteredPackages, newSettlementStatus);
+      }
+    } catch (err) {
+      logger.error(
+        'Error updating packages in the dispatch to new Settlement Status',
+      );
+      res.sendStaus(400);
+    }
+  } catch (err) {
+    logger.error(`There was an error updating Settlement Status. ${err}`);
+    res.status(400).send(err);
+  }
+
+  try {
+    const updatedPackages = await findPackages(queryObj);
+    res.status(200).json(updatedPackages);
+  } catch (err) {
+    res.sendStatus(400);
+  }
 };
 
 const updatePackageSettlement = async (req, res) => {
@@ -153,17 +107,12 @@ const updatePackageSettlement = async (req, res) => {
   try {
     const updatedPackageId = await postal.updateSettlementStatus(payload);
     // once call to postal is complete grab updated package from database and send to front end
-    PostalPackage.find(
-      { packageId: updatedPackageId.data },
-      (error, newData) => {
-        if (error) {
-          res.sendStatus(400);
-        } else {
-          // logger.debug(`NewData: ${JSON.stringify(newData)}`);
-          res.status(200).json(newData[0]); // need to add returned data transformation logic
-        }
-      },
-    );
+    try {
+      const newData = await findOnePackage(updatedPackageId.data);
+      res.status(200).json(newData[0]);
+    } catch (err) {
+      res.sendStatus(400);
+    }
   } catch (err) {
     logger.error(`There was an error updating Settlement Status. ${err}`);
     res.status(400).send(err);
