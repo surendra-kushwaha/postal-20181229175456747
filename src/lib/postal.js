@@ -3,7 +3,10 @@ import logger from '../logger';
 const wss = {};
 let enrollObj = null;
 
-const { updateOnePackage, createPackage } = require('./postalPackageDataController');
+const {
+  updateOnePackage,
+  createPackage,
+} = require('./postalPackageDataController');
 
 const helper = require('../../utils/helper.js')(
   process.env.creds_filename,
@@ -163,7 +166,7 @@ class Postal {
           // saving data in database NOTE: would like to make this asyncronous through an event at some point
 
           try {
-            let result = await createPackage(postalData);
+            const result = await createPackage(postalData);
             logger.info('Create Package data saved successfully to mongodb');
             resolve(result);
           } catch (err) {
@@ -246,23 +249,17 @@ class Postal {
           logger.debug(
             `Conditions for update: ${JSON.stringify(updateConditions)}`,
           );
-          
+
           try {
-
-          let result = await updateOnePackage( response.data, updateObj);
-          logger.debug('package data saved successfully to mongodb');
-          resolve(result);
-
+            const result = await updateOnePackage(response.data, updateObj);
+            logger.debug('package data saved successfully to mongodb');
+            resolve(result);
           } catch (err) {
-          
-          logger.error(
-          `Unable to save update to package in blockchain. ${err}`,
-          );
-          reject(err);  
-          
+            logger.error(
+              `Unable to save update to package in blockchain. ${err}`,
+            );
+            reject(err);
           }
-
-
         } else {
           reject(
             new Error(
@@ -302,23 +299,20 @@ class Postal {
           reject(err);
         } else if (!err) {
           logger.debug({ status: 'success', data: response });
-          const updateConditions = {
-            packageId: response.data,
-          };
+          
           const updateObj = {
             settlementStatus, // should be response.shipmentStatus
             lastUpdated,
           };
-          
-          try{
-            let response = await updateOnePackage(response.data, updateObj);
+
+          try {
+            const response = await updateOnePackage(response.data, updateObj);
             logger.debug('package data saved successfully to mongodb');
             resolve(response);
           } catch (err) {
             logger.debug({ status: 'fails', data: error });
             reject(err);
           }
-           
         } else {
           logger.debug({
             status: 'fail',
