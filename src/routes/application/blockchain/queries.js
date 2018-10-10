@@ -35,7 +35,7 @@ const updateDispatchSettlement = async (req, res) => {
   let filteredPackages = [];
 
   try {
-    const packages = findPackages(queryObj);
+    const packages = await findPackages(queryObj);
     if (newSettlementStatus === 'Settlement Disputed') {
       const allowedSettlementStatuses = [
         'Reconciled',
