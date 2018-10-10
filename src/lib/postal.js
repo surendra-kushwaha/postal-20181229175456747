@@ -3,7 +3,7 @@ import logger from '../logger';
 const wss = {};
 let enrollObj = null;
 
-const { PostalPackage } = require('../models/postalPackageData');
+const { updateOnePackage, createPackage } = require('./postalPackageDataController');
 
 const helper = require('../../utils/helper.js')(
   process.env.creds_filename,
@@ -117,7 +117,7 @@ class Postal {
     options.args = argsValue;
 
     return new Promise((resolve, reject) =>
-      postalscm_lib.call_chaincode(options, (err, response) => {
+      postalscm_lib.call_chaincode(options, async (err, response) => {
         logger.debug('callback from blockchain');
         if (err) {
           logger.error(`Unable to create package in blockchain: ${err}`);
@@ -161,16 +161,15 @@ class Postal {
             postalData.dispatchId = '';
           }
           // saving data in database NOTE: would like to make this asyncronous through an event at some point
-          const postal = new PostalPackage(postalData);
-          postal.save((err, result) => {
-            if (err) {
-              logger.info(`Unable to save created package in database: ${err}`);
-              reject(err);
-            } else {
-              logger.info('Create Package data saved successfully to mongodb');
-              resolve(result);
-            }
-          });
+
+          try {
+            let result = await createPackage(postalData);
+            logger.info('Create Package data saved successfully to mongodb');
+            resolve(result);
+          } catch (err) {
+            logger.info(`Unable to save created package in database: ${err}`);
+            reject(err);
+          }
           // Save the data to DB end
         } else {
           reject(
@@ -229,7 +228,7 @@ class Postal {
     options.args = argsValue;
 
     return new Promise((resolve, reject) =>
-      postalscm_lib.call_chaincode(options, (err, response) => {
+      postalscm_lib.call_chaincode(options, async (err, response) => {
         if (err) {
           logger.error(`Unable to update package in blockchain: ${err}`);
           reject(err);
@@ -247,21 +246,23 @@ class Postal {
           logger.debug(
             `Conditions for update: ${JSON.stringify(updateConditions)}`,
           );
-          PostalPackage.findOneAndUpdate(
-            updateConditions,
-            updateObj,
-            (errDb, result) => {
-              if (errDb) {
-                logger.error(
-                  `Unable to save update to package in blockchain. ${errDb}`,
-                );
-                reject(errDb);
-              } else {
-                logger.debug('package data saved successfully to mongodb');
-                resolve(result);
-              }
-            },
+          
+          try {
+
+          let result = await updateOnePackage( response.data, updateObj);
+          logger.debug('package data saved successfully to mongodb');
+          resolve(result);
+
+          } catch (err) {
+          
+          logger.error(
+          `Unable to save update to package in blockchain. ${err}`,
           );
+          reject(err);  
+          
+          }
+
+
         } else {
           reject(
             new Error(
@@ -295,7 +296,7 @@ class Postal {
       `Options for updateSettlementStatus: ${JSON.stringify(options)}`,
     );
     return new Promise((resolve, reject) =>
-      postalscm_lib.call_chaincode(options, (err, response) => {
+      postalscm_lib.call_chaincode(options, async (err, response) => {
         if (err) {
           logger.debug({ status: 'error', data: [err, response] });
           reject(err);
@@ -308,15 +309,16 @@ class Postal {
             settlementStatus, // should be response.shipmentStatus
             lastUpdated,
           };
-          PostalPackage.findOneAndUpdate(updateConditions, updateObj, error => {
-            if (error) {
-              logger.debug({ status: 'fails', data: error });
-              reject(error);
-            } else {
-              logger.debug('package data saved successfully to mongodb');
-              resolve(response);
-            }
-          });
+          
+          try{
+            let response = await updateOnePackage(response.data, updateObj);
+            logger.debug('package data saved successfully to mongodb');
+            resolve(response);
+          } catch (err) {
+            logger.debug({ status: 'fails', data: error });
+            reject(err);
+          }
+           
         } else {
           logger.debug({
             status: 'fail',
