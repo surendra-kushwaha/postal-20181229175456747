@@ -7,7 +7,7 @@
         "organization": "Org1"
     },
     "channels": {
-        "channel1": {
+        "mychannel": {
             "orderers": [
                 "fabric-orderer"
             ],
