@@ -170,6 +170,28 @@ paths:
           description: Simulation complete.
         '405':
           description: Was not able to get simulated data  
+
+  /input-data:
+    post:
+      tags:
+        - Input Data
+      summary: Uplaod Data from EDI message 
+      description: >-
+        This endpoint will take the package Data from EDI message
+      operationId: inputData
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          description: EDI Data 
+          required: true
+          schema:
+            $ref: '#/definitions/inputData'
+      responses:
+        '200':
+          description: OK
+        '405':
+          description: Was not able to get simulated data 
   
   /update-dispatch-settlement:
     post:
@@ -337,6 +359,26 @@ definitions:
         type: string
       dispatchId:
         type: string
+
+  inputData:
+    type: object
+    properties: 
+      origin:
+        type: string
+      destination:
+        type: string
+      dispatchId: 
+        type: string
+      packageId:
+        type: string
+      receptacleId:
+        type: string
+      weight:
+        type: string
+      shipmentStatus:
+        type: string
+
+  
 
   UpdateSettlement:
     type: object

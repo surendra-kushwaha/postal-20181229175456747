@@ -62,7 +62,9 @@
         "prettier": "^1.7.1"
     },
     "jest": {
-        "setupTestFrameworkScriptFile": "<rootDir>/tools/jest.setup.js"
+        "setupTestFrameworkScriptFile": "<rootDir>/tools/jest.setup.js",
+        "verbose": true,
+        "testURL": "http://localhost/"
     },
     "lint-staged": {
         "*.js": [

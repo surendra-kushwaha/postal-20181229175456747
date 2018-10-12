@@ -306,11 +306,11 @@ class Postal {
           };
 
           try {
-            const response = await updateOnePackage(response.data, updateObj);
+            const result = await updateOnePackage(response.data, updateObj);
             logger.debug('package data saved successfully to mongodb');
-            resolve(response);
+            resolve(result);
           } catch (err) {
-            logger.debug({ status: 'fails', data: error });
+            logger.debug({ status: 'fails', data: err });
             reject(err);
           }
         } else {

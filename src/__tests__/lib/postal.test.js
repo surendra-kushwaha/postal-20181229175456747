@@ -131,16 +131,19 @@ describe('tests for update settlement status', () => {
 
     const packageId = 'testPackageId';
     const settlementStatus = 'Reconciled';
+    const newSettlementStatus = 'Unreconciled';
     const lastUpdated = today;
     const payload = {
       packageId,
       settlementStatus,
+      newSettlementStatus,
       lastUpdated,
     };
 
     const response = await postal.updateSettlementStatus(payload);
-    expect(response).toEqual({
-      data: packageId,
+    expect(response.updateObject).toEqual({
+      lastUpdated,
+      settlementStatus: newSettlementStatus,
     });
   });
 });
