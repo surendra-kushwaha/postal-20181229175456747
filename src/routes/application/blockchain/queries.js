@@ -84,7 +84,8 @@ const updateDispatchSettlement = async (req, res) => {
 
   try {
     const updatedPackages = await findPackages(queryObj);
-    res.status(200).json(updatedPackages);
+    // res.status(200).json(updatedPackages);
+    res.send(updatedPackages);
   } catch (err) {
     res.sendStatus(400);
   }
@@ -104,12 +105,16 @@ const updatePackageSettlement = async (req, res) => {
     newSettlementStatus: req.body.newStatus,
     lastUpdated: new Date(),
   }; // need to add transformation logic
+  logger.debug(`Paylod : ${JSON.stringify(payload)}`);
   try {
     const updatedPackageId = await postal.updateSettlementStatus(payload);
+    logger.debug(`updatedPackageId : ${JSON.stringify(updatedPackageId)}`);
     // once call to postal is complete grab updated package from database and send to front end
     try {
       const newData = await findOnePackage(updatedPackageId.data);
-      res.status(200).json(newData[0]);
+      logger.debug(`RESPONSE : ${JSON.stringify(newData)}`);
+      //res.status(200).json(newData[0]);
+      res.send(newData[0]);
     } catch (err) {
       res.sendStatus(400);
     }

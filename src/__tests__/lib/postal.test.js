@@ -97,7 +97,7 @@ describe('tests for getPackageHistory', () => {
   });
 });
 describe('tests for update shipment status', () => {
-  test('test that the proper update conditions and object are sent', async () => {
+  test('test that the proper update conditions and object are sent postal.js', async () => {
     expect.assertions(2);
 
     const packageId = 'testPackageId';
@@ -126,10 +126,10 @@ describe('tests for update shipment status', () => {
   });
 });
 describe('tests for update settlement status', () => {
-  test('test that the proper update conditions are sent', async () => {
+  test('test that the proper update conditions are sent postal.js', async () => {
     expect.assertions(1);
 
-    const packageId = 'testPackageId';
+    const packageId = 'testPackageId123';
     const settlementStatus = 'Reconciled';
     const newSettlementStatus = 'Unreconciled';
     const lastUpdated = today;

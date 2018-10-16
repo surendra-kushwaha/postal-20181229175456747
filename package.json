@@ -64,7 +64,9 @@
     "jest": {
         "setupTestFrameworkScriptFile": "<rootDir>/tools/jest.setup.js",
         "verbose": true,
-        "testURL": "http://localhost/"
+        "testURL": "http://localhost/",
+        "collectCoverage": true,
+        "coverageReporters": ["json", "html"]
     },
     "lint-staged": {
         "*.js": [
@@ -81,7 +83,7 @@
         "lint": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" .",
         "fix": "eslint --ignore-path .gitignore --ignore-pattern \"!**/.*\" --fix .",
         "check": "flow check",
-        "test": "jest",
+        "test": "jest --coverage",
         "test-watch": "jest --watch",
         "build": "node tools/build.js",
         "build-watch": "node tools/build.js --watch",
