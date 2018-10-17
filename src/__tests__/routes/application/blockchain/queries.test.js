@@ -4,6 +4,7 @@ import toBeType from 'jest-tobetype';
 import {
   updatePackageSettlement,
   updateDispatchSettlement,
+  packageHistory,
 } from '../../../../routes/application/blockchain/queries';
 import logger from '../../../../logger';
 
@@ -234,6 +235,50 @@ describe('tests for update dispatch settlement status', () => {
       },
     ];
     await updateDispatchSettlement(req, res);
+    logger.debug(
+      `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
+    );
+    expect(mockSend.mock.calls.length).toBe(1);
+    expect(mockSend.mock.calls[0][0]).toEqual(expected);
+  });
+});
+
+describe('test blockchain/queries/packageHistory()', () => {
+  test('test historian records', async () => {
+    const req = {
+      query: {
+        packageId: 'packageHistoryTest',
+      },
+    };
+    expect.assertions(2);
+    const expected = [
+      {
+        date: '10/17/2018',
+        status: 'EMA',
+        statusType: 'Shipment Status',
+      },
+      {
+        date: '10/17/2018',
+        status: 'Unreconciled',
+        statusType: 'Settlement Status',
+      },
+      {
+        date: '10/17/2018',
+        status: 'Reconciled',
+        statusType: 'Settlement Status',
+      },
+      {
+        date: '10/17/2018',
+        status: 'Settlement Disputed',
+        statusType: 'Settlement Status',
+      },
+      {
+        date: '10/17/2018',
+        status: 'EMD',
+        statusType: 'Shipment Status',
+      },
+    ];
+    await packageHistory(req, res);
     logger.debug(
       `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
     );

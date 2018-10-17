@@ -166,7 +166,7 @@ const packageHistory = async (req, res) => {
         // logger.info(`History data: ${JSON.stringify(historyData)}`);
         historyArray.push(historyData);
       });
-      res.status(200).send(historyArray);
+      res.send(historyArray);
     }
   } catch (error) {
     res.status(405).send(error);
