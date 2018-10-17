@@ -14,7 +14,10 @@ import {
   getPackage,
   clearData,
 } from './routes/application/database/queries';
-import inputData from './routes/application/generate_data/queries';
+import {
+  inputData,
+  simulate,
+} from './routes/application/generate_data/queries';
 
 const router = new Router();
 
@@ -54,5 +57,7 @@ router.post('/update-dispatch-settlement', updateDispatchSettlement);
 router.get('/package-history', packageHistory);
 
 router.post('/input-data', inputData);
+
+router.post('/simulate', simulate);
 
 export default router;
