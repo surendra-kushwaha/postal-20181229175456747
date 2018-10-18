@@ -27,7 +27,7 @@ module.exports = function(enrollObj, g_options, fcw, logger) {
       fcw.invoke_chaincode(enrollObj, opts, (err, resp) => {
         if (cb) {
           if (!resp) resp = {};
-          resp.data = opts.cc_args[0]; // pass marble id back
+          //resp.data = opts.cc_args[0]; // pass marble id back
           cb(err, resp);
         }
       });

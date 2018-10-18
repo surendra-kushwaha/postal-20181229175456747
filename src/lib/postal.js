@@ -44,8 +44,8 @@ class Postal {
           reject(err);
         } else if (!err) {
           logger.debug({ status: 'success', data: response });
-          const blockchainPackage = JSON.parse(response.data);
-
+          //const blockchainPackage = JSON.parse(response.data);
+          const blockchainPackage = JSON.parse(response);
           // create today's date
           const todateTimeStamp = new Date();
           let today = `${todateTimeStamp.getMonth() +
@@ -153,8 +153,9 @@ class Postal {
           logger.error(`Unable to update package in blockchain: ${err}`);
           reject(err);
         } else if (!err) {
-          logger.info(`Package (${response.data}) updated on blockchain.`);
-          const updateConditions = { packageId: response.data };
+        	const blockchainPackage = JSON.parse(response);	
+          logger.info(`Package (${blockchainPackage.PackageID}) updated on blockchain.`);
+          const updateConditions = { packageId: blockchainPackage.PackageID };
 
           const updateObj = {
             shipmentStatus,
@@ -221,9 +222,9 @@ class Postal {
             settlementStatus, // should be response.shipmentStatus
             lastUpdated,
           };
-          
+          const blockchainPackage = JSON.parse(response);
           try {
-            const result = await updateOnePackage(response.data, updateObj);
+            const result = await updateOnePackage(blockchainPackage.PackageID, updateObj);
             logger.debug('package data saved successfully to mongodb');
             resolve(result);
           } catch (err) {

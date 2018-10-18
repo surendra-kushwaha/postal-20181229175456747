@@ -4,6 +4,13 @@
 const path = require('path');
 
 module.exports = function(g_options, logger) {
+
+  function sleepFor( sleepDuration ){
+    var now = new Date().getTime();
+    console.log("sleep method called");
+    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
+}
+
   const common = require(path.join(__dirname, './common.js'))(logger);
   const invoke_cc = {};
 
@@ -50,6 +57,9 @@ module.exports = function(g_options, logger) {
       'grpc.http2.keepalive_time': 15,
     }
   );
+
+
+  sleepFor(900);
     // Send Proposal
     channel
       .sendTransactionProposal(request)
@@ -64,7 +74,7 @@ module.exports = function(g_options, logger) {
       .then(response => {
         // All good
         if (response.status === 'SUCCESS') {
-           //logger.debug('[fcw] Successfully ordered endorsement transaction.');
+           logger.debug('[fcw] Successfully ordered endorsement transaction$$$.');
 
           // Call optional order hook
           if (options.ordered_hook)
@@ -84,41 +94,40 @@ module.exports = function(g_options, logger) {
                   cbCalled = true;
                   return cb(null); // timeout pass it back
                 }
-              }, g_options.block_delay + 300000); // increasing timeout from 2000 to 300000
+              }, g_options.block_delay + 2000); // increasing timeout from 2000 to 300000
               // Wait for tx committed event
               var transactionId=request.txId.getTransactionID();
               const channelEventHub = channel.newChannelEventHub(peer);
-              // register the listeners before calling "connect()" so there
-              // is an error callback ready to process an error in case the
-              // connect() call fails
-              channelEventHub.registerTxEvent(
-                request.txId.getTransactionID(),
-                (tx, code) => {
+    
+              channelEventHub.connect(true);
+              channelEventHub.registerChaincodeEvent(options.chaincode_id, 'PostalEvent',
+                (event, blockNum, txID, status) => {
                   const elapsed = `${Date.now() - startTime}ms`;
                   logger.info(
                     '[fcw] The chaincode transaction event has happened! success?:',
-                    code,
+                    status,
                     elapsed,
                   );
                   clearTimeout(watchdog);
-                  channelEventHub.disconnect();
-
-                  if (code !== 'VALID') {
+                  if (status !== 'VALID') {
                     if (cb && !cbCalled) {
                       cbCalled = true;
                       return cb(
-                        common.format_error_msg(`Commit code: ${code}`),
+                        common.format_error_msg(`Commit code: ${status}`),
                       ); // pass error back
                     }
                     return;
                   }
+                  
                   if (cb && !cbCalled) {
                     cbCalled = true;
-                    return cb(null); // all good, pass it back
+                    return cb(null,event.payload.toString('utf8')); // all good, pass it back
+                    //return cb(null);
                   }
+                  channelEventHub.disconnect();
                 },
               );
-              channelEventHub.connect();
+              //channelEventHub.connect();
             } catch (e) {
               logger.error('[fcw] Illusive event error: ', e); // not sure why this happens, seems rare 3/27/2017
               try {
@@ -135,7 +144,7 @@ module.exports = function(g_options, logger) {
           } else {
             setTimeout(() => {
               if (cb) return cb(null);
-            }, g_options.block_delay + 300000); // increasing timeout from 2000 to 300000
+            }, g_options.block_delay + 2000); // increasing timeout from 2000 to 300000
           }
         }
 
