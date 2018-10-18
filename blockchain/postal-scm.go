@@ -11,7 +11,7 @@ package main
  * 2 specific Hyperledger Fabric specific libraries for Smart Contracts
  */
 import (
-	//"bytes"
+	"time"
  	"errors"
 	"encoding/json"
 	"fmt"
@@ -31,6 +31,8 @@ type Postal struct{
 	PostalID string `json:"PostalID"`
 	Name string `json:"Name"`
 	Country string `json:"Country"`
+	TransactionName string `json:"TransactionName"`
+	TimeStamp  time.Time `json:"TimeStamp"`
 }
 
 // Define the package structure, with 10 properties.  Structure tags are used by encoding/json library
@@ -46,6 +48,7 @@ type PostalPackage struct {
 	DispatchID   string `json:"DispatchID"`
 	LastUpdated string `json:"LastUpdated"`
 	TransactionName string `json:"TransactionName"`
+	TimeStamp  time.Time `json:"TimeStamp"`
 }
 
 /*
@@ -149,6 +152,8 @@ func (self *PostalScmChainCode) Invoke(APIstub shim.ChaincodeStubInterface) sc.R
 		res := &Postal{}
 		//user := &User{}
 		err := json.Unmarshal([]byte(userJSON), res)
+		res.TransactionName = "addPostal"
+		res.TimeStamp=time.Now()
 		if err != nil {
 			fmt.Println("Failed to unmarshal user ")
 			return nil, err
@@ -167,6 +172,10 @@ func (self *PostalScmChainCode) Invoke(APIstub shim.ChaincodeStubInterface) sc.R
 			return nil, err
 			//return shim.Error(err.Error())
 		}
+
+		//stub.SetEvent("AddPostalEvent", []byte(string(body)))
+		err = stub.SetEvent("PostalEvent", []byte(string(body)))
+		
 		fmt.Println("Created User  with Key : "+ res.PostalID)
 		fmt.Println("In initialize.AddUser end ")
 		return nil,nil
@@ -314,6 +323,7 @@ func createPostalPackage(packageJSON string, stub shim.ChaincodeStubInterface) (
 		//user := &User{}
 		err := json.Unmarshal([]byte(packageJSON), res)
 		res.TransactionName = "createPostalPackage"
+		res.TimeStamp=time.Now()
 		if err != nil {
 			fmt.Println("Failed to unmarshal package ")
 			return nil, err
@@ -332,6 +342,8 @@ func createPostalPackage(packageJSON string, stub shim.ChaincodeStubInterface) (
 			return nil, err
 			//return shim.Error(err.Error())
 		}
+
+		err = stub.SetEvent("PostalEvent", []byte(string(body)))
 
 		fmt.Println("Created User  with Key : "+ res.PackageID)
 		fmt.Println("In initialize.PACKAGE end ")
@@ -352,6 +364,7 @@ func updateSettlementStatus(APIstub shim.ChaincodeStubInterface, args []string) 
 	packageData.SettlementStatus = args[1]
 	packageData.LastUpdated = args[2]
 	packageData.TransactionName = "updateSettlementStatus"
+	packageData.TimeStamp=time.Now()
 
 	packageAsBytes, _ = json.Marshal(packageData)
 	APIstub.PutState(args[0], packageAsBytes)
@@ -361,6 +374,8 @@ func updateSettlementStatus(APIstub shim.ChaincodeStubInterface, args []string) 
 	if err != nil {
 		return shim.Error(err.Error())
 	}*/
+
+	APIstub.SetEvent("PostalEvent", packageAsBytes)
 
 	return shim.Success(nil)
 }
@@ -381,6 +396,7 @@ func updateShipmentStatus(APIstub shim.ChaincodeStubInterface, args []string) sc
 	packageData.DispatchID = args[3]
 	packageData.LastUpdated = args[4]
 	packageData.TransactionName = "updateShipmentStatus"
+	packageData.TimeStamp=time.Now()
 
 	packageAsBytes, _ = json.Marshal(packageData)
 	APIstub.PutState(args[0], packageAsBytes)
@@ -390,6 +406,7 @@ func updateShipmentStatus(APIstub shim.ChaincodeStubInterface, args []string) sc
 	if err != nil {
 		return shim.Error(err.Error())
 	}*/
+	APIstub.SetEvent("PostalEvent", packageAsBytes)
 
 	return shim.Success(nil)
 }
