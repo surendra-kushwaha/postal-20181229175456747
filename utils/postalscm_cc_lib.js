@@ -16,6 +16,7 @@ module.exports = function(enrollObj, g_options, fcw, logger) {
       chaincode_id: g_options.chaincode_id,
       chaincode_version: g_options.chaincode_version,
       event_url: g_options.event_url,
+      peer_url: g_options.peer_urls[0],
       endorsed_hook: options.endorsed_hook,
       ordered_hook: options.ordered_hook,
       cc_function: options.func,
