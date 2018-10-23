@@ -1166,7 +1166,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
     test('make sure packageId has correct format', async () => {
       expect.assertions(3);
 
-      // we have 2 packages being created in our simulation
+      // we have 1 packages being created in our simulation
       const response = await simulator.simulate(
         'small',
         origin,
@@ -1183,7 +1183,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
     test('make sure only EMA, EMB, and EMC/PREDES messages exist', async () => {
       expect.assertions(4);
 
-      // we have 2 packages being created in our simulation
+      // we have 1 packages being created in our simulation
       const response = await simulator.simulate(
         'small',
         origin,
@@ -1201,7 +1201,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
     test('make sure package ends as unreconciled', async () => {
       expect.assertions(1);
 
-      // we have 2 packages being created in our simulation
+      // we have 1 packages being created in our simulation
       const response = await simulator.simulate(
         'small',
         origin,
@@ -1239,7 +1239,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
     test('make sure packageId has correct format', async () => {
       expect.assertions(1);
 
-      // we have 2 packages being created in our simulation
+      // we have 10 packages being created in our simulation
       const response = await simulator.simulate(
         'small',
         origin,
@@ -1256,7 +1256,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
     test('test that 10 packages are created', async () => {
       expect.assertions(1);
 
-      // we have 2 packages being created in our simulation
+      // we have 10 packages being created in our simulation
       const response = await simulator.simulate(
         'small',
         origin,
@@ -1268,9 +1268,9 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(response[0].length).toBe(10); // we expect 10 packages to be created (i.e. have an EMA)
     });
     test('test the flow -> that all 10 packages have a EMB, EMC, and first PREDES scans, but only 9 have second PREDES and destination scans', async () => {
-      expect.assertions(1);
+      expect.assertions(9);
 
-      // we have 2 packages being created in our simulation
+      // we have 10 packages being created in our simulation
       const response = await simulator.simulate(
         'small',
         origin,
@@ -1336,7 +1336,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
     test('test that only 1 package did not get the second predes scan', async () => {
       expect.assertions(3);
 
-      // we have 2 packages being created in our simulation
+      // we have 10 packages being created in our simulation
       const response = await simulator.simulate(
         'small',
         origin,
@@ -1366,9 +1366,9 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(forgottenPackages.length).toBe(1);
     });
     test('test that the package that did not get the second predes scan does not get any more scans', async () => {
-      expect.assertions(3);
+      expect.assertions(5);
 
-      // we have 2 packages being created in our simulation
+      // we have 10 packages being created in our simulation
       const response = await simulator.simulate(
         'small',
         origin,
@@ -1427,9 +1427,9 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(deliveryPackageIds).not.toContain(forgottenPackageId);
     });
     test('test that the packages that did get the second predes scan have a new receptacleId and dispatchId', async () => {
-      expect.assertions(3);
+      expect.assertions(7);
 
-      // we have 2 packages being created in our simulation
+      // we have 10 packages being created in our simulation
       const response = await simulator.simulate(
         'small',
         origin,
@@ -1509,6 +1509,365 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(edcDifferentIds.length).toBe(0);
       expect(preDeliveryDifferentIds.length).toBe(0);
       expect(deliveryDifferentIds.length).toBe(0);
+    });
+    test('test that the packages that did get the second predes scan end up as reconciled', async () => {
+      expect.assertions(2);
+
+      // we have 10 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the delivery message pacakgeIds
+      const delivery = response[1].filter(message =>
+        shipmentStatuses[7].includes(message.shipmentStatus),
+      );
+      const reconciled = delivery.filter(
+        message => message.settlementStatus === 'Reconciled',
+      );
+
+      expect(delivery.length).toBe(9);
+      expect(reconciled.length).toBe(9);
+    });
+  });
+  describe('tests for Items in a Different Receptacle PREDES', () => {
+    beforeAll(() => {
+      config.simulate = {
+        size: {
+          small: 1,
+        },
+        days: [1, 2, 1, 1, 3, 1, 1, 1, 2],
+        ReceivedinExcess_rate: 0,
+        LostParcel_rate: 0, // over 100 %
+        SeizedorReturned_rate: 0, // over 100 %
+        NoPreDes_rate: 0, // over 100 %
+        ParallelDuplicates_rate: 0, // over 100 %
+        SequentialDuplicates_rate: 0, // over 100 %
+        ExactDuplicates_rate: 0, // over 100 %
+        PreDesOnly: 0, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 100, // over 100%
+      };
+    });
+    test('make sure packageId has correct format', async () => {
+      expect.assertions(1);
+
+      // we have 10 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      const [[{ packageId, packageType }]] = response;
+      const expectedPackageId = new RegExp(
+        `${getPackageTypeCode(packageType)}0000[0-9]{5}${origin}`,
+      );
+      expect(packageId).toMatch(expectedPackageId);
+    });
+    test('test that 10 packages are created', async () => {
+      expect.assertions(1);
+
+      // we have 10 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      expect(response[0].length).toBe(10); // we expect 10 packages to be created (i.e. have an EMA)
+    });
+    test('test the flow -> that all 10 packages have a EMB, EMC, and destination scans. 5 should have another PREDES scan', async () => {
+      expect.assertions(9);
+
+      // we have 10 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      expect(response[1].length).toBe(85); // all scans should be present
+
+      /**
+       * @Edu I know this flow of packages is different than the rest of patches.
+       * We can discuss if this change become overly difficult to include.
+       */
+      // get the EMB messages
+      const emb = response[1].filter(
+        message => message.shipmentStatus === 'EMB',
+      );
+      expect(emb.length).toBe(10);
+
+      // get the EMC messages
+      const emc = response[1].filter(
+        message => message.shipmentStatus === 'EMC',
+      );
+      expect(emc.length).toBe(10);
+
+      // get the PREDES messages
+      const predes = response[1].filter(
+        message => message.shipmentStatus === 'PREDES',
+      );
+      expect(predes.length).toBe(15); // nine of the package should have 2 PREDES scans
+
+      // After second PREDES only 9 packages continue
+      // get the resdes/emd messages
+      const emd = response[1].filter(message =>
+        shipmentStatuses[3].includes(message.shipmentStatus),
+      );
+      expect(emd.length).toBe(10);
+
+      // get the eda messages
+      const eda = response[1].filter(message =>
+        shipmentStatuses[4].includes(message.shipmentStatus),
+      );
+      expect(eda.length).toBe(10);
+
+      // get the edc messages
+      const edc = response[1].filter(message =>
+        shipmentStatuses[5].includes(message.shipmentStatus),
+      );
+      expect(edc.length).toBe(10);
+
+      // get the pre-delivery messages
+      const preDeliveryScans = response[1].filter(message =>
+        shipmentStatuses[6].includes(message.shipmentStatus),
+      );
+      expect(preDeliveryScans.length).toBe(10);
+
+      // get the delivery messages
+      const deliveryScans = response[1].filter(message =>
+        shipmentStatuses[7].includes(message.shipmentStatus),
+      );
+      expect(deliveryScans.length).toBe(10);
+    });
+    test('5 packages did not get the second predes scan', async () => {
+      expect.assertions(3);
+
+      // we have 10 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the PREDES messages
+      const predes = response[1].filter(
+        message => message.shipmentStatus === 'PREDES',
+      );
+
+      const { receptacleId: receptacleId1 } = predes[0];
+      const predes1 = predes.filter(
+        message => message.receptacleId === receptacleId1,
+      );
+      const predes2 = predes.filter(
+        message => message.receptacleId !== receptacleId1,
+      );
+      const predes2PackageIds = predes2.map(msg => msg.packageId);
+      const forgottenPackages = predes1.filter(
+        message => !predes2PackageIds.includes(message.packageId),
+      );
+      expect(predes2.length).toBe(5);
+      expect(predes1.length).toBe(10);
+      expect(forgottenPackages.length).toBe(5);
+    });
+    test('test that the packages that did not get the second predes scan still get destination scans', async () => {
+      expect.assertions(5);
+
+      // we have 10 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the PREDES messages
+      const predes = response[1].filter(
+        message => message.shipmentStatus === 'PREDES',
+      );
+
+      const { receptacleId: receptacleId1 } = predes[0];
+
+      // get the resdes/emd messages
+      const emd = response[1]
+        .filter(message => shipmentStatuses[3].includes(message.shipmentStatus))
+        .filter(message => message.receptacleId === receptacleId1);
+
+      // get the eda messages
+      const eda = response[1]
+        .filter(message => shipmentStatuses[4].includes(message.shipmentStatus))
+        .filter(message => message.receptacleId === receptacleId1);
+
+      // get the edc messages
+      const edc = response[1]
+        .filter(message => shipmentStatuses[5].includes(message.shipmentStatus))
+        .filter(message => message.receptacleId === receptacleId1);
+
+      // get the pre-delivery messages
+      const preDelivery = response[1]
+        .filter(message => shipmentStatuses[6].includes(message.shipmentStatus))
+        .filter(message => message.receptacleId === receptacleId1);
+
+      // get the delivery messages
+      const delivery = response[1]
+        .filter(message => shipmentStatuses[7].includes(message.shipmentStatus))
+        .filter(message => message.receptacleId === receptacleId1);
+
+      expect(emd.length).toBe(5);
+      expect(eda.length).toBe(5);
+      expect(edc.length).toBe(5);
+      expect(preDelivery.length).toBe(5);
+      expect(delivery.length).toBe(5);
+    });
+    test('test that the packages that did get the second predes scan have a new receptacleId and dispatchId', async () => {
+      expect.assertions(12);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the PREDES messages
+      const predes = response[1].filter(
+        message => message.shipmentStatus === 'PREDES',
+      );
+
+      const {
+        receptacleId: receptacleId1,
+        dispatchId: dispatchId1,
+      } = predes[0];
+      const predes2 = predes.find(
+        message => message.receptacleId !== receptacleId1,
+      );
+      const { receptacleId: receptacleId2, dispatchId: dispatchId2 } = predes2;
+
+      // get the resdes/emd messages
+      const emd = response[1].filter(message =>
+        shipmentStatuses[3].includes(message.shipmentStatus),
+      );
+      const emdDifferentIds = emd.filter(
+        message =>
+          message.dispatchId !== dispatchId2 ||
+          message.receptacleId !== receptacleId2,
+      );
+      const emdSameIds = emd.filter(
+        message =>
+          message.dispatchId === dispatchId2 ||
+          message.receptacleId === receptacleId2,
+      );
+
+      // get the eda messages
+      const eda = response[1].filter(message =>
+        shipmentStatuses[4].includes(message.shipmentStatus),
+      );
+      const edaDifferentIds = eda.filter(
+        message =>
+          message.dispatchId !== dispatchId2 ||
+          message.receptacleId !== receptacleId2,
+      );
+      const edaSameIds = eda.filter(
+        message =>
+          message.dispatchId === dispatchId2 ||
+          message.receptacleId === receptacleId2,
+      );
+
+      // get the edc messages
+      const edc = response[1].filter(message =>
+        shipmentStatuses[5].includes(message.shipmentStatus),
+      );
+      const edcDifferentIds = edc.filter(
+        message =>
+          message.dispatchId !== dispatchId2 ||
+          message.receptacleId !== receptacleId2,
+      );
+      const edcSameIds = edc.filter(
+        message =>
+          message.dispatchId === dispatchId2 ||
+          message.receptacleId === receptacleId2,
+      );
+
+      // get the pre-delivery messages
+      const preDelivery = response[1].filter(message =>
+        shipmentStatuses[6].includes(message.shipmentStatus),
+      );
+      const preDeliveryDifferentIds = preDelivery.filter(
+        message =>
+          message.dispatchId !== dispatchId2 ||
+          message.receptacleId !== receptacleId2,
+      );
+      const preDeliverySameIds = preDelivery.filter(
+        message =>
+          message.dispatchId === dispatchId2 ||
+          message.receptacleId === receptacleId2,
+      );
+
+      // get the delivery messages
+      const delivery = response[1].filter(message =>
+        shipmentStatuses[7].includes(message.shipmentStatus),
+      );
+      const deliveryDifferentIds = delivery.filter(
+        message =>
+          message.dispatchId !== dispatchId2 ||
+          message.receptacleId !== receptacleId2,
+      );
+      const deliverySameIds = delivery.filter(
+        message =>
+          message.dispatchId === dispatchId2 ||
+          message.receptacleId === receptacleId2,
+      );
+
+      expect(dispatchId1).not.toMatch(dispatchId2);
+      expect(receptacleId1).not.toMatch(receptacleId2);
+      expect(emdSameIds.length).toBe(5);
+      expect(edaSameIds.length).toBe(5);
+      expect(edcSameIds.length).toBe(5);
+      expect(preDeliverySameIds.length).toBe(5);
+      expect(deliverySameIds.length).toBe(5);
+      expect(emdDifferentIds.length).toBe(5);
+      expect(edaDifferentIds.length).toBe(5);
+      expect(edcDifferentIds.length).toBe(5);
+      expect(preDeliveryDifferentIds.length).toBe(5);
+      expect(deliveryDifferentIds.length).toBe(5);
+    });
+    test('test that all packages end up as reconciled', async () => {
+      expect.assertions(2);
+
+      // we have 10 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the delivery message pacakgeIds
+      const delivery = response[1].filter(message =>
+        shipmentStatuses[7].includes(message.shipmentStatus),
+      );
+      const reconciled = delivery.filter(
+        message => message.settlementStatus === 'Reconciled',
+      );
+
+      expect(delivery.length).toBe(10);
+      expect(reconciled.length).toBe(10);
     });
   });
 });
