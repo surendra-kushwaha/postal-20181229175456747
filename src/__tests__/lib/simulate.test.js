@@ -19,8 +19,8 @@ const simulator = new DispatchSimulator();
 
 const PackageType = ['LA', 'CA', 'EX', 'UA', 'RA']; // tracked,parcels,express,untracked,registered
 const Countrys = ['US', 'CN', 'GB', 'DE', 'CA', 'JP', 'FR'];
-const AirportsUS = ['JFKA'];
-const AirportsCN = ['BJSA'];
+const AirportsUS = ['JFKA', 'ORDA'];
+const AirportsCN = ['BJSA', 'PVGA'];
 const AirportsUK = ['LONA', 'CVTA'];
 const AirportsDE = ['FRAA'];
 const AirportsCA = ['YTOA'];
