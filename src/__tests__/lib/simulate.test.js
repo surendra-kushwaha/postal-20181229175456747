@@ -760,4 +760,385 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(response[1][3].receptacleId).toBe('');
     });
   });
+  describe('tests for parallel duplicates', () => {
+    beforeAll(() => {
+      config.simulate = {
+        size: {
+          small: 1,
+        },
+        days: [1, 2, 1, 1, 3, 1, 1, 1, 2],
+        ReceivedinExcess_rate: 0,
+        LostParcel_rate: 0, // over 100 %
+        SeizedorReturned_rate: 0, // over 100 %
+        NoPreDes_rate: 0, // over 100 %
+        ParallelDuplicates_rate: 100, // over 100 %
+        SequentialDuplicates_rate: 0, // over 100 %
+        ExactDuplicates_rate: 0, // over 100 %
+        PreDesOnly: 0, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 0, // over 100%
+      };
+    });
+    test('make sure the EMA messages are on the same day and are identical', async () => {
+      expect.assertions(3);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      expect(response[0].length).toBe(2); // two packages should be created
+      const {
+        packageId: packageId1,
+        packageType: packageType1,
+        lastUpdated: lastUpdated1,
+      } = response[0][0];
+      const {
+        packageId: packageId2,
+        lastUpdated: lastUpdated2,
+      } = response[0][1];
+      expect(packageId1).toMatch(packageId2); // the packageIds should be the same
+      const expectedPackageId1 = new RegExp(
+        `${getPackageTypeCode(packageType1)}5555[0-9]{5}${origin}`,
+      );
+      expect(packageId1).toMatch(expectedPackageId1);
+      expect(lastUpdated1).toMatch(lastUpdated2);
+    });
+    test('confirm that both messages have the different receptacle and dispatchIds, but EMC occurs on the same day', async () => {
+      expect.assertions(8);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      // get the EMC/PREDES messages
+      const emcs = response[1].filter(message =>
+        shipmentStatuses[2].contains(message.shipmentStatus),
+      );
+      expect(emcs.length).toBe(2); // only two packages should have been created
+      const {
+        receptacleId: receptacleId1,
+        dispatchId: dispatchId1,
+        packageId: packageId1,
+        lastUpdated: lastUpdated1,
+      } = emcs[0];
+      const {
+        receptacleId: receptacleId2,
+        dispatchId: dispatchId2,
+        packageId: packageId2,
+        lastUpdated: lastUpdated2,
+      } = emcs[1];
+
+      const getDestinationAirportRegex = `${origin}[A-Za-z]{4}${destination}([A-Za-z]{4})`;
+      const destAirport1 = dispatchId1.match(getDestinationAirportRegex);
+      const destAirport2 = dispatchId2.match(getDestinationAirportRegex);
+
+      expect(getAirportArray(destination).contain(destAirport1)).toBeTruthy();
+      expect(getAirportArray(destination).contain(destAirport2)).toBeTruthy(); // airports should be valid
+      expect(destAirport1).not.toMatch(destAirport2); // destination airports should be different
+      expect(receptacleId1).not.toMatch(receptacleId2);
+      expect(dispatchId1).not.toMatch(dispatchId2);
+      expect(packageId1).toMatch(packageId2);
+      expect(lastUpdated1).toMatch(lastUpdated2); // may need to clean up date formats here..
+    });
+    test('confirm that both packages are delivered on the same day', async () => {
+      expect.assertions(5);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the delivery messages
+      const deliveryScans = response[1].filter(message =>
+        shipmentStatuses[7].contains(message.shipmentStatus),
+      );
+      expect(deliveryScans.length).toBe(2);
+
+      const {
+        receptacleId: receptacleId1,
+        dispatchId: dispatchId1,
+        packageId: packageId1,
+        lastUpdated: lastUpdated1,
+      } = deliveryScans[0];
+      const {
+        receptacleId: receptacleId2,
+        dispatchId: dispatchId2,
+        packageId: packageId2,
+        lastUpdated: lastUpdated2,
+      } = deliveryScans[1];
+
+      expect(receptacleId1).not.toMatch(receptacleId2);
+      expect(dispatchId1).not.toMatch(dispatchId2);
+      expect(packageId1).toMatch(packageId2);
+      expect(lastUpdated1).toMatch(lastUpdated2); // may need to clean up date formats here..
+    });
+  });
+  describe('tests for sequential duplicates', () => {
+    beforeAll(() => {
+      config.simulate = {
+        size: {
+          small: 1,
+        },
+        days: [1, 2, 1, 1, 3, 1, 1, 1, 2],
+        ReceivedinExcess_rate: 0,
+        LostParcel_rate: 0, // over 100 %
+        SeizedorReturned_rate: 0, // over 100 %
+        NoPreDes_rate: 0, // over 100 %
+        ParallelDuplicates_rate: 0, // over 100 %
+        SequentialDuplicates_rate: 100, // over 100 %
+        ExactDuplicates_rate: 0, // over 100 %
+        PreDesOnly: 0, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 0, // over 100%
+      };
+    });
+    test('make sure the EMA messages are on different days but packageId is same', async () => {
+      expect.assertions(3);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      expect(response[0].length).toBe(2); // two packages should be created
+      const {
+        packageId: packageId1,
+        packageType: packageType1,
+        lastUpdated: lastUpdated1,
+      } = response[0][0];
+      const {
+        packageId: packageId2,
+        lastUpdated: lastUpdated2,
+      } = response[0][1];
+      expect(packageId1).toMatch(packageId2); // the packageIds should be the same
+      const expectedPackageId1 = new RegExp(
+        `${getPackageTypeCode(packageType1)}6666[0-9]{5}${origin}`,
+      );
+      expect(packageId1).toMatch(expectedPackageId1);
+      expect(lastUpdated1).not.toMatch(lastUpdated2);
+    });
+    test('confirm that both messages have the different receptacle and dispatchIds, and EMC occurs on different day', async () => {
+      expect.assertions(8);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      // get the EMC/PREDES messages
+      const emcs = response[1].filter(message =>
+        shipmentStatuses[2].contains(message.shipmentStatus),
+      );
+      expect(emcs.length).toBe(2); // only two packages should have been created
+      const {
+        receptacleId: receptacleId1,
+        dispatchId: dispatchId1,
+        packageId: packageId1,
+        lastUpdated: lastUpdated1,
+      } = emcs[0];
+      const {
+        receptacleId: receptacleId2,
+        dispatchId: dispatchId2,
+        packageId: packageId2,
+        lastUpdated: lastUpdated2,
+      } = emcs[1];
+
+      const getDestinationAirportRegex = `${origin}[A-Za-z]{4}${destination}([A-Za-z]{4})`;
+      const destAirport1 = dispatchId1.match(getDestinationAirportRegex);
+      const destAirport2 = dispatchId2.match(getDestinationAirportRegex);
+
+      expect(getAirportArray(destination).contain(destAirport1)).toBeTruthy();
+      expect(getAirportArray(destination).contain(destAirport2)).toBeTruthy(); // airports should be valid
+      expect(destAirport1).not.toMatch(destAirport2); // destination airports should be different
+      expect(receptacleId1).not.toMatch(receptacleId2);
+      expect(dispatchId1).not.toMatch(dispatchId2);
+      expect(packageId1).toMatch(packageId2);
+      expect(lastUpdated1).toMatch(lastUpdated2); // may need to clean up date formats here..
+    });
+    test('confirm that both packages are delivered on different days', async () => {
+      expect.assertions(5);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the delivery messages
+      const deliveryScans = response[1].filter(message =>
+        shipmentStatuses[7].contains(message.shipmentStatus),
+      );
+      expect(deliveryScans.length).toBe(2);
+
+      const {
+        receptacleId: receptacleId1,
+        dispatchId: dispatchId1,
+        packageId: packageId1,
+        lastUpdated: lastUpdated1,
+      } = deliveryScans[0];
+      const {
+        receptacleId: receptacleId2,
+        dispatchId: dispatchId2,
+        packageId: packageId2,
+        lastUpdated: lastUpdated2,
+      } = deliveryScans[1];
+
+      expect(receptacleId1).not.toMatch(receptacleId2);
+      expect(dispatchId1).not.toMatch(dispatchId2);
+      expect(packageId1).toMatch(packageId2);
+      expect(lastUpdated1).not.toMatch(lastUpdated2); // may need to clean up date formats here..
+    });
+    test('confirm that the first package is fully delivered before the second package is created', async () => {
+      expect.assertions(2);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the delivery messages
+      const deliveryScans = response[1].filter(message =>
+        shipmentStatuses[7].contains(message.shipmentStatus),
+      );
+      expect(deliveryScans.length).toBe(2);
+
+      // may need to validate that the timestamps can be compared with > or <
+      const { lastUpdated: creationDate1 } = response[0][0];
+      const { lastUpdated: creationDate2 } = response[0][1];
+      const { lastUpdated: deliveryDate1 } = deliveryScans[0];
+      const { lastUpdated: deliveryDate2 } = deliveryScans[1];
+
+      expect(
+        creationDate1 > deliveryDate2 || creationDate2 > deliveryDate1,
+      ).toBeTruthy();
+    });
+  });
+  describe('tests for exact duplicates', () => {
+    beforeAll(() => {
+      config.simulate = {
+        size: {
+          small: 1,
+        },
+        days: [1, 2, 1, 1, 3, 1, 1, 1, 2],
+        ReceivedinExcess_rate: 0,
+        LostParcel_rate: 0, // over 100 %
+        SeizedorReturned_rate: 0, // over 100 %
+        NoPreDes_rate: 0, // over 100 %
+        ParallelDuplicates_rate: 0, // over 100 %
+        SequentialDuplicates_rate: 0, // over 100 %
+        ExactDuplicates_rate: 100, // over 100 %
+        PreDesOnly: 0, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 0, // over 100%
+      };
+    });
+    test('make sure the EMA messages are on different days but packageId is same', async () => {
+      expect.assertions(3);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      expect(response[0].length).toBe(2); // two packages should be created
+      const {
+        packageId: packageId1,
+        packageType: packageType1,
+      } = response[0][0];
+      const { packageId: packageId2 } = response[0][1];
+      expect(packageId1).toMatch(packageId2); // the packageIds should be the same
+      const expectedPackageId1 = new RegExp(
+        `${getPackageTypeCode(packageType1)}7777[0-9]{5}${origin}`,
+      );
+      expect(packageId1).toMatch(expectedPackageId1);
+    });
+    test('make sure all of the messages are the exact same', async () => {
+      expect.assertions(11);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      expect(response[0].length).toBe(2); // two packages should be created
+      expect(response[1].length).toBe(16); // all scans should be present
+
+      // EMA messages should be identical
+      expect(response[0][0]).toMatch(response[0][1]);
+
+      // get the EXA messages
+      const exa = response[1].filter(message =>
+        shipmentStatuses[0].contains(message.shipmentStatus),
+      );
+      expect(exa[0]).toMatch(exa[1]);
+
+      // get the exc messages
+      const exc = response[1].filter(message =>
+        shipmentStatuses[1].contains(message.shipmentStatus),
+      );
+      expect(exc[0]).toMatch(exc[1]);
+
+      // get the emc/predes messages
+      const emc = response[1].filter(message =>
+        shipmentStatuses[2].contains(message.shipmentStatus),
+      );
+      expect(emc[0]).toMatch(emc[1]);
+
+      // get the resdes/emd messages
+      const emd = response[1].filter(message =>
+        shipmentStatuses[3].contains(message.shipmentStatus),
+      );
+      expect(emd[0]).toMatch(emd[1]);
+
+      // get the eda messages
+      const eda = response[1].filter(message =>
+        shipmentStatuses[4].contains(message.shipmentStatus),
+      );
+      expect(eda[0]).toMatch(eda[1]);
+
+      // get the edc messages
+      const edc = response[1].filter(message =>
+        shipmentStatuses[5].contains(message.shipmentStatus),
+      );
+      expect(edc[0]).toMatch(edc[1]);
+
+      // get the pre-delivery messages
+      const preDeliveryScans = response[1].filter(message =>
+        shipmentStatuses[6].contains(message.shipmentStatus),
+      );
+      expect(preDeliveryScans[0]).toMatch(preDeliveryScans[1]);
+
+      // get the delivery messages
+      const deliveryScans = response[1].filter(message =>
+        shipmentStatuses[7].contains(message.shipmentStatus),
+      );
+      expect(deliveryScans[0]).toMatch(deliveryScans[1]);
+    });
+  });
 });
