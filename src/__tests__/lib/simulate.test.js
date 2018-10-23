@@ -1141,4 +1141,80 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(deliveryScans[0]).toMatch(deliveryScans[1]);
     });
   });
+  describe('tests for PREDES only at Origin', () => {
+    beforeAll(() => {
+      config.simulate = {
+        size: {
+          small: 1,
+        },
+        days: [1, 2, 1, 1, 3, 1, 1, 1, 2],
+        ReceivedinExcess_rate: 0,
+        LostParcel_rate: 0, // over 100 %
+        SeizedorReturned_rate: 0, // over 100 %
+        NoPreDes_rate: 0, // over 100 %
+        ParallelDuplicates_rate: 0, // over 100 %
+        SequentialDuplicates_rate: 0, // over 100 %
+        ExactDuplicates_rate: 0, // over 100 %
+        PreDesOnly: 100, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 0, // over 100%
+      };
+    });
+    test('make sure packageId has correct format', async () => {
+      expect.assertions(3);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+      const [[{ packageId, packageType }]] = response;
+      const expectedPackageId = new RegExp(
+        `${getPackageTypeCode(packageType)}8888[0-9]{5}${origin}`,
+      );
+      expect(packageId).toMatch(expectedPackageId);
+    });
+    test('make sure only EMA, EMB, and EMC/PREDES messages exist', async () => {
+      expect.assertions(3);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      expect(response[0].length).toBe(1); // only expect 1 package
+      expect(response[1].length).toBe(2); // two scans to update the package
+      expect(response[1][0].shipmentStatus).toMatch('EMB');
+      const emcPreDes = response[1][1];
+      expect(
+        emcPreDes.shipmentStatus === 'EMC' ||
+          emcPreDes.shipmentStatus === 'PREDES',
+      ).toBeTruthy();
+    });
+    test('make sure package ends as unreconciled', async () => {
+      expect.assertions(3);
+
+      // we have 2 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      const updatesLength = response[1].length;
+
+      expect(response[1][updatesLength - 1].settlementStatus).toMatch(
+        'Unreconciled',
+      );
+    });
+  });
 });
