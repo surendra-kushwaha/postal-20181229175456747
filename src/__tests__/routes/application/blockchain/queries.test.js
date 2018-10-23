@@ -19,6 +19,8 @@ jest.mock('../../../../models/postalPackageData.js');
 expect.extend(toBeType);
 
 const todateTimeStamp = new Date();
+const startdateTimeStamp = new Date('01/01/2018');
+const enddateTimeStamp = new Date('01/20/2018');
 const today =
   todateTimeStamp.getMonth() + 1 < 10
     ? `0${todateTimeStamp.getMonth() +
@@ -26,19 +28,19 @@ const today =
     : `${todateTimeStamp.getMonth() +
         1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
 
-// const settlementStatus = 'Reconciled';
 const startDate =
   new Date('01/01/2018').getMonth() + 1 < 10
-    ? `0${todateTimeStamp.getMonth() +
-        1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`
-    : `${todateTimeStamp.getMonth() +
-        1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
+    ? `0${startdateTimeStamp.getMonth() +
+        1}/${startdateTimeStamp.getDate()}/${startdateTimeStamp.getFullYear()}`
+    : `${startdateTimeStamp.getMonth() +
+        1}/${startdateTimeStamp.getDate()}/${startdateTimeStamp.getFullYear()}`;
+
 const endDate =
   new Date('20/01/2018').getMonth() + 1 < 10
-    ? `0${todateTimeStamp.getMonth() +
-        1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`
-    : `${todateTimeStamp.getMonth() +
-        1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
+    ? `0${enddateTimeStamp.getMonth() +
+        1}/${enddateTimeStamp.getDate()}/${enddateTimeStamp.getFullYear()}`
+    : `${enddateTimeStamp.getMonth() +
+        1}/${enddateTimeStamp.getDate()}/${enddateTimeStamp.getFullYear()}`;
 
 const lastUpdated = today;
 
@@ -70,7 +72,7 @@ describe('smoke test', () => {
   });
 });
 
-describe('tests for update settlement status', () => {
+describe('/POST updatePackageSettlement', () => {
   test('test that the proper update conditions are sent for settlement queries.js', async () => {
     const req = {
       body: {
@@ -92,7 +94,7 @@ describe('tests for update settlement status', () => {
   });
 });
 
-describe('tests for update dispatch settlement status', () => {
+describe('/POST updateDispatchSettlement', () => {
   test('test that the proper update conditions are sent for dispatch settlement', async () => {
     expect.assertions(2);
     const req = {
@@ -116,6 +118,7 @@ describe('tests for update dispatch settlement status', () => {
         destinationPost: 'CN',
         startDate,
         endDate,
+        weight: 1,
         dateCreated: today,
         packageType: 'test',
       },
@@ -127,6 +130,7 @@ describe('tests for update dispatch settlement status', () => {
         destinationPost: 'CN',
         startDate,
         endDate,
+        weight: 3,
         dateCreated: today,
         packageType: 'test',
       },
@@ -137,6 +141,7 @@ describe('tests for update dispatch settlement status', () => {
         originPost: 'US',
         destinationPost: 'CN',
         startDate,
+        weight: 4,
         endDate,
         dateCreated: today,
         packageType: 'test',
@@ -174,6 +179,7 @@ describe('tests for update dispatch settlement status', () => {
         startDate,
         endDate,
         dateCreated: today,
+        weight: 1,
         packageType: 'test',
       },
       {
@@ -184,6 +190,7 @@ describe('tests for update dispatch settlement status', () => {
         destinationPost: 'CN',
         startDate,
         endDate,
+        weight: 3,
         dateCreated: today,
         packageType: 'test',
       },
@@ -196,6 +203,7 @@ describe('tests for update dispatch settlement status', () => {
         startDate,
         endDate,
         dateCreated: today,
+        weight: 4,
         packageType: 'test',
       },
     ];
@@ -228,6 +236,7 @@ describe('tests for update dispatch settlement status', () => {
         settlementStatus: req.body.newStatus,
         originPost: 'US',
         destinationPost: 'CN',
+        weight: 2,
         startDate,
         endDate,
         dateCreated: today,
@@ -243,7 +252,7 @@ describe('tests for update dispatch settlement status', () => {
   });
 });
 
-describe('test blockchain/queries/packageHistory()', () => {
+describe('/GET packageHistory', () => {
   test('test historian records', async () => {
     const req = {
       query: {
@@ -253,27 +262,27 @@ describe('test blockchain/queries/packageHistory()', () => {
     expect.assertions(2);
     const expected = [
       {
-        date: '10/17/2018',
+        date: today,
         status: 'EMA',
         statusType: 'Shipment Status',
       },
       {
-        date: '10/17/2018',
+        date: today,
         status: 'Unreconciled',
         statusType: 'Settlement Status',
       },
       {
-        date: '10/17/2018',
+        date: today,
         status: 'Reconciled',
         statusType: 'Settlement Status',
       },
       {
-        date: '10/17/2018',
+        date: today,
         status: 'Settlement Disputed',
         statusType: 'Settlement Status',
       },
       {
-        date: '10/17/2018',
+        date: today,
         status: 'EMD',
         statusType: 'Shipment Status',
       },

@@ -33,27 +33,59 @@ class PostalPackage {
     else cb(undefined, response);
   }
   static find(findCondition: Object, queryString?: String, cb) {
-    if (findCondition.packageId) {
+    logger.debug(`findCondition:${findCondition}`);
+    if ('packageId' in findCondition) {
       const response = {
         packageId: findCondition.packageId,
       };
       cb(undefined, [response]);
-    } else if (PostalPackage.noneArray.includes(findCondition.dispatchId)) {
+    } else if ('dispatchId' in findCondition) {
+      if (PostalPackage.noneArray.includes(findCondition.dispatchId)) {
+        const response = PostalPackage.packages.filter(
+          pac =>
+            pac.dispatchId === findCondition.dispatchId &&
+            pac.originPost === findCondition.originPost &&
+            pac.destinationPost === findCondition.destinationPost &&
+            pac.startDate === findCondition.startDate &&
+            pac.endDate === findCondition.endDate &&
+            pac.packageType === findCondition.packageType &&
+            pac.dateCreated === findCondition.dateCreated,
+        );
+        logger.debug(`RESPONSE:${JSON.stringify(response)}`);
+        cb(undefined, response);
+      } else {
+        const response = PostalPackage.packages.filter(
+          pac => pac.dispatchId === findCondition.dispatchId,
+        );
+        logger.debug(`RESPONSE:${JSON.stringify(response)}`);
+        cb(undefined, response);
+      }
+    } else if ('$or' in findCondition) {
       const response = PostalPackage.packages.filter(
         pac =>
-          pac.dispatchId === findCondition.dispatchId &&
+          pac.originPost === findCondition.$or[0].originPost ||
+          pac.destinationPost === findCondition.$or[1].destinationPost,
+      );
+      const updatedResponse = response.map(res => ({
+        startDate: res.startDate,
+        endDate: res.endDate,
+        dateCreated: res.dateCreated,
+        originPost: res.originPost,
+        destinationPost: res.destinationPost,
+      }));
+      logger.debug(`RESPONSE:${JSON.stringify(updatedResponse)}`);
+      cb(undefined, updatedResponse);
+    } else if (
+      !('dispatchId' in findCondition) &&
+      !('packageId' in findCondition)
+    ) {
+      const response = PostalPackage.packages.filter(
+        pac =>
           pac.originPost === findCondition.originPost &&
           pac.destinationPost === findCondition.destinationPost &&
           pac.startDate === findCondition.startDate &&
           pac.endDate === findCondition.endDate &&
-          pac.packageType === findCondition.packageType &&
           pac.dateCreated === findCondition.dateCreated,
-      );
-      logger.debug(`RESPONSE:${JSON.stringify(response)}`);
-      cb(undefined, response);
-    } else if (findCondition.dispatchId) {
-      const response = PostalPackage.packages.filter(
-        pac => pac.dispatchId === findCondition.dispatchId,
       );
       logger.debug(`RESPONSE:${JSON.stringify(response)}`);
       cb(undefined, response);
@@ -62,6 +94,8 @@ class PostalPackage {
 }
 
 const todateTimeStamp = new Date();
+const startdateTimeStamp = new Date('01/01/2018');
+const enddateTimeStamp = new Date('01/20/2018');
 const today =
   todateTimeStamp.getMonth() + 1 < 10
     ? `0${todateTimeStamp.getMonth() +
@@ -71,17 +105,17 @@ const today =
 
 const startDate =
   new Date('01/01/2018').getMonth() + 1 < 10
-    ? `0${todateTimeStamp.getMonth() +
-        1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`
-    : `${todateTimeStamp.getMonth() +
-        1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
+    ? `0${startdateTimeStamp.getMonth() +
+        1}/${startdateTimeStamp.getDate()}/${startdateTimeStamp.getFullYear()}`
+    : `${startdateTimeStamp.getMonth() +
+        1}/${startdateTimeStamp.getDate()}/${startdateTimeStamp.getFullYear()}`;
 
 const endDate =
   new Date('20/01/2018').getMonth() + 1 < 10
-    ? `0${todateTimeStamp.getMonth() +
-        1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`
-    : `${todateTimeStamp.getMonth() +
-        1}/${todateTimeStamp.getDate()}/${todateTimeStamp.getFullYear()}`;
+    ? `0${enddateTimeStamp.getMonth() +
+        1}/${enddateTimeStamp.getDate()}/${enddateTimeStamp.getFullYear()}`
+    : `${enddateTimeStamp.getMonth() +
+        1}/${enddateTimeStamp.getDate()}/${enddateTimeStamp.getFullYear()}`;
 
 PostalPackage.noneArray = [
   undefined,
@@ -100,6 +134,7 @@ PostalPackage.packages = [
     settlementStatus: 'Settlement Disputed',
     originPost: 'US',
     destinationPost: 'CN',
+    weight: 1,
     startDate,
     endDate,
     dateCreated: today,
@@ -111,6 +146,7 @@ PostalPackage.packages = [
     settlementStatus: 'Settlement Requested',
     originPost: 'US',
     destinationPost: 'CN',
+    weight: 2,
     startDate,
     endDate,
     dateCreated: today,
@@ -122,6 +158,7 @@ PostalPackage.packages = [
     settlementStatus: 'Settlement Agreed',
     originPost: 'US',
     destinationPost: 'CN',
+    weight: 3,
     startDate,
     endDate,
     dateCreated: today,
@@ -133,6 +170,7 @@ PostalPackage.packages = [
     settlementStatus: 'Dispute Confirmed',
     originPost: 'US',
     destinationPost: 'CN',
+    weight: 4,
     startDate,
     endDate,
     dateCreated: today,

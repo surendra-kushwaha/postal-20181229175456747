@@ -4,6 +4,7 @@ const {
   createArrayOfDispatches,
   createDispatchIdArray,
   performDispatchCalculations,
+  filterViewReports,
 } = require('./utilities');
 
 const {
@@ -85,43 +86,6 @@ const postPackageReport = async (req, res) => {
   } catch (err) {
     res.send({ status: 'fail', data: { msg: err } });
   }
-};
-
-// Mongo DB changes end here
-
-const filterViewReports = (packages: []) => {
-  const filteredArray = [];
-  packages.forEach(packageObj => {
-    // need to get rid of unique identifier of each package
-    const viewReportObj = {
-      originPost: packageObj.originPost,
-      destinationPost: packageObj.destinationPost,
-      startDate: packageObj.startDate,
-      endDate: packageObj.endDate,
-      dateCreated: packageObj.dateCreated,
-    };
-    if (filteredArray.length < 1) {
-      filteredArray.push(viewReportObj);
-    } else {
-      let same = false;
-      filteredArray.forEach(uniqueObject => {
-        if (
-          viewReportObj.originPost === uniqueObject.originPost &&
-          viewReportObj.destinationPost === uniqueObject.destinationPost &&
-          String(viewReportObj.startDate) === String(uniqueObject.startDate) &&
-          String(viewReportObj.endDate) === String(uniqueObject.endDate) &&
-          String(viewReportObj.dateCreated) === String(uniqueObject.dateCreated)
-        ) {
-          same = true;
-        }
-      });
-      if (!same) {
-        logger.debug('Adding view report object');
-        filteredArray.push(viewReportObj);
-      }
-    }
-  });
-  return filteredArray;
 };
 
 const viewReports = async (req, res) => {
