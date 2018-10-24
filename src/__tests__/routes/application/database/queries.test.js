@@ -91,7 +91,6 @@ describe('/GET getPackage', () => {
 
 describe('/POST postPackageReport', () => {
   test('test that we get all packages for an empty dispatchId', async () => {
-    expect.assertions(2);
     const req = {
       body: {
         originPost: 'US',
@@ -103,85 +102,44 @@ describe('/POST postPackageReport', () => {
         dispatchId: '',
       },
     };
-    const expected = [
-      {
-        dispatchId: '',
-        packageId: 'package2',
-        originPost: 'US',
-        destinationPost: 'CN',
-        settlementStatus: 'Settlement Requested',
-        startDate,
-        endDate,
-        weight: 2,
-        dateCreated: today,
-        packageType: 'test',
-      },
-    ];
     await postPackageReport(req, res);
     logger.debug(
       `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0].data)}`,
     );
+    expect.assertions(mockSend.mock.calls[0][0].data + 1);
     expect(mockSend.mock.calls.length).toBe(1);
-    expect(mockSend.mock.calls[0][0].data).toEqual(expected);
+    mockSend.mock.calls[0][0].data.forEach(dispatch => {
+      expect(dispatch.dispatchId).toBe(req.body.dispatchId);
+    });
   });
 });
 describe('/GET getPackageReport', () => {
   test('test that we get all packages for a non-empty dispatchId', async () => {
-    expect.assertions(2);
+    expect.assertions(5);
     const req = {
       query: {
         dispatchId: 'dispatch1',
       },
     };
-    const expected = [
-      {
-        dateCreated: today,
-        destinationPost: 'CN',
-        dispatchId: 'dispatch1',
-        endDate,
-        originPost: 'US',
-        packageId: 'package1',
-        packageType: 'test',
-        settlementStatus: 'Settlement Disputed',
-        weight: 1,
-        startDate,
-      },
-      {
-        dateCreated: today,
-        destinationPost: 'CN',
-        dispatchId: 'dispatch1',
-        endDate,
-        originPost: 'US',
-        packageId: 'package3',
-        packageType: 'test',
-        settlementStatus: 'Settlement Agreed',
-        weight: 3,
-        startDate,
-      },
-      {
-        dateCreated: today,
-        destinationPost: 'CN',
-        dispatchId: 'dispatch1',
-        endDate,
-        originPost: 'US',
-        packageId: 'package4',
-        packageType: 'test',
-        settlementStatus: 'Dispute Confirmed',
-        weight: 4,
-        startDate,
-      },
-    ];
     await getPackageReport(req, res);
     logger.debug(
       `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0].data)}`,
     );
     expect(mockSend.mock.calls.length).toBe(1);
-    expect(mockSend.mock.calls[0][0].data).toEqual(expected);
+    expect(mockSend.mock.calls[0][0].data.length).toBe(3);
+    expect(mockSend.mock.calls[0][0].data[0].dispatchId).toBe(
+      req.query.dispatchId,
+    );
+    expect(mockSend.mock.calls[0][0].data[1].dispatchId).toBe(
+      req.query.dispatchId,
+    );
+    expect(mockSend.mock.calls[0][0].data[2].dispatchId).toBe(
+      req.query.dispatchId,
+    );
   });
 });
-describe('/POST query', () => {
+describe('/POST report', () => {
   test('test that we get all the dispatch summaries from a mocked database', async () => {
-    expect.assertions(2);
     const req = {
       body: {
         originPost: 'US',
@@ -191,66 +149,39 @@ describe('/POST query', () => {
         dateCreated: today,
       },
     };
-    const expected = [
-      {
-        dateCreated: today,
-        destinationPost: 'CN',
-        dispatchId: 'dispatch1',
-        endDate,
-        originPost: 'US',
-        packageType: 'test',
-        settlementStatus: 'Unreconciled',
-        startDate,
-        totalReconciledPackages: 1,
-        totalReconciledWeight: 3,
-        totalUnreconciledPackages: 2,
-        totalUnreconciledWeight: 5,
-      },
-      {
-        dateCreated: today,
-        destinationPost: 'CN',
-        dispatchId: '',
-        endDate,
-        originPost: 'US',
-        packageType: 'test',
-        settlementStatus: 'Unreconciled',
-        startDate,
-        totalReconciledPackages: 0,
-        totalReconciledWeight: 0,
-        totalUnreconciledPackages: 1,
-        totalUnreconciledWeight: 2,
-      },
-    ];
     await report(req, res);
     logger.debug(
       `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0].data)}`,
     );
+    expect.assertions(mockSend.mock.calls[0][0].data.length * 5 + 1);
     expect(mockSend.mock.calls.length).toBe(1);
-    expect(mockSend.mock.calls[0][0].data).toEqual(expected);
+    mockSend.mock.calls[0][0].data.forEach(dispatch => {
+      expect(dispatch.originPost).toBe(req.body.originPost);
+      expect(dispatch.destinationPost).toBe(req.body.destinationPost);
+      expect(dispatch.startDate).toBe(req.body.startDate);
+      expect(dispatch.endDate).toBe(req.body.endDate);
+      expect(dispatch.dateCreated).toBe(req.body.dateCreated);
+    });
   });
 });
-describe('/GET query', () => {
+describe('/GET  viewReports', () => {
   test('test that we get all the dispatch summaries for a country from a mocked database', async () => {
-    expect.assertions(2);
     const req = {
       query: {
         country: 'US',
       },
     };
-    const expected = [
-      {
-        originPost: 'US',
-        destinationPost: 'CN',
-        startDate,
-        endDate,
-        dateCreated: today,
-      },
-    ];
     await viewReports(req, res);
     logger.debug(
       `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0].data)}`,
     );
+    expect.assertions(mockSend.mock.calls[0][0].data.length + 1);
     expect(mockSend.mock.calls.length).toBe(1);
-    expect(mockSend.mock.calls[0][0].data).toEqual(expected);
+    mockSend.mock.calls[0][0].data.forEach(dispatch => {
+      expect(
+        dispatch.originPost === req.query.country ||
+          dispatch.destinationPost === req.query.country,
+      ).toBeTruthy();
+    });
   });
 });

@@ -120,7 +120,8 @@ const updatePackageSettlement = async (req, res) => {
     }
   } catch (err) {
     logger.error(`There was an error updating Settlement Status. ${err}`);
-    res.status(400).send(err);
+    res.status(400);
+    res.send(err);
   }
 };
 

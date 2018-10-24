@@ -73,7 +73,7 @@ describe('smoke test', () => {
 });
 
 describe('/POST updatePackageSettlement', () => {
-  test('test that the proper update conditions are sent for settlement queries.js', async () => {
+  test('test that the proper update conditions are sent for package settlement', async () => {
     const req = {
       body: {
         id: 'queriestest1',
@@ -92,11 +92,25 @@ describe('/POST updatePackageSettlement', () => {
     expect(mockSend.mock.calls.length).toBe(1);
     expect(mockSend.mock.calls[0]).toEqual([expected]);
   });
+  test('test that the proper error code is sent for bad updatePackageSettlement request', async () => {
+    const req = {
+      body: {
+        id: 'queriestest1',
+        lastUpdated,
+      },
+    };
+    expect.assertions(3);
+    await updatePackageSettlement(req, res);
+    logger.debug(`Final Response: ${JSON.stringify(mockSend.mock.calls[0])}`);
+    expect(mockSend.mock.calls.length).toBe(1);
+    expect(mockStatus.mock.calls[0][0]).toBe(400);
+    expect(mockSend.mock.calls[0]).toEqual([Error]);
+  });
 });
 
 describe('/POST updateDispatchSettlement', () => {
-  test('test that the proper update conditions are sent for dispatch settlement', async () => {
-    expect.assertions(2);
+  test('test that correct packages are updated for Settlement Disputed', async () => {
+    expect.assertions(5);
     const req = {
       body: {
         originPost: 'US',
@@ -109,54 +123,86 @@ describe('/POST updateDispatchSettlement', () => {
         newStatus: 'Settlement Disputed',
       },
     };
-    const expected = [
-      {
-        dispatchId: 'dispatch1',
-        packageId: 'package1',
-        settlementStatus: 'Settlement Disputed',
-        originPost: 'US',
-        destinationPost: 'CN',
-        startDate,
-        endDate,
-        weight: 1,
-        dateCreated: today,
-        packageType: 'test',
-      },
-      {
-        dispatchId: 'dispatch1',
-        packageId: 'package3',
-        settlementStatus: req.body.newStatus,
-        originPost: 'US',
-        destinationPost: 'CN',
-        startDate,
-        endDate,
-        weight: 3,
-        dateCreated: today,
-        packageType: 'test',
-      },
-      {
-        dispatchId: 'dispatch1',
-        packageId: 'package4',
-        settlementStatus: 'Dispute Confirmed',
-        originPost: 'US',
-        destinationPost: 'CN',
-        startDate,
-        weight: 4,
-        endDate,
-        dateCreated: today,
-        packageType: 'test',
-      },
-    ];
     await updateDispatchSettlement(req, res);
     logger.debug(
       `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
     );
     expect(mockSend.mock.calls.length).toBe(1);
-    expect(mockSend.mock.calls[0][0]).toEqual(expected);
+    expect(mockSend.mock.calls[0][0].length).toBe(3);
+    expect(mockSend.mock.calls[0][0][0].settlementStatus).toBe(
+      'Settlement Disputed',
+    );
+    expect(mockSend.mock.calls[0][0][1].settlementStatus).toBe(
+      req.body.newStatus,
+    );
+    expect(mockSend.mock.calls[0][0][2].settlementStatus).toBe(
+      'Dispute Confirmed',
+    );
+  });
+
+  test('test that correct packages are updated for Settlement Requested', async () => {
+    expect.assertions(5);
+    const req = {
+      body: {
+        originPost: 'US',
+        destinationPost: 'CN',
+        startDate,
+        endDate,
+        dateCreated: today,
+        packageType: 'test',
+        dispatchId: 'dispatch1',
+        newStatus: 'Settlement Requested',
+      },
+    };
+    await updateDispatchSettlement(req, res);
+    logger.debug(
+      `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
+    );
+    expect(mockSend.mock.calls.length).toBe(1);
+    expect(mockSend.mock.calls[0][0].length).toBe(3);
+    expect(mockSend.mock.calls[0][0][0].settlementStatus).toBe(
+      req.body.newStatus,
+    );
+    expect(mockSend.mock.calls[0][0][1].settlementStatus).toBe(
+      req.body.newStatus,
+    );
+    expect(mockSend.mock.calls[0][0][2].settlementStatus).toBe(
+      req.body.newStatus,
+    );
+  });
+  test('test that correct packages are updated for Settlement Agreed', async () => {
+    expect.assertions(5);
+    const req = {
+      body: {
+        originPost: 'US',
+        destinationPost: 'CN',
+        startDate,
+        endDate,
+        dateCreated: today,
+        packageType: 'test',
+        dispatchId: 'dispatch1',
+        newStatus: 'Settlement Agreed',
+      },
+    };
+    await updateDispatchSettlement(req, res);
+    logger.debug(
+      `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
+    );
+    expect(mockSend.mock.calls.length).toBe(1);
+    expect(mockSend.mock.calls[0][0].length).toBe(3);
+    expect(mockSend.mock.calls[0][0][0].settlementStatus).toBe(
+      req.body.newStatus,
+    );
+    expect(mockSend.mock.calls[0][0][1].settlementStatus).toBe(
+      req.body.newStatus,
+    );
+    expect(mockSend.mock.calls[0][0][2].settlementStatus).toBe(
+      req.body.newStatus,
+    );
   });
 
   test('test that the settlement status is not updated to wrong settlement status', async () => {
-    expect.assertions(2);
+    expect.assertions(5);
     const req = {
       body: {
         originPost: 'US',
@@ -166,57 +212,28 @@ describe('/POST updateDispatchSettlement', () => {
         dateCreated: today,
         packageType: 'test',
         dispatchId: 'dispatch1',
-        newStatus: 'Settlement Disputed',
+        newStatus: 'Settlement Requested',
       },
     };
-    const expected = [
-      {
-        dispatchId: 'dispatch1',
-        packageId: 'package1',
-        settlementStatus: 'Settlement Disputed',
-        originPost: 'US',
-        destinationPost: 'CN',
-        startDate,
-        endDate,
-        dateCreated: today,
-        weight: 1,
-        packageType: 'test',
-      },
-      {
-        dispatchId: 'dispatch1',
-        packageId: 'package3',
-        settlementStatus: req.body.newStatus,
-        originPost: 'US',
-        destinationPost: 'CN',
-        startDate,
-        endDate,
-        weight: 3,
-        dateCreated: today,
-        packageType: 'test',
-      },
-      {
-        dispatchId: 'dispatch1',
-        packageId: 'package4',
-        settlementStatus: req.body.newStatus,
-        originPost: 'US',
-        destinationPost: 'CN',
-        startDate,
-        endDate,
-        dateCreated: today,
-        weight: 4,
-        packageType: 'test',
-      },
-    ];
     await updateDispatchSettlement(req, res);
     logger.debug(
       `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
     );
     expect(mockSend.mock.calls.length).toBe(1);
-    expect(mockSend.mock.calls[0][0]).not.toEqual(expected);
+    expect(mockSend.mock.calls[0][0].length).toBe(3);
+    expect(mockSend.mock.calls[0][0][0].settlementStatus).not.toBe(
+      req.body.newStatus,
+    );
+    expect(mockSend.mock.calls[0][0][1].settlementStatus).not.toBe(
+      req.body.newStatus,
+    );
+    expect(mockSend.mock.calls[0][0][2].settlementStatus).not.toBe(
+      req.body.newStatus,
+    );
   });
 
   test('test that empty dispatchId is handled correctly', async () => {
-    expect.assertions(2);
+    expect.assertions(3);
     const req = {
       body: {
         originPost: 'US',
@@ -229,26 +246,15 @@ describe('/POST updateDispatchSettlement', () => {
         newStatus: 'Settlement Disputed',
       },
     };
-    const expected = [
-      {
-        dispatchId: '',
-        packageId: 'package2',
-        settlementStatus: req.body.newStatus,
-        originPost: 'US',
-        destinationPost: 'CN',
-        weight: 2,
-        startDate,
-        endDate,
-        dateCreated: today,
-        packageType: 'test',
-      },
-    ];
     await updateDispatchSettlement(req, res);
     logger.debug(
       `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
     );
     expect(mockSend.mock.calls.length).toBe(1);
-    expect(mockSend.mock.calls[0][0]).toEqual(expected);
+    expect(mockSend.mock.calls[0][0].length).toBe(1);
+    expect(mockSend.mock.calls[0][0][0].settlementStatus).toBe(
+      req.body.newStatus,
+    );
   });
 });
 

@@ -11,85 +11,109 @@ class PostalPackage {
     cb(undefined, this.data);
   }
   static findOneAndUpdate(updateConditions, updateObject, cb) {
-    const response = {
-      updateConditions,
-      updateObject,
-    };
-    if (
-      updateConditions.packageId === 'package1' ||
-      updateConditions.packageId === 'package2' ||
-      updateConditions.packageId === 'package3' ||
-      updateConditions.packageId === 'package4'
-    ) {
-      PostalPackage.packages.forEach(pac => {
-        if (pac.packageId === updateConditions.packageId)
-          pac.settlementStatus = updateObject.settlementStatus;
-      });
+    try {
+      if (
+        updateConditions === undefined ||
+        updateConditions === null ||
+        updateObject === undefined ||
+        updateObject === null
+      )
+        throw Error;
+      const response = {
+        updateConditions,
+        updateObject,
+      };
+      if (
+        updateConditions.packageId === 'package1' ||
+        updateConditions.packageId === 'package2' ||
+        updateConditions.packageId === 'package3' ||
+        updateConditions.packageId === 'package4'
+      ) {
+        PostalPackage.packages.forEach(pac => {
+          if (pac.packageId === updateConditions.packageId)
+            pac.settlementStatus = updateObject.settlementStatus;
+        });
+      }
+
+      if (updateConditions.packageId === 'queriestest1')
+        cb(undefined, {
+          data: updateConditions.packageId,
+        });
+      else cb(undefined, response);
+    } catch (err) {
+      cb(err, undefined);
     }
-    if (updateConditions.packageId === 'testPackageId123')
-      cb(undefined, response);
-    else if (updateConditions.packageId === 'queriestest1')
-      cb(undefined, { data: updateConditions.packageId });
-    else cb(undefined, response);
   }
   static find(findCondition: Object, queryString?: String, cb) {
-    logger.debug(`findCondition:${findCondition}`);
-    if ('packageId' in findCondition) {
-      const response = {
-        packageId: findCondition.packageId,
-      };
-      cb(undefined, [response]);
-    } else if ('dispatchId' in findCondition) {
-      if (PostalPackage.noneArray.includes(findCondition.dispatchId)) {
+    try {
+      logger.debug(`findCondition:${findCondition}`);
+      if ('packageId' in findCondition) {
+        const response = {
+          packageId: findCondition.packageId,
+        };
+        cb(undefined, [response]);
+      } else if ('dispatchId' in findCondition) {
+        if (PostalPackage.noneArray.includes(findCondition.dispatchId)) {
+          const response = PostalPackage.packages.filter(
+            pac =>
+              pac.dispatchId === findCondition.dispatchId &&
+              pac.originPost === findCondition.originPost &&
+              pac.destinationPost === findCondition.destinationPost &&
+              pac.startDate === findCondition.startDate &&
+              pac.endDate === findCondition.endDate &&
+              pac.packageType === findCondition.packageType &&
+              pac.dateCreated === findCondition.dateCreated,
+          );
+          logger.debug(`RESPONSE:${JSON.stringify(response)}`);
+          cb(undefined, response);
+        } else {
+          const response = PostalPackage.packages.filter(
+            pac => pac.dispatchId === findCondition.dispatchId,
+          );
+          logger.debug(`RESPONSE:${JSON.stringify(response)}`);
+          cb(undefined, response);
+        }
+      } else if ('$or' in findCondition) {
         const response = PostalPackage.packages.filter(
           pac =>
-            pac.dispatchId === findCondition.dispatchId &&
+            pac.originPost === findCondition.$or[0].originPost ||
+            pac.destinationPost === findCondition.$or[1].destinationPost,
+        );
+        const updatedResponse = response.map(res => ({
+          startDate: res.startDate,
+          endDate: res.endDate,
+          dateCreated: res.dateCreated,
+          originPost: res.originPost,
+          destinationPost: res.destinationPost,
+        }));
+        logger.debug(`RESPONSE:${JSON.stringify(updatedResponse)}`);
+        cb(undefined, updatedResponse);
+      } else if (
+        !('dispatchId' in findCondition) &&
+        !('packageId' in findCondition)
+      ) {
+        const response = PostalPackage.packages.filter(
+          pac =>
             pac.originPost === findCondition.originPost &&
             pac.destinationPost === findCondition.destinationPost &&
             pac.startDate === findCondition.startDate &&
             pac.endDate === findCondition.endDate &&
-            pac.packageType === findCondition.packageType &&
             pac.dateCreated === findCondition.dateCreated,
         );
         logger.debug(`RESPONSE:${JSON.stringify(response)}`);
         cb(undefined, response);
-      } else {
-        const response = PostalPackage.packages.filter(
-          pac => pac.dispatchId === findCondition.dispatchId,
-        );
-        logger.debug(`RESPONSE:${JSON.stringify(response)}`);
-        cb(undefined, response);
       }
-    } else if ('$or' in findCondition) {
-      const response = PostalPackage.packages.filter(
-        pac =>
-          pac.originPost === findCondition.$or[0].originPost ||
-          pac.destinationPost === findCondition.$or[1].destinationPost,
-      );
-      const updatedResponse = response.map(res => ({
-        startDate: res.startDate,
-        endDate: res.endDate,
-        dateCreated: res.dateCreated,
-        originPost: res.originPost,
-        destinationPost: res.destinationPost,
-      }));
-      logger.debug(`RESPONSE:${JSON.stringify(updatedResponse)}`);
-      cb(undefined, updatedResponse);
-    } else if (
-      !('dispatchId' in findCondition) &&
-      !('packageId' in findCondition)
-    ) {
-      const response = PostalPackage.packages.filter(
-        pac =>
-          pac.originPost === findCondition.originPost &&
-          pac.destinationPost === findCondition.destinationPost &&
-          pac.startDate === findCondition.startDate &&
-          pac.endDate === findCondition.endDate &&
-          pac.dateCreated === findCondition.dateCreated,
-      );
-      logger.debug(`RESPONSE:${JSON.stringify(response)}`);
-      cb(undefined, response);
+    } catch (err) {
+      cb(err, undefined);
     }
+  }
+
+  static clearMockedDatabase() {
+    logger.debug(`INSIDE CLEAR`);
+    PostalPackage.packages[0].settlementStatus = 'Settlement Disputed';
+    PostalPackage.packages[1].settlementStatus = 'Settlement Requested';
+    PostalPackage.packages[2].settlementStatus = 'Settlement Agreed';
+    PostalPackage.packages[3].settlementStatus = 'Dispute Confirmed';
   }
 }
 

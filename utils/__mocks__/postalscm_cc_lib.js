@@ -3,6 +3,10 @@ import logger from '../../src/logger';
 module.exports = () => {
   const postalscm_lib = {};
   postalscm_lib.call_chaincode = jest.fn((options, callback) => {
+    try{
+      logger.debug(`ARGS:${options.args}`)
+      if(options.args.includes("undefined"))
+      throw Error;
     const err = undefined; // no error occurs
     const functionName = options.func;
     const response = {};
@@ -54,6 +58,10 @@ module.exports = () => {
       response.data = options.args[0];
     }
     callback(err, response);
+  }catch(err){
+    callback(Error,undefined);
+  }
   });
   return postalscm_lib;
+  
 }
