@@ -808,7 +808,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(response[0].length).toBe(2); // two packages should be created
       expect(packageId1).toMatch(packageId2); // the packageIds should be the same
       expect(packageId1).toMatch(expectedPackageId1);
-      expect(lastUpdated1).toMatch(lastUpdated2);
+      expect(lastUpdated1).toEqual(lastUpdated2);
     });
     test('confirm that both messages have the different receptacle and dispatchIds, but EMC occurs on the same day', async () => {
       expect.assertions(8);
@@ -848,7 +848,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(receptacleId1).not.toMatch(receptacleId2);
       expect(dispatchId1).not.toMatch(dispatchId2);
       expect(packageId1).toMatch(packageId2);
-      expect(lastUpdated1).toMatch(lastUpdated2); // may need to clean up date formats here..
+      expect(lastUpdated1).toEqual(lastUpdated2); // may need to clean up date formats here..
     });
     test('confirm that both packages are delivered on the same day', async () => {
       expect.assertions(5);
@@ -883,7 +883,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(receptacleId1).not.toMatch(receptacleId2);
       expect(dispatchId1).not.toMatch(dispatchId2);
       expect(packageId1).toMatch(packageId2);
-      expect(lastUpdated1).toMatch(lastUpdated2); // may need to clean up date formats here..
+      expect(lastUpdated1).toEqual(lastUpdated2); // may need to clean up date formats here..
     });
   });
   describe('tests for sequential duplicates', () => {
@@ -931,7 +931,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         `${getPackageTypeCode(packageType1)}6666[0-9]{5}${origin}`,
       );
       expect(packageId1).toMatch(expectedPackageId1);
-      expect(lastUpdated1).not.toMatch(lastUpdated2);
+      expect(lastUpdated1).not.toEqual(lastUpdated2);
     });
     test('confirm that both messages have the different receptacle and dispatchIds, and EMC occurs on different day', async () => {
       expect.assertions(8);
@@ -971,7 +971,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(receptacleId1).not.toMatch(receptacleId2);
       expect(dispatchId1).not.toMatch(dispatchId2);
       expect(packageId1).toMatch(packageId2);
-      expect(lastUpdated1).toMatch(lastUpdated2); // may need to clean up date formats here..
+      expect(lastUpdated1).toEqual(lastUpdated2); // may need to clean up date formats here..
     });
     test('confirm that both packages are delivered on different days', async () => {
       expect.assertions(5);
