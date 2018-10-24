@@ -25,11 +25,24 @@ module.exports = function(enrollObj, g_options, fcw, logger) {
     };
     if (options.method_type == 'invoke') {
       fcw.invoke_chaincode(enrollObj, opts, (err, resp) => {
-        if (cb) {
+        /*if (cb) {
           if (!resp) resp = {};
           //resp.data = opts.cc_args[0]; // pass marble id back
           cb(err, resp);
-        }
+        }*/
+    	  var response='';
+          if (cb) {
+            if (!resp) resp = {};
+            if(resp=='event_error'){
+              logger.debug("event error");
+              response=JSON.stringify(opts.cc_args[0]);
+            }else{
+              logger.debug("events:"+resp);
+              response=resp;
+            }
+            //resp.data = opts.cc_args[0]; // pass marble id back
+            cb(err, response);
+          }
       });
     } else {
       fcw.query_chaincode(enrollObj, opts, cb);

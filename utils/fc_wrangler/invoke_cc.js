@@ -74,7 +74,7 @@ module.exports = function(g_options, logger) {
       .then(response => {
         // All good
         if (response.status === 'SUCCESS') {
-           logger.debug('[fcw] Successfully ordered endorsement transaction$$$.');
+           logger.debug('[fcw] Successfully ordered endorsement transaction.');
 
           // Call optional order hook
           if (options.ordered_hook)
@@ -124,8 +124,13 @@ module.exports = function(g_options, logger) {
                     return cb(null,event.payload.toString('utf8')); // all good, pass it back
                     //return cb(null);
                   }
-                  channelEventHub.disconnect();
+                  //channelEventHub.disconnect();
                 },
+                (error) => {
+                    //clearTimeout(watchdog);
+                    logger.info('Failed to receive the chaincode event:' + error);
+                    return cb(null,"event_error");
+                 }
               );
               //channelEventHub.connect();
             } catch (e) {
