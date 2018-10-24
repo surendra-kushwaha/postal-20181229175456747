@@ -733,6 +733,7 @@ class DispatchSimulator {
       for (let z = 0; z < daysofstatus.length; z += 1) {
         totaldaysofstatus += +daysofstatus[z];
       }
+      const totaldaysconfig = totaldaysofstatus + 15; // save the total days from config file
 
       // get the days of difference between start and end date
       const datestart = new Date(startDate);
@@ -841,6 +842,9 @@ class DispatchSimulator {
           // duplicate data object
           duplicatedata = Object.assign({}, data);
         } else if (typeofpatch === 'SequentialDups') {
+          // logger.debug('_____________________________________________________________');
+          // logger.debug(totaldaysconfig);
+
           duplicatedata = generateEDI(
             EDIpackageid,
             dupdispatchId,
@@ -855,6 +859,12 @@ class DispatchSimulator {
             dupdatastatus,
             deliverybyday,
           );
+          // duplicatedata.lastUpdated = data.lastUpdated;
+          const newemadate = new Date(data.lastUpdated);
+          newemadate.setDate(newemadate.getDate() + totaldaysconfig);
+          duplicatedata.lastUpdated = newemadate;
+          // logger.debug(data);
+          // logger.debug(duplicatedata);
         } else if (typeofpatch === 'ParallelDups') {
           // If status is EMD-PREDES, consider the same day for data and duplicate data.
           if (i === 8) {
