@@ -7,8 +7,8 @@ import postal from './postal';
 // define random values
 const PackageType = ['LA', 'CA', 'EX', 'UA', 'RA']; // tracked,parcels,express,untracked,registered
 const Countrys = ['US', 'CN', 'GB', 'DE', 'CA', 'JP', 'FR'];
-const AirportsUS = ['JFKA'];
-const AirportsCN = ['BJSA'];
+const AirportsUS = ['JFKA', 'ORDA'];
+const AirportsCN = ['BJSA', 'PVGA'];
 const AirportsUK = ['LONA', 'CVTA'];
 const AirportsDE = ['FRAA'];
 const AirportsCA = ['YTOA'];
@@ -46,6 +46,12 @@ function generatepackage(country, packagetype, typeofpatch) {
     ninecharnum = `3333${randomNumber(5)}`;
   } else if (typeofpatch === 'nopredes') {
     ninecharnum = `4444${randomNumber(5)}`;
+  } else if (typeofpatch === 'ParallelDups') {
+    ninecharnum = `5555${randomNumber(5)}`;
+  } else if (typeofpatch === 'SequentialDups') {
+    ninecharnum = `6666${randomNumber(5)}`;
+  } else if (typeofpatch === 'ExactDups') {
+    ninecharnum = `7777${randomNumber(5)}`;
   } else {
     ninecharnum = randomNumber(9);
   }
@@ -435,12 +441,64 @@ class DispatchSimulator {
       ` Packets with rate NumOfNoPreDes         ${rateNumOfNoPreDes} - ${NoPreDesArray}`,
     );
 
+    const rateNumOfParallelDups = Math.round(
+      (repeatpackage * config.simulate.ParallelDuplicates_rate) / 100,
+    );
+    const ParallelDupsArray = rateArray(repeatpackage, rateNumOfParallelDups);
+    logger.info(
+      ` Packets with rate ParallelDups          ${rateNumOfParallelDups} - ${ParallelDupsArray}`,
+    );
+    const rateNumOfSequentialDups = Math.round(
+      (repeatpackage * config.simulate.SequentialDuplicates_rate) / 100,
+    );
+    const SequentialDupsArray = rateArray(
+      repeatpackage,
+      rateNumOfSequentialDups,
+    );
+    logger.info(
+      ` Packets with rate SequentialDups        ${rateNumOfSequentialDups} - ${SequentialDupsArray}`,
+    );
+    const rateNumOfExactDups = Math.round(
+      (repeatpackage * config.simulate.ExactDuplicates_rate) / 100,
+    );
+    const ExactDupsArray = rateArray(repeatpackage, rateNumOfExactDups);
+    logger.info(
+      ` Packets with rate ExactDups             ${rateNumOfExactDups} - ${ExactDupsArray}`,
+    );
+    const rateNumOfPredesOrigin = Math.round(
+      (repeatpackage * config.simulate.PreDesOnly) / 100,
+    );
+    const PredesOriginArray = rateArray(repeatpackage, rateNumOfPredesOrigin);
+    logger.info(
+      ` Packets with rate PredesOrigin          ${rateNumOfPredesOrigin} - ${PredesOriginArray}`,
+    );
+    const rateNumOfItemsDifRecep = Math.round(
+      (repeatpackage * config.simulate.MultiplePreDes) / 100,
+    );
+    const ItemsDifRecepArray = rateArray(repeatpackage, rateNumOfItemsDifRecep);
+    logger.info(
+      ` Packets with rate ItemsDifRecep         ${rateNumOfItemsDifRecep} - ${ItemsDifRecepArray}`,
+    );
+    const rateNumOfItemsInDifferentRecep = Math.round(
+      (repeatpackage * config.simulate.ItemsInDifferentReceptacle) / 100,
+    );
+    const ItemsInDifferentRecepArray = rateArray(
+      repeatpackage,
+      rateNumOfItemsInDifferentRecep,
+    );
+    logger.info(
+      ` Packets with rate ItemsInDifferentRecep ${rateNumOfItemsInDifferentRecep} - ${ItemsInDifferentRecepArray}`,
+    );
+
     let receptacleSerialNum = randomNumber(3);
 
     // sum the array for calculate rates in each dispatch
     let countDispatch = -1;
     let sumofrates;
     let minvalue;
+    // let savedEDIpackageid; // EDU
+    let newEDIdispatchid; // EDU
+    let newEDIreceptacleId; // EDU
 
     // REPEAT X PACKAGE FROM SIZE
     for (let j = 0; j < repeatpackage; j += 1) {
@@ -460,7 +518,12 @@ class DispatchSimulator {
           NumOfRecInExcessArray[countDispatch] +
           LostParcelArray[countDispatch] +
           SeizedorReturnedArray[countDispatch] +
-          NoPreDesArray;
+          NoPreDesArray[countDispatch] +
+          ParallelDupsArray[countDispatch] +
+          SequentialDupsArray[countDispatch] +
+          ExactDupsArray[countDispatch] +
+          PredesOriginArray[countDispatch] +
+          ItemsDifRecepArray[countDispatch];
         minvalue = 50 * countDispatch;
       }
       logger.debug(`Total number of unhappy paths: ${sumofrates}`);
@@ -477,6 +540,7 @@ class DispatchSimulator {
       );
 
       // type o patch: happypatch, lost, seized or returned and received in excess
+      // and add ParallelDups, SequentialDups, ExactDups, PredesOrigin and ItemsDifRecep
       let typeofpatch;
       if (
         minvalue <= j &&
@@ -521,6 +585,111 @@ class DispatchSimulator {
       ) {
         // No PREDES
         typeofpatch = 'nopredes';
+      } else if (
+        minvalue +
+          SeizedorReturnedArray[countDispatch] +
+          LostParcelArray[countDispatch] +
+          NumOfRecInExcessArray[countDispatch] +
+          NoPreDesArray[countDispatch] <=
+          j &&
+        j <
+          minvalue +
+            SeizedorReturnedArray[countDispatch] +
+            LostParcelArray[countDispatch] +
+            NumOfRecInExcessArray[countDispatch] +
+            NoPreDesArray[countDispatch] +
+            ParallelDupsArray[countDispatch]
+      ) {
+        // ParallelDups
+        typeofpatch = 'ParallelDups';
+      } else if (
+        minvalue +
+          SeizedorReturnedArray[countDispatch] +
+          LostParcelArray[countDispatch] +
+          NumOfRecInExcessArray[countDispatch] +
+          NoPreDesArray[countDispatch] +
+          ParallelDupsArray[countDispatch] <=
+          j &&
+        j <
+          minvalue +
+            SeizedorReturnedArray[countDispatch] +
+            LostParcelArray[countDispatch] +
+            NumOfRecInExcessArray[countDispatch] +
+            NoPreDesArray[countDispatch] +
+            ParallelDupsArray[countDispatch] +
+            SequentialDupsArray[countDispatch]
+      ) {
+        // SequentialDups
+        typeofpatch = 'SequentialDups';
+      } else if (
+        minvalue +
+          SeizedorReturnedArray[countDispatch] +
+          LostParcelArray[countDispatch] +
+          NumOfRecInExcessArray[countDispatch] +
+          NoPreDesArray[countDispatch] +
+          ParallelDupsArray[countDispatch] +
+          SequentialDupsArray[countDispatch] <=
+          j &&
+        j <
+          minvalue +
+            SeizedorReturnedArray[countDispatch] +
+            LostParcelArray[countDispatch] +
+            NumOfRecInExcessArray[countDispatch] +
+            NoPreDesArray[countDispatch] +
+            ParallelDupsArray[countDispatch] +
+            SequentialDupsArray[countDispatch] +
+            ExactDupsArray[countDispatch]
+      ) {
+        // ExactDups
+        typeofpatch = 'ExactDups';
+      } else if (
+        minvalue +
+          SeizedorReturnedArray[countDispatch] +
+          LostParcelArray[countDispatch] +
+          NumOfRecInExcessArray[countDispatch] +
+          NoPreDesArray[countDispatch] +
+          ParallelDupsArray[countDispatch] +
+          SequentialDupsArray[countDispatch] +
+          ExactDupsArray[countDispatch] <=
+          j &&
+        j <
+          minvalue +
+            SeizedorReturnedArray[countDispatch] +
+            LostParcelArray[countDispatch] +
+            NumOfRecInExcessArray[countDispatch] +
+            NoPreDesArray[countDispatch] +
+            ParallelDupsArray[countDispatch] +
+            SequentialDupsArray[countDispatch] +
+            ExactDupsArray[countDispatch] +
+            PredesOriginArray[countDispatch]
+      ) {
+        // PredesOrigin
+        typeofpatch = 'PredesOrigin';
+      } else if (
+        minvalue +
+          SeizedorReturnedArray[countDispatch] +
+          LostParcelArray[countDispatch] +
+          NumOfRecInExcessArray[countDispatch] +
+          NoPreDesArray[countDispatch] +
+          ParallelDupsArray[countDispatch] +
+          SequentialDupsArray[countDispatch] +
+          ExactDupsArray[countDispatch] +
+          PredesOriginArray[countDispatch] <=
+          j &&
+        j <
+          minvalue +
+            SeizedorReturnedArray[countDispatch] +
+            LostParcelArray[countDispatch] +
+            NumOfRecInExcessArray[countDispatch] +
+            NoPreDesArray[countDispatch] +
+            ParallelDupsArray[countDispatch] +
+            SequentialDupsArray[countDispatch] +
+            ExactDupsArray[countDispatch] +
+            PredesOriginArray[countDispatch] +
+            ItemsDifRecepArray[countDispatch]
+      ) {
+        // ItemsDifRecep
+        typeofpatch = 'ItemsDifRecep';
       } else {
         typeofpatch = 'happypatch';
       }
@@ -530,6 +699,33 @@ class DispatchSimulator {
         EDIpackagetype,
         typeofpatch,
       );
+
+      // TO DELETE:
+      if (j % 50 === 0) {
+        // logger.debug('__________________________________________________________________________NEW DISPATCH');
+      }
+      // IF TYPE IS PARALLEL DUPLICATES, REPEAT THE PACKAGEID AND CHANGE THE DISPATCH AND RECEPTACLE ID
+      if (typeofpatch === 'SequentialDups') {
+        // if (j % 2 === 0) {
+        //   savedEDIpackageid = generatepackage(
+        //     EDIorigin,
+        //     EDIpackagetype,
+        //     typeofpatch,
+        //   );
+        // logger.debug('*********************************************************************GENERATE NEW DISPATCH AND RECEPTACLE');
+        // }
+        // EDIpackageid = savedEDIpackageid;
+        newEDIdispatchid = generatedispatch(
+          EDIorigin,
+          EDIdestination,
+          EDIpackagetype,
+        );
+        newEDIreceptacleId = generatereceipt(
+          newEDIdispatchid,
+          EDIpackageParams[1],
+          receptacleSerialNum,
+        );
+      }
 
       // generate sum date for status
       const daysofstatus = config.simulate.days;
@@ -567,16 +763,23 @@ class DispatchSimulator {
 
       do {
         // dispatch empty or not
+        let dupdispatchId;
+        let duporiginReceptacleId;
+        let dupReceptacleId;
         if (
           i < 6 ||
           typeofpatch === 'receivedExcess' ||
           typeofpatch === 'nopredes'
         ) {
           dispatchId = '';
+          dupdispatchId = '';
           originReceptacleId = '';
+          duporiginReceptacleId = '';
         } else {
           dispatchId = EDIdispatchid;
+          dupdispatchId = newEDIdispatchid;
           originReceptacleId = EDIreceptacleId;
+          duporiginReceptacleId = newEDIreceptacleId;
         }
         // receptacleId empty or not
         if (
@@ -585,8 +788,10 @@ class DispatchSimulator {
           typeofpatch === 'nopredes'
         ) {
           receptacleId = '';
+          dupReceptacleId = '';
         } else {
           receptacleId = EDIreceptacleId;
+          dupReceptacleId = newEDIreceptacleId;
         }
         // delivery by day
         if (i > 13) {
@@ -602,6 +807,19 @@ class DispatchSimulator {
           settlementStatus = 'Unreconciled';
         }
 
+        const datastatus = generatestatus(
+          i,
+          dateend,
+          typeofpatch,
+          randomreceivedExcess,
+        );
+        let dupdatastatus = generatestatus(
+          i,
+          dateend,
+          typeofpatch,
+          randomreceivedExcess,
+        );
+
         const data = generateEDI(
           EDIpackageid,
           dispatchId,
@@ -613,13 +831,88 @@ class DispatchSimulator {
           originReceptacleId,
           settlementStatus,
           EDIpackageParams[1],
-          generatestatus(i, dateend, typeofpatch, randomreceivedExcess),
+          datastatus,
           deliverybyday,
         );
+
+        let duplicatedata;
+        // NEW CASES
+        if (typeofpatch === 'ExactDups') {
+          // duplicate data object
+          duplicatedata = Object.assign({}, data);
+        } else if (typeofpatch === 'SequentialDups') {
+          duplicatedata = generateEDI(
+            EDIpackageid,
+            dupdispatchId,
+            dupReceptacleId,
+            EDIpackageParams[0],
+            packageUUID,
+            EDIorigin,
+            EDIdestination,
+            duporiginReceptacleId,
+            settlementStatus,
+            EDIpackageParams[1],
+            dupdatastatus,
+            deliverybyday,
+          );
+        } else if (typeofpatch === 'ParallelDups') {
+          // If status is EMD-PREDES, consider the same day for data and duplicate data.
+          if (i === 8) {
+            // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ENTRA EN EMD   RESDES');
+            // logger.debug(datastatus);
+            // logger.debug(dupdatastatus);
+            // logger.debug(data.lastUpdated);
+            dupdatastatus = datastatus;
+          }
+          duplicatedata = generateEDI(
+            EDIpackageid,
+            dupdispatchId,
+            dupReceptacleId,
+            EDIpackageParams[0],
+            packageUUID,
+            EDIorigin,
+            EDIdestination,
+            duporiginReceptacleId,
+            settlementStatus,
+            EDIpackageParams[1],
+            dupdatastatus,
+            deliverybyday,
+          );
+          if (i === 8) {
+            duplicatedata.lastUpdated = data.lastUpdated;
+          }
+        }
+
+        // TO DELETE: TEMP LOGGER
+        if (
+          typeofpatch === 'ExactDups' ||
+          typeofpatch === 'SequentialDups' ||
+          typeofpatch === 'ParallelDups'
+        ) {
+          // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>data:');
+          // logger.debug(data);
+          // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>duplicatedata:');
+          // logger.debug(duplicatedata);
+        }
+
         if (!statusfinished && data.shipmentStatus !== '') {
           if (i < 1 || (i === 8 && typeofpatch === 'receivedExcess')) {
             // createpackage
             EDICreatePackage.push(data);
+            if (
+              typeofpatch === 'ExactDups' ||
+              typeofpatch === 'SequentialDups' ||
+              typeofpatch === 'ParallelDups'
+            ) {
+              // if (data.shipmentStatus === 'EMA') {
+              //   const newemadate = new Date(data.lastUpdated);
+              //   newemadate.setDate(newemadate.getDate() - 1);
+              //   duplicatedata.lastUpdated = newemadate;
+              //   // logger.debug(data);
+              //   // logger.debug(duplicatedata);
+              // }
+              EDICreatePackage.push(duplicatedata);
+            }
           } else if (typeofpatch === 'lostParcel' && randomlostpackage === i) {
             // repeat the last package status with lost status
             data.shipmentStatus = 'LOST';
@@ -629,9 +922,23 @@ class DispatchSimulator {
               data.lastUpdated = dateformat(dateend, false);
             }
             EDIUpdatePackage.push(data);
+            if (
+              typeofpatch === 'ExactDups' ||
+              typeofpatch === 'SequentialDups' ||
+              typeofpatch === 'ParallelDups'
+            ) {
+              EDIUpdatePackage.push(duplicatedata);
+            }
           } else {
             // add new status
             EDIUpdatePackage.push(data);
+            if (
+              typeofpatch === 'ExactDups' ||
+              typeofpatch === 'SequentialDups' ||
+              typeofpatch === 'ParallelDups'
+            ) {
+              EDIUpdatePackage.push(duplicatedata);
+            }
             // rememberhourlostpackage = data.lastUpdated;
             // logger.info("actual status " + data.shipmentStatus + ' ' + typeofpatch);
           }
