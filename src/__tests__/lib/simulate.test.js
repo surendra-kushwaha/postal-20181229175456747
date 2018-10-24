@@ -1055,7 +1055,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         ItemsInDifferentReceptacle: 0, // over 100%
       };
     });
-    test('make sure the EMA messages are on different days but packageId is same', async () => {
+    test('make sure the EMA messages have the same packageId packageId', async () => {
       expect.assertions(3);
 
       // we have 2 packages being created in our simulation
@@ -1093,55 +1093,55 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(response[1].length).toBe(16); // all scans should be present
 
       // EMA messages should be identical
-      expect(response[0][0]).toMatch(response[0][1]);
+      expect(response[0][0]).toEqual(response[0][1]);
 
       // get the EXA messages
       const exa = response[1].filter(message =>
         shipmentStatuses[0].includes(message.shipmentStatus),
       );
-      expect(exa[0]).toMatch(exa[1]);
+      expect(exa[0]).toEqual(exa[1]);
 
       // get the exc messages
       const exc = response[1].filter(message =>
         shipmentStatuses[1].includes(message.shipmentStatus),
       );
-      expect(exc[0]).toMatch(exc[1]);
+      expect(exc[0]).toEqual(exc[1]);
 
       // get the emc/predes messages
       const emc = response[1].filter(message =>
         shipmentStatuses[2].includes(message.shipmentStatus),
       );
-      expect(emc[0]).toMatch(emc[1]);
+      expect(emc[0]).toEqual(emc[1]);
 
       // get the resdes/emd messages
       const emd = response[1].filter(message =>
         shipmentStatuses[3].includes(message.shipmentStatus),
       );
-      expect(emd[0]).toMatch(emd[1]);
+      expect(emd[0]).toEqual(emd[1]);
 
       // get the eda messages
       const eda = response[1].filter(message =>
         shipmentStatuses[4].includes(message.shipmentStatus),
       );
-      expect(eda[0]).toMatch(eda[1]);
+      expect(eda[0]).toEqual(eda[1]);
 
       // get the edc messages
       const edc = response[1].filter(message =>
         shipmentStatuses[5].includes(message.shipmentStatus),
       );
-      expect(edc[0]).toMatch(edc[1]);
+      expect(edc[0]).toEqual(edc[1]);
 
       // get the pre-delivery messages
       const preDeliveryScans = response[1].filter(message =>
         shipmentStatuses[6].includes(message.shipmentStatus),
       );
-      expect(preDeliveryScans[0]).toMatch(preDeliveryScans[1]);
+      expect(preDeliveryScans[0]).toEqual(preDeliveryScans[1]);
 
       // get the delivery messages
       const deliveryScans = response[1].filter(message =>
         shipmentStatuses[7].includes(message.shipmentStatus),
       );
-      expect(deliveryScans[0]).toMatch(deliveryScans[1]);
+      expect(deliveryScans[0]).toEqual(deliveryScans[1]);
     });
   });
   describe('tests for PREDES only at Origin', () => {
