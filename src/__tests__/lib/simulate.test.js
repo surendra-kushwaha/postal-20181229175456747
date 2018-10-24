@@ -99,6 +99,12 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         LostParcel_rate: 0, // over 100 %
         SeizedorReturned_rate: 0, // over 100 %
         NoPreDes_rate: 0, // over 100 %
+        ParallelDuplicates_rate: 0, // over 100 %
+        SequentialDuplicates_rate: 0, // over 100 %
+        ExactDuplicates_rate: 0, // over 100 %
+        PreDesOnly: 0, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 0, // over 100%
       };
     });
     test('make sure two sets of arrays are created', async () => {
@@ -423,6 +429,12 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         LostParcel_rate: 0, // over 100 %
         SeizedorReturned_rate: 0, // over 100 %
         NoPreDes_rate: 100, // over 100 %
+        ParallelDuplicates_rate: 0, // over 100 %
+        SequentialDuplicates_rate: 0, // over 100 %
+        ExactDuplicates_rate: 0, // over 100 %
+        PreDesOnly: 0, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 0, // over 100%
       };
     });
     test('make sure the packageId follows the right format', async () => {
@@ -551,6 +563,12 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         LostParcel_rate: 100, // over 100 %
         SeizedorReturned_rate: 0, // over 100 %
         NoPreDes_rate: 0, // over 100 %
+        ParallelDuplicates_rate: 0, // over 100 %
+        SequentialDuplicates_rate: 0, // over 100 %
+        ExactDuplicates_rate: 0, // over 100 %
+        PreDesOnly: 0, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 0, // over 100%
       };
     });
     test('make sure the packageId follows the right format', async () => {
@@ -603,6 +621,12 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         LostParcel_rate: 0, // over 100 %
         SeizedorReturned_rate: 100, // over 100 %
         NoPreDes_rate: 0, // over 100 %
+        ParallelDuplicates_rate: 0, // over 100 %
+        SequentialDuplicates_rate: 0, // over 100 %
+        ExactDuplicates_rate: 0, // over 100 %
+        PreDesOnly: 0, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 0, // over 100%
       };
     });
     test('make sure the packageId follows the right format', async () => {
@@ -661,6 +685,12 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         LostParcel_rate: 0, // over 100 %
         SeizedorReturned_rate: 0, // over 100 %
         NoPreDes_rate: 0, // over 100 %
+        ParallelDuplicates_rate: 0, // over 100 %
+        SequentialDuplicates_rate: 0, // over 100 %
+        ExactDuplicates_rate: 0, // over 100 %
+        PreDesOnly: 0, // over 100 %
+        MultiplePreDes: 0, // over 100 %
+        ItemsInDifferentReceptacle: 0, // over 100%
       };
     });
     test('make sure the packageId follows the right format', async () => {
@@ -1090,7 +1120,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(response[1].length).toBe(16); // all scans should be present
 
       // EMA messages should be identical
-      expect(response[0][0]).toMatch(response[0][1]);
+      expect(response[0][0]).toEqual(response[0][1]);
 
       // get the EXA messages
       const exa = response[1].filter(message =>
