@@ -810,7 +810,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       };
     });
     test('make sure the EMA messages are on the same day and are identical', async () => {
-      expect.assertions(3);
+      expect.assertions(4);
 
       // we have 2 packages being created in our simulation
       const response = await simulator.simulate(
@@ -838,7 +838,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(response[0].length).toBe(2); // two packages should be created
       expect(packageId1).toMatch(packageId2); // the packageIds should be the same
       expect(packageId1).toMatch(expectedPackageId1);
-      expect(lastUpdated1).toEqual(lastUpdated2);
+      expect(lastUpdated1.toDateString()).toMatch(lastUpdated2.toDateString());
     });
     test('confirm that both messages have the different receptacle and dispatchIds, but EMC occurs on the same day', async () => {
       expect.assertions(8);
@@ -936,7 +936,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       };
     });
     test('make sure the EMA messages are on different days but packageId is same', async () => {
-      expect.assertions(3);
+      expect.assertions(4);
 
       // we have 2 packages being created in our simulation
       const response = await simulator.simulate(
@@ -992,8 +992,8 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       } = emcs[1];
 
       const getDestinationAirportRegex = `${origin}[A-Za-z]{4}${destination}([A-Za-z]{4})`;
-      const destAirport1 = dispatchId1.match(getDestinationAirportRegex);
-      const destAirport2 = dispatchId2.match(getDestinationAirportRegex);
+      const destAirport1 = dispatchId1.match(getDestinationAirportRegex)[1];
+      const destAirport2 = dispatchId2.match(getDestinationAirportRegex)[1];
 
       expect(getAirportArray(destination).includes(destAirport1)).toBeTruthy();
       expect(getAirportArray(destination).includes(destAirport2)).toBeTruthy(); // airports should be valid
