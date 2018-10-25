@@ -124,6 +124,33 @@ function dateformat(datestatus, daytime?) {
   return new Date(datestatus.getFullYear(), month, day, hour, minutes, 0, 0);
 }
 
+function getinverseairport(origin, airport) {
+  let inverseairport = '  ';
+
+  if (origin === 'US') {
+    inverseairport = AirportsUS.filter(city => city !== airport);
+  }
+  if (origin === 'CN') {
+    inverseairport = AirportsCN.filter(city => city !== airport);
+  }
+  if (origin === 'GB') {
+    inverseairport = AirportsUK.filter(city => city !== airport);
+  }
+  if (origin === 'DE') {
+    inverseairport = AirportsDE.filter(city => city !== airport);
+  }
+  if (origin === 'CA') {
+    inverseairport = AirportsCA.filter(city => city !== airport);
+  }
+  if (origin === 'JP') {
+    inverseairport = AirportsJP.filter(city => city !== airport);
+  }
+  if (origin === 'FR') {
+    inverseairport = AirportsFR.filter(city => city !== airport);
+  }
+  return inverseairport;
+}
+
 // return the Dispatch ID
 function generatedispatch(origin, destination, packagetype) {
   const actualYear = new Date()
@@ -783,10 +810,6 @@ class DispatchSimulator {
         typeofpatch,
       );
 
-      // TO DELETE:
-      if (j % 50 === 0) {
-        // logger.debug('__________________________________________________________________________NEW DISPATCH');
-      }
       // IF TYPE IS PARALLEL DUPLICATES, REPEAT THE PACKAGEID AND CHANGE THE DISPATCH AND RECEPTACLE ID
       if (typeofpatch === 'SequentialDups' || typeofpatch === 'ParallelDups') {
         dupEDIdispatchid = generatedispatch(
@@ -794,6 +817,18 @@ class DispatchSimulator {
           EDIdestination,
           EDIpackagetype,
         );
+        // get the contrary airport
+        let newairport = dupEDIdispatchid.substring(8, 12);
+        newairport = getinverseairport(EDIdestination, newairport);
+        // logger.debug(newairport[0]);
+        logger.debug(dupEDIdispatchid);
+        dupEDIdispatchid =
+          dupEDIdispatchid.substring(0, 8) +
+          newairport[0] +
+          dupEDIdispatchid.substring(12, 20);
+        dupEDIdispatchid.toString();
+        logger.debug(dupEDIdispatchid);
+
         dupEDIreceptacleId = generatereceipt(
           dupEDIdispatchid,
           EDIpackageParams[1],
@@ -1009,13 +1044,11 @@ class DispatchSimulator {
             typeofpatch === 'XXXMultiplePreDes' ||
             typeofpatch === 'XXXXPreDesOnly' ||
             typeofpatch === 'XXXExactDups' ||
-            typeofpatch === 'XXXSequentialDups' ||
-            typeofpatch === 'XXXParallelDups'
+            typeofpatch === 'SequentialDups' ||
+            typeofpatch === 'ParallelDups'
           ) {
-            logger.debug(
-              '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>data:',
-            );
-            logger.debug(data);
+            // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>data:');
+            // logger.debug(data);
             // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>duplicatedata:');
             // logger.debug(duplicatedata);
           }
