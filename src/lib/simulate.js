@@ -221,7 +221,7 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
       datestatus.setDate(datestatus.getDate() + config.simulate.days[0]);
       break;
     case 1:
-      if (typeofpatch === 'PreDesOnly') {
+      if (typeofpatch === 'PreDesOnly' || typeofpatch === 'MultiplePreDes') {
         actualStatus = ['EMB']; // Arrival at outward OE
       }
       datestatus.setDate(datestatus.getDate() + config.simulate.days[0]);
@@ -229,7 +229,9 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 2:
       if (typeofpatch !== 'receivedExcess') {
         if (typeofpatch !== 'PreDesOnly') {
-          actualStatus = ['EXA']; // EXA Item presented to export customs
+          if (typeofpatch !== 'MultiplePreDes') {
+            actualStatus = ['EXA']; // EXA Item presented to export customs
+          }
         }
       }
       datestatus.setDate(datestatus.getDate() + config.simulate.days[1]);
@@ -237,12 +239,14 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 3:
       if (typeofpatch !== 'receivedExcess') {
         if (typeofpatch !== 'PreDesOnly') {
-          if (
-            typeofpatch === 'seizedorReturned' &&
-            randomreceivedExcess === 0
-          ) {
-            actualStatus = ['EXB']; // RETENIDO: EXB Item held by export customs
-            datestatus.setDate(datestatus.getDate() + 1);
+          if (typeofpatch !== 'MultiplePreDes') {
+            if (
+              typeofpatch === 'seizedorReturned' &&
+              randomreceivedExcess === 0
+            ) {
+              actualStatus = ['EXB']; // RETENIDO: EXB Item held by export customs
+              datestatus.setDate(datestatus.getDate() + 1);
+            }
           }
         }
       }
@@ -250,7 +254,9 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 4:
       if (typeofpatch !== 'receivedExcess') {
         if (typeofpatch !== 'PreDesOnly') {
-          actualStatus = ['EXC']; // Item returned from customs
+          if (typeofpatch !== 'MultiplePreDes') {
+            actualStatus = ['EXC']; // Item returned from customs
+          }
         }
       }
       datestatus.setDate(datestatus.getDate() + config.simulate.days[2]);
@@ -258,12 +264,14 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 5:
       if (typeofpatch !== 'receivedExcess') {
         if (typeofpatch !== 'PreDesOnly') {
-          if (
-            typeofpatch === 'seizedorReturned' &&
-            randomreceivedExcess === 1
-          ) {
-            actualStatus = ['EXX']; // cancelation or terminated , status 0 to 3
-            datestatus.setDate(datestatus.getDate() + 1);
+          if (typeofpatch !== 'MultiplePreDes') {
+            if (
+              typeofpatch === 'seizedorReturned' &&
+              randomreceivedExcess === 1
+            ) {
+              actualStatus = ['EXX']; // cancelation or terminated , status 0 to 3
+              datestatus.setDate(datestatus.getDate() + 1);
+            }
           }
         }
       }
@@ -271,11 +279,19 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 6:
       if (typeofpatch !== 'receivedExcess' && typeofpatch !== 'nopredes') {
         // begin directdespatch status - Operator of transits
-        actualStatus = ['EMC', 'PREDES']; // Left Origin (Originally called Item Left)
+        if (typeofpatch !== 'PreDesOnly' && typeofpatch !== 'MultiplePreDes') {
+          actualStatus = ['EMC', 'PREDES']; // Left Origin (Originally called Item Left)
+        } else {
+          actualStatus = ['EMC'];
+        }
       }
       datestatus.setDate(datestatus.getDate() + config.simulate.days[3]);
       break;
     case 7:
+      if (typeofpatch === 'PreDesOnly' || typeofpatch === 'MultiplePreDes') {
+        actualStatus = ['PREDES'];
+        datestatus.setDate(datestatus.getDate() + 1);
+      }
       // actualStatus = ['EMJ','EMK']; // Left Origin (Originally called Item Left)
       break;
     case 8:
@@ -982,76 +998,80 @@ class DispatchSimulator {
               duplicatedata.lastUpdated = data.lastUpdated;
             }
           }
-          if (typeofpatch === 'PreDesOnly' && i > '6') {
+          if (typeofpatch === 'PreDesOnly' && i > '7') {
             data.shipmentStatus = '';
           }
-
+          if (typeofpatch === 'MultiplePreDes' && np === 9 && i > '7') {
+            data.shipmentStatus = '';
+          }
           // TO DELETE: TEMP LOGGER
           if (
             typeofpatch === 'XXXMultiplePreDes' ||
-            typeofpatch === 'XXXPreDesOnly' ||
+            typeofpatch === 'XXXXPreDesOnly' ||
             typeofpatch === 'XXXExactDups' ||
             typeofpatch === 'XXXSequentialDups' ||
             typeofpatch === 'XXXParallelDups'
           ) {
-            // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>data:');
-            // logger.debug(data);
+            logger.debug(
+              '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>data:',
+            );
+            logger.debug(data);
             // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>duplicatedata:');
             // logger.debug(duplicatedata);
           }
 
-          if (np !== 9 && typeofpatch !== 'MultiplePreDes') {
-            if (!statusfinished && data.shipmentStatus !== '') {
-              if (i < 1 || (i === 8 && typeofpatch === 'receivedExcess')) {
-                // createpackage
-                EDICreatePackage.push(data);
-                if (
-                  typeofpatch === 'ExactDups' ||
-                  typeofpatch === 'SequentialDups' ||
-                  typeofpatch === 'ParallelDups'
-                ) {
-                  EDICreatePackage.push(duplicatedata);
-                }
-              } else if (
-                typeofpatch === 'lostParcel' &&
-                randomlostpackage === i
+          // if (np !== 9 && typeofpatch !== 'MultiplePreDes') {
+          if (!statusfinished && data.shipmentStatus !== '') {
+            if (i < 1 || (i === 8 && typeofpatch === 'receivedExcess')) {
+              // createpackage
+              EDICreatePackage.push(data);
+              if (
+                typeofpatch === 'ExactDups' ||
+                typeofpatch === 'SequentialDups' ||
+                typeofpatch === 'ParallelDups'
               ) {
-                // repeat the last package status with lost status
-                data.shipmentStatus = 'LOST';
-                if (data.lastUpdated) {
-                  // data.lastUpdated = rememberhourlostpackage;
-                  dateend.setDate(dateend.getDate() + 6); // add 7 days to lost package
-                  data.lastUpdated = dateformat(dateend, false);
-                }
-                EDIUpdatePackage.push(data);
-                if (
-                  typeofpatch === 'ExactDups' ||
-                  typeofpatch === 'SequentialDups' ||
-                  typeofpatch === 'ParallelDups'
-                ) {
-                  EDIUpdatePackage.push(duplicatedata);
-                }
-              } else {
-                // add new status
-                EDIUpdatePackage.push(data);
-                // repeat EMC / PREDES STATUS FOR MultiplePreDes Case
-                if (i === 6 && np < 9 && typeofpatch === 'MultiplePreDes') {
-                  logger.debug('entra');
-                  EDIUpdatePackage.push(data);
-                }
-                if (
-                  typeofpatch === 'ExactDups' ||
-                  typeofpatch === 'SequentialDups' ||
-                  typeofpatch === 'ParallelDups'
-                ) {
-                  EDIUpdatePackage.push(duplicatedata);
-                }
-                // rememberhourlostpackage = data.lastUpdated;
-                // logger.info("actual status " + data.shipmentStatus + ' ' + typeofpatch);
+                EDICreatePackage.push(duplicatedata);
               }
-              countstatus += 1;
+            } else if (
+              typeofpatch === 'lostParcel' &&
+              randomlostpackage === i
+            ) {
+              // repeat the last package status with lost status
+              data.shipmentStatus = 'LOST';
+              if (data.lastUpdated) {
+                // data.lastUpdated = rememberhourlostpackage;
+                dateend.setDate(dateend.getDate() + 6); // add 7 days to lost package
+                data.lastUpdated = dateformat(dateend, false);
+              }
+              EDIUpdatePackage.push(data);
+              if (
+                typeofpatch === 'ExactDups' ||
+                typeofpatch === 'SequentialDups' ||
+                typeofpatch === 'ParallelDups'
+              ) {
+                EDIUpdatePackage.push(duplicatedata);
+              }
+            } else {
+              // add new status
+              EDIUpdatePackage.push(data);
+              // repeat EMC / PREDES STATUS FOR MultiplePreDes Case
+              if (i === 7 && np < 9 && typeofpatch === 'MultiplePreDes') {
+                // logger.debug('entra');
+                EDIUpdatePackage.push(data);
+              }
+              if (
+                typeofpatch === 'ExactDups' ||
+                typeofpatch === 'SequentialDups' ||
+                typeofpatch === 'ParallelDups'
+              ) {
+                EDIUpdatePackage.push(duplicatedata);
+              }
+              // rememberhourlostpackage = data.lastUpdated;
+              // logger.info("actual status " + data.shipmentStatus + ' ' + typeofpatch);
             }
+            countstatus += 1;
           }
+          // }
 
           // scape from status:
           statusfinished = [
