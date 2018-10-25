@@ -85,6 +85,9 @@ const getPackageTypeCode = packageType => {
 beforeEach(() => {
   origin = randomArray(Countrys);
   destination = randomArray(Countrys);
+  while (origin === destination) {
+    destination = randomArray(Countrys);
+  }
 });
 
 describe('test the functionality of the simulator for creating the EDI Messages', () => {
