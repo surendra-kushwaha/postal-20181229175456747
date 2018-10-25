@@ -13,8 +13,8 @@ class PostalPackage {
   static findOneAndUpdate(updateConditions, updateObject, cb) {
     try {
       if (
-        updateConditions === undefined ||
-        updateConditions === null ||
+        updateConditions.packageId === undefined ||
+        updateConditions.packageId === null ||
         updateObject === undefined ||
         updateObject === null
       )
@@ -48,11 +48,13 @@ class PostalPackage {
     try {
       logger.debug(`findCondition:${findCondition}`);
       if ('packageId' in findCondition) {
+        if (findCondition.packageId === undefined) throw Error;
         const response = {
           packageId: findCondition.packageId,
         };
         cb(undefined, [response]);
       } else if ('dispatchId' in findCondition) {
+        if (findCondition.dispatchId === null) throw Error;
         if (PostalPackage.noneArray.includes(findCondition.dispatchId)) {
           const response = PostalPackage.packages.filter(
             pac =>
@@ -74,6 +76,11 @@ class PostalPackage {
           cb(undefined, response);
         }
       } else if ('$or' in findCondition) {
+        if (
+          findCondition.$or[0].originPost === undefined &&
+          findCondition.$or[0].destinationPost === undefined
+        )
+          throw Error;
         const response = PostalPackage.packages.filter(
           pac =>
             pac.originPost === findCondition.$or[0].originPost ||
@@ -92,6 +99,11 @@ class PostalPackage {
         !('dispatchId' in findCondition) &&
         !('packageId' in findCondition)
       ) {
+        const keys = Object.keys(findCondition);
+        keys.forEach(key => {
+          if (findCondition[key] === undefined) throw Error;
+        });
+
         const response = PostalPackage.packages.filter(
           pac =>
             pac.originPost === findCondition.originPost &&

@@ -200,6 +200,36 @@ describe('/POST updateDispatchSettlement', () => {
       req.body.newStatus,
     );
   });
+  test('test that correct packages are updated for Dispute Confirmed', async () => {
+    expect.assertions(5);
+    const req = {
+      body: {
+        originPost: 'US',
+        destinationPost: 'CN',
+        startDate,
+        endDate,
+        dateCreated: today,
+        packageType: 'test',
+        dispatchId: 'dispatch1',
+        newStatus: 'Dispute Confirmed',
+      },
+    };
+    await updateDispatchSettlement(req, res);
+    logger.debug(
+      `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
+    );
+    expect(mockSend.mock.calls.length).toBe(1);
+    expect(mockSend.mock.calls[0][0].length).toBe(3);
+    expect(mockSend.mock.calls[0][0][0].settlementStatus).toBe(
+      'Settlement Agreed',
+    );
+    expect(mockSend.mock.calls[0][0][1].settlementStatus).toBe(
+      'Settlement Agreed',
+    );
+    expect(mockSend.mock.calls[0][0][2].settlementStatus).toBe(
+      'Settlement Agreed',
+    );
+  });
 
   test('test that the settlement status is not updated to wrong settlement status', async () => {
     expect.assertions(5);
@@ -256,6 +286,29 @@ describe('/POST updateDispatchSettlement', () => {
       req.body.newStatus,
     );
   });
+
+  test('test that null settlement status is handled correctly', async () => {
+    expect.assertions(3);
+    const req = {
+      body: {
+        originPost: 'US',
+        destinationPost: 'CN',
+        startDate,
+        endDate,
+        dateCreated: today,
+        packageType: 'test',
+        dispatchId: null,
+        newStatus: 'Settlement Disputed',
+      },
+    };
+    await updateDispatchSettlement(req, res);
+    logger.debug(
+      `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
+    );
+    expect(mockSend.mock.calls.length).toBe(1);
+    expect(mockStatus.mock.calls[0][0]).toBe(400);
+    expect(mockSend.mock.calls[0]).toEqual([Error]);
+  });
 });
 
 describe('/GET packageHistory', () => {
@@ -299,5 +352,20 @@ describe('/GET packageHistory', () => {
     );
     expect(mockSend.mock.calls.length).toBe(1);
     expect(mockSend.mock.calls[0][0]).toEqual(expected);
+  });
+  test('test historian records for undefined packageId', async () => {
+    const req = {
+      query: {
+        packageId: undefined,
+      },
+    };
+    expect.assertions(3);
+    await packageHistory(req, res);
+    logger.debug(
+      `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0])}`,
+    );
+    expect(mockSend.mock.calls.length).toBe(1);
+    expect(mockStatus.mock.calls[0][0]).toBe(405);
+    expect(mockSend.mock.calls[0]).toEqual([Error]);
   });
 });

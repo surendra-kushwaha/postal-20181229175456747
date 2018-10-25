@@ -87,6 +87,17 @@ describe('/GET getPackage', () => {
 
     expect(mockSend.mock.calls[0]).toEqual(expected);
   });
+  test('test that mocked database returns the error for undefined packageId', async () => {
+    expect.assertions(1);
+    const req = {
+      query: {
+        packageId: undefined,
+      },
+    };
+    await getPackage(req, res);
+    const expected = [{ status: 'fail', data: { msg: Error } }];
+    expect(mockSend.mock.calls[0]).toEqual(expected);
+  });
 });
 
 describe('/POST postPackageReport', () => {
@@ -112,6 +123,26 @@ describe('/POST postPackageReport', () => {
       expect(dispatch.dispatchId).toBe(req.body.dispatchId);
     });
   });
+  test('test that we catch correct error for null dispatchId', async () => {
+    const req = {
+      body: {
+        originPost: 'US',
+        destinationPost: 'CN',
+        startDate,
+        endDate,
+        dateCreated: today,
+        packageType: 'test',
+        dispatchId: null,
+      },
+    };
+    await postPackageReport(req, res);
+    logger.debug(
+      `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0].data)}`,
+    );
+    const expected = [{ status: 'fail', data: { msg: Error } }];
+    expect.assertions(1);
+    expect(mockSend.mock.calls[0]).toEqual(expected);
+  });
 });
 describe('/GET getPackageReport', () => {
   test('test that we get all packages for a non-empty dispatchId', async () => {
@@ -136,6 +167,20 @@ describe('/GET getPackageReport', () => {
     expect(mockSend.mock.calls[0][0].data[2].dispatchId).toBe(
       req.query.dispatchId,
     );
+  });
+  test('test that we catch correct error for null dispatchId', async () => {
+    const req = {
+      query: {
+        dispatchId: null,
+      },
+    };
+    await getPackageReport(req, res);
+    logger.debug(
+      `Final Response: ${JSON.stringify(mockSend.mock.calls[0][0].data)}`,
+    );
+    const expected = [{ status: 'fail', data: { msg: Error } }];
+    expect.assertions(1);
+    expect(mockSend.mock.calls[0]).toEqual(expected);
   });
 });
 describe('/POST report', () => {
@@ -163,6 +208,21 @@ describe('/POST report', () => {
       expect(dispatch.dateCreated).toBe(req.body.dateCreated);
     });
   });
+  test('test that we get all the dispatch summaries from a mocked database', async () => {
+    const req = {
+      body: {
+        originPost: undefined,
+        destinationPost: undefined,
+        startDate: undefined,
+        endDate: undefined,
+        dateCreated: undefined,
+      },
+    };
+    await report(req, res);
+    const expected = [{ status: 'fail', data: { msg: Error } }];
+    expect.assertions(1);
+    expect(mockSend.mock.calls[0]).toEqual(expected);
+  });
 });
 describe('/GET  viewReports', () => {
   test('test that we get all the dispatch summaries for a country from a mocked database', async () => {
@@ -183,5 +243,16 @@ describe('/GET  viewReports', () => {
           dispatch.destinationPost === req.query.country,
       ).toBeTruthy();
     });
+  });
+  test('test that we catch correct error for undefined country code', async () => {
+    const req = {
+      query: {
+        country: undefined,
+      },
+    };
+    await viewReports(req, res);
+    const expected = [{ status: 'fail', data: { msg: Error } }];
+    expect.assertions(1);
+    expect(mockSend.mock.calls[0]).toEqual(expected);
   });
 });

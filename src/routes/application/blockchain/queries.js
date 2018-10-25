@@ -79,7 +79,8 @@ const updateDispatchSettlement = async (req, res) => {
     }
   } catch (err) {
     logger.error(`There was an error updating Settlement Status. ${err}`);
-    res.status(400).send(err);
+    res.status(400);
+    res.send(err);
   }
 
   try {
@@ -170,7 +171,8 @@ const packageHistory = async (req, res) => {
       res.send(historyArray);
     }
   } catch (error) {
-    res.status(405).send(error);
+    res.status(405);
+    res.send(error);
   }
 };
 

@@ -5,7 +5,7 @@ module.exports = () => {
   postalscm_lib.call_chaincode = jest.fn((options, callback) => {
     try{
       logger.debug(`ARGS:${options.args}`)
-      if(options.args.includes("undefined"))
+      if(options.args.includes("undefined") || options.args.includes(undefined))
       throw Error;
     const err = undefined; // no error occurs
     const functionName = options.func;
