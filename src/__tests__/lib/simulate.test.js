@@ -22,10 +22,10 @@ const Countrys = ['US', 'CN', 'GB', 'DE', 'CA', 'JP', 'FR'];
 const AirportsUS = ['JFKA', 'ORDA'];
 const AirportsCN = ['BJSA', 'PVGA'];
 const AirportsUK = ['LONA', 'CVTA'];
-const AirportsDE = ['FRAA'];
-const AirportsCA = ['YTOA'];
-const AirportsJP = ['TYOA'];
-const AirportsFR = ['CDGA'];
+const AirportsDE = ['FRAA', 'FRAB'];
+const AirportsCA = ['YTOA', 'YTOB'];
+const AirportsJP = ['TYOA', 'TYOB'];
+const AirportsFR = ['CDGA', 'CDGB'];
 
 const shipmentStatuses = [
   ['EXA'],
