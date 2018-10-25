@@ -868,8 +868,8 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       } = emcs[1];
 
       const getDestinationAirportRegex = `${origin}[A-Za-z]{4}${destination}([A-Za-z]{4})`;
-      const destAirport1 = dispatchId1.match(getDestinationAirportRegex);
-      const destAirport2 = dispatchId2.match(getDestinationAirportRegex);
+      const destAirport1 = dispatchId1.match(getDestinationAirportRegex)[1];
+      const destAirport2 = dispatchId2.match(getDestinationAirportRegex)[1];
 
       expect(emcs.length).toBe(2); // only two packages should have been created
       expect(getAirportArray(destination)).toContain(destAirport1);
@@ -1194,7 +1194,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       };
     });
     test('make sure packageId has correct format', async () => {
-      expect.assertions(3);
+      expect.assertions(1);
 
       // we have 1 packages being created in our simulation
       const response = await simulator.simulate(
@@ -1211,7 +1211,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(packageId).toMatch(expectedPackageId);
     });
     test('make sure only EMA, EMB, and EMC/PREDES messages exist', async () => {
-      expect.assertions(4);
+      expect.assertions(5);
 
       // we have 1 packages being created in our simulation
       const response = await simulator.simulate(
@@ -1421,9 +1421,9 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       );
       const predes2PackageIds = predes2.map(msg => msg.packageId);
 
-      const forgottenPackageId = predes1.filter(
+      const forgottenPackageId = predes1.find(
         message => !predes2PackageIds.includes(message.packageId),
-      )[0].packageId;
+      ).packageId;
 
       // get the resdes/emd message packageIds
       const emdPackageIds = response[1]
