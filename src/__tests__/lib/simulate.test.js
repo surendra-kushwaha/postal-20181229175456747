@@ -22,10 +22,10 @@ const Countrys = ['US', 'CN', 'GB', 'DE', 'CA', 'JP', 'FR'];
 const AirportsUS = ['JFKA', 'ORDA'];
 const AirportsCN = ['BJSA', 'PVGA'];
 const AirportsUK = ['LONA', 'CVTA'];
-const AirportsDE = ['FRAA'];
-const AirportsCA = ['YTOA'];
-const AirportsJP = ['TYOA'];
-const AirportsFR = ['CDGA'];
+const AirportsDE = ['FRAA', 'FRAB'];
+const AirportsCA = ['YTOA', 'YTOB'];
+const AirportsJP = ['TYOA', 'TYOB'];
+const AirportsFR = ['CDGA', 'CDGB'];
 
 const shipmentStatuses = [
   ['EXA'],
@@ -1001,7 +1001,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(receptacleId1).not.toMatch(receptacleId2);
       expect(dispatchId1).not.toMatch(dispatchId2);
       expect(packageId1).toMatch(packageId2);
-      expect(lastUpdated1).toEqual(lastUpdated2); // may need to clean up date formats here..
+      expect(lastUpdated1).not.toEqual(lastUpdated2); // may need to clean up date formats here..
     });
     test('confirm that both packages are delivered on different days', async () => {
       expect.assertions(5);
