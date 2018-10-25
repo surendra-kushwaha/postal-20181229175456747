@@ -818,7 +818,7 @@ class DispatchSimulator {
           EDIpackagetype,
         );
         // get the contrary airport
-        let newairport = dupEDIdispatchid.substring(8, 12);
+        let newairport = EDIdispatchid.substring(8, 12);
         newairport = getinverseairport(EDIdestination, newairport);
         // logger.debug(newairport[0]);
         logger.debug(dupEDIdispatchid);
