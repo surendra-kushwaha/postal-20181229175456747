@@ -641,7 +641,7 @@ class DispatchSimulator {
       }
       const EDIpackageParams = getPackageParams(EDIpackagetype[0]);
 
-      let EDIreceptacleId = generatereceipt(
+      const EDIreceptacleId = generatereceipt(
         EDIdispatchid,
         EDIpackageParams[1],
         receptacleSerialNum,
@@ -939,23 +939,22 @@ class DispatchSimulator {
             receptacleId = EDIreceptacleId;
             dupReceptacleId = dupEDIreceptacleId;
           }
-          if (i > 7 && np < 9 && typeofpatch === 'MultiplePreDes') {
+
+          if (
+            i === 0 &&
+            np === 1 &&
+            (typeofpatch === 'MultiplePreDes' ||
+              typeofpatch === 'ItemsDifRecep')
+          ) {
+            dispatchId2 = dispatchId.substring(0, 15) + randomNumber(5);
+            receptacleId2 = dispatchId2 + receptacleId.substring(20, 29);
+          }
+          if (i > 7 && np > 0 && typeofpatch === 'MultiplePreDes') {
             dispatchId = dispatchId2;
             receptacleId = receptacleId2;
           } else if (i > 7 && np > 4 && typeofpatch === 'ItemsDifRecep') {
             dispatchId = dispatchId2;
             receptacleId = receptacleId2;
-          } else if (i === 8 && np < 9 && typeofpatch === 'MultiplePreDes') {
-            dispatchId = generatedispatch(
-              EDIorigin,
-              EDIdestination,
-              EDIpackagetype,
-            );
-            receptacleId = generatereceipt(
-              dispatchId,
-              EDIpackageParams[1],
-              receptacleSerialNum,
-            );
           }
           // delivery by day
           if (i > 13) {
@@ -1075,7 +1074,7 @@ class DispatchSimulator {
           if (typeofpatch === 'PreDesOnly' && i > '7') {
             data.shipmentStatus = '';
           }
-          if (typeofpatch === 'MultiplePreDes' && np === 9 && i > '7') {
+          if (typeofpatch === 'MultiplePreDes' && np === 0 && i > '7') {
             data.shipmentStatus = '';
           }
           // // TO DELETE: TEMP LOGGER
@@ -1134,9 +1133,11 @@ class DispatchSimulator {
               // );
 
               // repeat one PREDES STATUS FOR MultiplePreDes Case
-              if (i === 7 && np < 9 && typeofpatch === 'MultiplePreDes') {
-                dispatchId2 = dispatchId.substring(0, 15) + randomNumber(5);
-                receptacleId2 = dispatchId2 + receptacleId.substring(20, 29);
+              if (i === 7 && np > 0 && typeofpatch === 'MultiplePreDes') {
+                if (np === 1) {
+                  dispatchId2 = dispatchId.substring(0, 15) + randomNumber(5);
+                  receptacleId2 = dispatchId2 + receptacleId.substring(20, 29);
+                }
                 data.dispatchId = dispatchId2.toString();
                 data.receptacleId = receptacleId2.toString();
                 dateend.setDate(dateend.getDate() + 1); // add 1 day
@@ -1148,8 +1149,10 @@ class DispatchSimulator {
 
                 // repeat one PREDES STATUS FOR ItemsDifRecep Case
               } else if (i === 7 && np > 4 && typeofpatch === 'ItemsDifRecep') {
-                dispatchId2 = dispatchId.substring(0, 15) + randomNumber(5);
-                receptacleId2 = dispatchId2 + receptacleId.substring(20, 29);
+                if (np === 5) {
+                  dispatchId2 = dispatchId.substring(0, 15) + randomNumber(5);
+                  receptacleId2 = dispatchId2 + receptacleId.substring(20, 29);
+                }
                 data.dispatchId = dispatchId2.toString();
                 data.receptacleId = receptacleId2.toString();
                 dateend.setDate(dateend.getDate() + 1); // add 1 day
@@ -1195,21 +1198,21 @@ class DispatchSimulator {
           // }
 
           // Reset Dispatch and ReceptacleId each 14 status
-          if (
-            (i === 14 && typeofpatch === 'MultiplePreDes') ||
-            (i === 14 && typeofpatch === 'ItemsDifRecep')
-          ) {
-            EDIdispatchid = generatedispatch(
-              EDIorigin,
-              EDIdestination,
-              EDIpackagetype,
-            );
-            EDIreceptacleId = generatereceipt(
-              EDIdispatchid,
-              EDIpackageParams[1],
-              receptacleSerialNum,
-            );
-          }
+          // if (
+          //   (i === 14 && typeofpatch === 'MultiplePreDes') ||
+          //   (i === 14 && typeofpatch === 'ItemsDifRecep')
+          // ) {
+          //   EDIdispatchid = generatedispatch(
+          //     EDIorigin,
+          //     EDIdestination,
+          //     EDIpackagetype,
+          //   );
+          //   EDIreceptacleId = generatereceipt(
+          //     EDIdispatchid,
+          //     EDIpackageParams[1],
+          //     receptacleSerialNum,
+          //   );
+          // }
 
           i += 1;
         } while (!statusfinished);
