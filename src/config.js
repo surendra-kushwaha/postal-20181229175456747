@@ -12,7 +12,13 @@ module.exports = {
     ReceivedinExcess_rate: 6, // in  X %
     LostParcel_rate: 3, // over 100 %
     SeizedorReturned_rate: 4, // over 100 %
-    NoPreDes_rate: 6, // over 100 %
+    NoPreDes_rate: 6, // over 100 %,
+    ParallelDuplicates_rate: 6, // over 100 %
+    SequentialDuplicates_rate: 6, // over 100 %
+    ExactDuplicates_rate: 6, // over 100 %
+    PreDesOnly: 6, // over 100 %
+    MultiplePreDes: 6, // over 100 %
+    ItemsInDifferentReceptacle: 6, // over 100%
   },
   users: {
     username: ['US', 'GB', 'CN', 'CA', 'FR', 'DE', 'JP'],
