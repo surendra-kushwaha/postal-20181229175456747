@@ -1274,6 +1274,9 @@ class DispatchSimulator {
     );
     allProcessStepArrays.push(outExports);
 
+    const emb = EDImessage.filter(message => message.shipmentStatus === 'EMB');
+    allProcessStepArrays.push(emb);
+
     const leftOrigin = EDImessage.filter(
       message =>
         message.shipmentStatus === 'EMC' || message.shipmentStatus === 'PREDES',
