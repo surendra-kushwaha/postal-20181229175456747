@@ -248,7 +248,11 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
       datestatus.setDate(datestatus.getDate() + config.simulate.days[0]);
       break;
     case 1:
-      if (typeofpatch === 'PreDesOnly' || typeofpatch === 'MultiplePreDes') {
+      if (
+        typeofpatch === 'PreDesOnly' ||
+        typeofpatch === 'MultiplePreDes' ||
+        typeofpatch === 'ItemsDifRecep'
+      ) {
         actualStatus = ['EMB']; // Arrival at outward OE
       }
       datestatus.setDate(datestatus.getDate() + config.simulate.days[0]);
@@ -256,7 +260,10 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 2:
       if (typeofpatch !== 'receivedExcess') {
         if (typeofpatch !== 'PreDesOnly') {
-          if (typeofpatch !== 'MultiplePreDes') {
+          if (
+            typeofpatch !== 'MultiplePreDes' &&
+            typeofpatch !== 'ItemsDifRecep'
+          ) {
             actualStatus = ['EXA']; // EXA Item presented to export customs
           }
         }
@@ -266,7 +273,10 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 3:
       if (typeofpatch !== 'receivedExcess') {
         if (typeofpatch !== 'PreDesOnly') {
-          if (typeofpatch !== 'MultiplePreDes') {
+          if (
+            typeofpatch !== 'MultiplePreDes' &&
+            typeofpatch !== 'ItemsDifRecep'
+          ) {
             if (
               typeofpatch === 'seizedorReturned' &&
               randomreceivedExcess === 0
@@ -281,7 +291,10 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 4:
       if (typeofpatch !== 'receivedExcess') {
         if (typeofpatch !== 'PreDesOnly') {
-          if (typeofpatch !== 'MultiplePreDes') {
+          if (
+            typeofpatch !== 'MultiplePreDes' &&
+            typeofpatch !== 'ItemsDifRecep'
+          ) {
             actualStatus = ['EXC']; // Item returned from customs
           }
         }
@@ -291,7 +304,10 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 5:
       if (typeofpatch !== 'receivedExcess') {
         if (typeofpatch !== 'PreDesOnly') {
-          if (typeofpatch !== 'MultiplePreDes') {
+          if (
+            typeofpatch !== 'MultiplePreDes' &&
+            typeofpatch !== 'ItemsDifRecep'
+          ) {
             if (
               typeofpatch === 'seizedorReturned' &&
               randomreceivedExcess === 1
@@ -306,7 +322,11 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
     case 6:
       if (typeofpatch !== 'receivedExcess' && typeofpatch !== 'nopredes') {
         // begin directdespatch status - Operator of transits
-        if (typeofpatch !== 'PreDesOnly' && typeofpatch !== 'MultiplePreDes') {
+        if (
+          typeofpatch !== 'PreDesOnly' &&
+          typeofpatch !== 'MultiplePreDes' &&
+          typeofpatch !== 'ItemsDifRecep'
+        ) {
           actualStatus = ['EMC', 'PREDES']; // Left Origin (Originally called Item Left)
         } else {
           actualStatus = ['EMC'];
@@ -315,7 +335,12 @@ function generatestatus(step, datestatus, typeofpatch, randomreceivedExcess) {
       datestatus.setDate(datestatus.getDate() + config.simulate.days[3]);
       break;
     case 7:
-      if (typeofpatch === 'PreDesOnly' || typeofpatch === 'MultiplePreDes') {
+      // Special case for repeat PREDES status
+      if (
+        typeofpatch === 'PreDesOnly' ||
+        typeofpatch === 'MultiplePreDes' ||
+        typeofpatch === 'ItemsDifRecep'
+      ) {
         actualStatus = ['PREDES'];
         datestatus.setDate(datestatus.getDate() + 1);
       }
@@ -616,7 +641,7 @@ class DispatchSimulator {
       }
       const EDIpackageParams = getPackageParams(EDIpackagetype[0]);
 
-      const EDIreceptacleId = generatereceipt(
+      let EDIreceptacleId = generatereceipt(
         EDIdispatchid,
         EDIpackageParams[1],
         receptacleSerialNum,
@@ -820,8 +845,6 @@ class DispatchSimulator {
         // get the contrary airport
         let newairport = EDIdispatchid.substring(8, 12);
         newairport = getinverseairport(EDIdestination, newairport);
-        // logger.debug(newairport[0]);
-        logger.debug(dupEDIdispatchid);
         dupEDIdispatchid =
           dupEDIdispatchid.substring(0, 8) +
           newairport[0] +
@@ -861,10 +884,12 @@ class DispatchSimulator {
 
       // LOOP TO GENERATE THE DIFFERENT STATUS
       let statusfinished = false;
+      let dispatchId;
       let receptacleId;
+      let dispatchId2;
+      let receptacleId2;
       let originReceptacleId;
       const packageUUID = generateUUID();
-      let dispatchId;
       let deliverybyday;
       let settlementStatus = 'Unreconciled';
       const randomreceivedExcess = Math.floor(Math.random() * 4);
@@ -872,12 +897,13 @@ class DispatchSimulator {
       // let rememberhourlostpackage; //remember last date for repeat lost status
 
       let repeatpackagenewcase = 0;
-      if (typeofpatch === 'MultiplePreDes') {
+      if (typeofpatch === 'MultiplePreDes' || typeofpatch === 'ItemsDifRecep') {
         repeatpackagenewcase = 9;
       }
       // repeat the package if we need generate more package from only one
       for (let np = 0; np <= repeatpackagenewcase; np += 1) {
         // init the loop for read all status each time we execute the loop -for-
+        countstatus = 0;
         i = 0;
         statusfinished = false;
 
@@ -913,6 +939,24 @@ class DispatchSimulator {
             receptacleId = EDIreceptacleId;
             dupReceptacleId = dupEDIreceptacleId;
           }
+          if (i > 7 && np < 9 && typeofpatch === 'MultiplePreDes') {
+            dispatchId = dispatchId2;
+            receptacleId = receptacleId2;
+          } else if (i > 7 && np > 4 && typeofpatch === 'ItemsDifRecep') {
+            dispatchId = dispatchId2;
+            receptacleId = receptacleId2;
+          } else if (i === 8 && np < 9 && typeofpatch === 'MultiplePreDes') {
+            dispatchId = generatedispatch(
+              EDIorigin,
+              EDIdestination,
+              EDIpackagetype,
+            );
+            receptacleId = generatereceipt(
+              dispatchId,
+              EDIpackageParams[1],
+              receptacleSerialNum,
+            );
+          }
           // delivery by day
           if (i > 13) {
             deliverybyday = true;
@@ -940,18 +984,16 @@ class DispatchSimulator {
             randomreceivedExcess,
           );
 
-          if (typeofpatch === 'MultiplePreDes') {
+          // Change the packageid for 10 items, from 0 to 9
+          if (
+            typeofpatch === 'MultiplePreDes' ||
+            typeofpatch === 'ItemsDifRecep'
+          ) {
             const packageidcount =
               EDIpackageid.substring(0, 10) +
               np +
               EDIpackageid.substring(11, 13);
             EDIpackageid = packageidcount.toString();
-
-            // receptacleId = generatereceipt(
-            //   dispatchId,
-            //   EDIpackageParams[1],
-            //   receptacleSerialNum,
-            // );
           }
           const data = generateEDI(
             EDIpackageid,
@@ -988,12 +1030,9 @@ class DispatchSimulator {
               dupdatastatus,
               deliverybyday,
             );
-            // duplicatedata.lastUpdated = data.lastUpdated;
             const newemadate = new Date(data.lastUpdated);
             newemadate.setDate(newemadate.getDate() + totaldaysconfig);
             duplicatedata.lastUpdated = newemadate;
-            // logger.debug(data);
-            // logger.debug(duplicatedata);
           } else if (typeofpatch === 'ParallelDups') {
             // If status is EMD-PREDES, consider the same day for data and duplicate data.
             duplicatedata = generateEDI(
@@ -1039,24 +1078,27 @@ class DispatchSimulator {
           if (typeofpatch === 'MultiplePreDes' && np === 9 && i > '7') {
             data.shipmentStatus = '';
           }
-          // TO DELETE: TEMP LOGGER
-          if (
-            typeofpatch === 'XXXMultiplePreDes' ||
-            typeofpatch === 'XXXXPreDesOnly' ||
-            typeofpatch === 'XXXExactDups' ||
-            typeofpatch === 'SequentialDups' ||
-            typeofpatch === 'ParallelDups'
-          ) {
-            // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>data:');
-            // logger.debug(data);
-            // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>duplicatedata:');
-            // logger.debug(duplicatedata);
-          }
+          // // TO DELETE: TEMP LOGGER
+          // if (
+          //   typeofpatch === 'ItemsDifRecep' ||
+          //   typeofpatch === 'MultiplePreDes' ||
+          //   typeofpatch === 'XXXXPreDesOnly' ||
+          //   typeofpatch === 'XXXExactDups' ||
+          //   typeofpatch === 'XXXSequentialDups' ||
+          //   typeofpatch === 'XXXParallelDups'
+          // ) {
+          //   // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>data:');
+          //   // logger.debug(data);
+          //   // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>duplicatedata:');
+          //   // logger.debug(duplicatedata);
+          // }
 
-          // if (np !== 9 && typeofpatch !== 'MultiplePreDes') {
           if (!statusfinished && data.shipmentStatus !== '') {
             if (i < 1 || (i === 8 && typeofpatch === 'receivedExcess')) {
               // createpackage
+              // logger.debug(
+              //   `   i:${i}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
+              // );
               EDICreatePackage.push(data);
               if (
                 typeofpatch === 'ExactDups' ||
@@ -1087,24 +1129,47 @@ class DispatchSimulator {
             } else {
               // add new status
               EDIUpdatePackage.push(data);
-              // repeat EMC / PREDES STATUS FOR MultiplePreDes Case
+              // logger.debug(
+              //   `   i:${i} np:${np}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
+              // );
+
+              // repeat one PREDES STATUS FOR MultiplePreDes Case
               if (i === 7 && np < 9 && typeofpatch === 'MultiplePreDes') {
-                // logger.debug('entra');
+                dispatchId2 = dispatchId.substring(0, 15) + randomNumber(5);
+                receptacleId2 = dispatchId2 + receptacleId.substring(20, 29);
+                data.dispatchId = dispatchId2.toString();
+                data.receptacleId = receptacleId2.toString();
+                dateend.setDate(dateend.getDate() + 1); // add 1 day
+                data.lastUpdated = dateformat(dateend, false);
+                // logger.debug(
+                //   `   i:${i} np:${np}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
+                // );
                 EDIUpdatePackage.push(data);
-              }
-              if (
+
+                // repeat one PREDES STATUS FOR ItemsDifRecep Case
+              } else if (i === 7 && np > 4 && typeofpatch === 'ItemsDifRecep') {
+                dispatchId2 = dispatchId.substring(0, 15) + randomNumber(5);
+                receptacleId2 = dispatchId2 + receptacleId.substring(20, 29);
+                data.dispatchId = dispatchId2.toString();
+                data.receptacleId = receptacleId2.toString();
+                dateend.setDate(dateend.getDate() + 1); // add 1 day
+                data.lastUpdated = dateformat(dateend, false);
+                // logger.debug(
+                //   `   i:${i} np:${np}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
+                // );
+                EDIUpdatePackage.push(data);
+
+                // Create a duplicate Data for the next cases
+              } else if (
                 typeofpatch === 'ExactDups' ||
                 typeofpatch === 'SequentialDups' ||
                 typeofpatch === 'ParallelDups'
               ) {
                 EDIUpdatePackage.push(duplicatedata);
               }
-              // rememberhourlostpackage = data.lastUpdated;
-              // logger.info("actual status " + data.shipmentStatus + ' ' + typeofpatch);
             }
             countstatus += 1;
           }
-          // }
 
           // scape from status:
           statusfinished = [
@@ -1123,10 +1188,27 @@ class DispatchSimulator {
           if (i > '14') {
             statusfinished = true;
           } // end scape if error status
-          if (data.shipmentStatus !== '') {
-            // logger.debug(
-            //   `           i:${i}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
-            // );
+          // if (data.shipmentStatus !== '') {
+          // logger.debug(
+          //   `   i:${i}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
+          // );
+          // }
+
+          // Reset Dispatch and ReceptacleId each 14 status
+          if (
+            (i === 14 && typeofpatch === 'MultiplePreDes') ||
+            (i === 14 && typeofpatch === 'ItemsDifRecep')
+          ) {
+            EDIdispatchid = generatedispatch(
+              EDIorigin,
+              EDIdestination,
+              EDIpackagetype,
+            );
+            EDIreceptacleId = generatereceipt(
+              EDIdispatchid,
+              EDIpackageParams[1],
+              receptacleSerialNum,
+            );
           }
 
           i += 1;
@@ -1136,10 +1218,6 @@ class DispatchSimulator {
         );
       } // End For
     }
-
-    // logger.debug('1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    // logger.debug(EDICreatePackage)
-    // logger.debug('2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     // order json by time
     EDICreatePackage.sort((a, b) => {
       if (a.lastUpdated < b.lastUpdated) return -1;
