@@ -1277,11 +1277,13 @@ class DispatchSimulator {
     const emb = EDImessage.filter(message => message.shipmentStatus === 'EMB');
     allProcessStepArrays.push(emb);
 
-    const leftOrigin = EDImessage.filter(
-      message =>
-        message.shipmentStatus === 'EMC' || message.shipmentStatus === 'PREDES',
+    const emc = EDImessage.filter(message => message.shipmentStatus === 'EMC');
+    allProcessStepArrays.push(emc);
+
+    const predes = EDImessage.filter(
+      message => message.shipmentStatus === 'PREDES',
     );
-    allProcessStepArrays.push(leftOrigin);
+    allProcessStepArrays.push(predes);
 
     const arriveDestination = EDImessage.filter(
       message =>
@@ -1332,9 +1334,22 @@ class DispatchSimulator {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const processStep of allProcessStepArrays) {
-      const stepPromiseResults = await updateProcessStep(processStep); // eslint-disable-line no-await-in-loop
-      logger.info('Completed a process step!');
-      allPromiseResults.push(stepPromiseResults);
+      const originals = processStep.filter(
+        (element, index, a) => a.indexOf(element) === index,
+      );
+      const duplicates = processStep.filter(
+        (element, index, a) => a.indexOf(element) !== index,
+      );
+      if (duplicates.length > 0) {
+        const firstPromiseResults = await updateProcessStep(originals); // eslint-disable-line no-await-in-loop
+        const secondPromiseResults = await updateProcessStep(duplicates); // eslint-disable-line no-await-in-loop
+        allPromiseResults.push(firstPromiseResults);
+        allPromiseResults.push(secondPromiseResults);
+      } else {
+        const stepPromiseResults = await updateProcessStep(processStep); // eslint-disable-line no-await-in-loop
+        logger.info('Completed a process step!');
+        allPromiseResults.push(stepPromiseResults);
+      }
     }
 
     // need to update settlement status for delivered packages
