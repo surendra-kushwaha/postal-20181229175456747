@@ -1334,11 +1334,14 @@ class DispatchSimulator {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const processStep of allProcessStepArrays) {
+      // first we need to figure out if there are any duplicate packageIds
+      // grab all packageIds
+      const packageIds = processStep.map(message => message.packageId);
       const originals = processStep.filter(
-        (element, index, a) => a.indexOf(element) === index,
+        (element, index) => packageIds.indexOf(element.packageId) === index,
       );
       const duplicates = processStep.filter(
-        (element, index, a) => a.indexOf(element) !== index,
+        (element, index) => packageIds.indexOf(element.packageId) !== index,
       );
       if (duplicates.length > 0) {
         const firstPromiseResults = await updateProcessStep(originals); // eslint-disable-line no-await-in-loop
