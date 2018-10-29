@@ -469,6 +469,20 @@ const updateProcessStep = async (messages: []): Promise<any> => {
   return Promise.settle(allPromises);
 };
 
+const updateDeliverySettlement = async (messages: []): Promise<any> => {
+  const allPromises = [];
+  messages.forEach(message => {
+    logger.debug('Updating settlement statuses of delivered packages');
+    const payload = {
+      packageId: message.packageId,
+      lastUpdated: message.lastUpdated,
+      newSettlementStatus: message.settlementStatus,
+    };
+    allPromises.push(postal.updateSettlementStatus(payload));
+  });
+  return Promise.settle(allPromises);
+};
+
 class DispatchSimulator {
   simulate = (
     size: string,
@@ -1343,28 +1357,33 @@ class DispatchSimulator {
       const duplicates = processStep.filter(
         (element, index) => packageIds.indexOf(element.packageId) !== index,
       );
+      const firstPromiseResults = await updateProcessStep(originals); // eslint-disable-line no-await-in-loop
+      allPromiseResults.push(firstPromiseResults);
       if (duplicates.length > 0) {
-        const firstPromiseResults = await updateProcessStep(originals); // eslint-disable-line no-await-in-loop
         const secondPromiseResults = await updateProcessStep(duplicates); // eslint-disable-line no-await-in-loop
-        allPromiseResults.push(firstPromiseResults);
         allPromiseResults.push(secondPromiseResults);
-      } else {
-        const stepPromiseResults = await updateProcessStep(processStep); // eslint-disable-line no-await-in-loop
-        logger.info('Completed a process step!');
-        allPromiseResults.push(stepPromiseResults);
       }
+      logger.info('Completed a process step!');
     }
 
     // need to update settlement status for delivered packages
-    delivery.forEach(message => {
-      logger.debug('Updating settlement statuses of delivered packages');
-      const payload = {
-        packageId: message.packageId,
-        lastUpdated: message.lastUpdated,
-        newSettlementStatus: message.settlementStatus,
-      };
-      allPromiseResults.push(postal.updateSettlementStatus(payload));
-    });
+    const deliveryPackageIds = delivery.map(message => message.pacakgeId);
+    const deliveryOriginals = delivery.filter(
+      (element, index) =>
+        deliveryPackageIds.indexOf(element.packageId) === index,
+    );
+    const deliveryDups = delivery.filter(
+      (element, index) =>
+        deliveryPackageIds.indexOf(element.packageId) !== index,
+    );
+    const originalDeliveryPromises = await updateDeliverySettlement(
+      deliveryOriginals,
+    );
+    allPromiseResults.push(originalDeliveryPromises);
+    if (deliveryDups.length > 0) {
+      const dupsDeliveryPromises = await updateDeliverySettlement(deliveryDups);
+      allPromiseResults.push(dupsDeliveryPromises);
+    }
     return Promise.settle(allPromiseResults);
   };
 }
