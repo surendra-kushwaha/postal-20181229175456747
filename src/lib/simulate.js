@@ -1149,8 +1149,9 @@ class DispatchSimulator {
                 }
                 data.dispatchId = dispatchId2.toString();
                 data.receptacleId = receptacleId2.toString();
-                dateend.setDate(dateend.getDate() + 1); // add 1 day
-                dateend.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
+                data.lastUpdated = new Date(dateend);
+                data.lastUpdated.setDate(dateend.getDate() + 1); // add 1 day
+                data.lastUpdated.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
                 data.lastUpdated = dateformat(dateend, false);
                 // logger.debug(
                 //   `   i:${i} np:${np}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
@@ -1165,9 +1166,9 @@ class DispatchSimulator {
                 }
                 data.dispatchId = dispatchId2.toString();
                 data.receptacleId = receptacleId2.toString();
-                dateend.setDate(dateend.getDate() + 1); // add 1 day
-                dateend.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
-                data.lastUpdated = dateformat(dateend, false);
+                data.lastUpdated = new Date(dateend);
+                data.lastUpdated.setDate(dateend.getDate() + 1); // add 1 day
+                data.lastUpdated.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
                 // logger.debug(
                 //   `   i:${i} np:${np}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
                 // );
