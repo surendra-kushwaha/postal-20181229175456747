@@ -195,10 +195,10 @@ const packageHistory = async (req, res) => {
     if (!response) {
       res.status(405).send('Package History response came back empty');
     } else {
-      const matchedDispatch = response.filter(
+      const matchedDispatch = response.find(
         transax => transax.value.DispatchId === req.body.dispatchId,
       );
-      const noMatchedDispatch = matchedDispatch.length === 0;
+      const noMatchedDispatch = matchedDispatch === undefined;
       const historyArray = [];
       response.forEach(transax => {
         // logger.info(`Transax: ${JSON.stringify(transax, null, 2)}`);
