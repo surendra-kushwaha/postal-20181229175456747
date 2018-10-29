@@ -3,7 +3,16 @@ import postal from '../../../lib/postal';
 
 const { PostalPackage } = require('../../../models/postalPackageData');
 
-const noneArray = [undefined, '""', 'none', 'NONE', '"none"', '"NONE"', ''];
+const noneArray = [
+  undefined,
+  '""',
+  'none',
+  'NONE',
+  '"none"',
+  '"NONE"',
+  '',
+  'None',
+];
 
 /**
  * Promise.settle is a way to take an array of Promises, executing in parallel,
@@ -186,6 +195,10 @@ const packageHistory = async (req, res) => {
     if (!response) {
       res.status(405).send('Package History response came back empty');
     } else {
+      const matchedDispatch = response.filter(
+        transax => transax.value.DispatchId === req.body.dispatchId,
+      );
+      const noMatchedDispatch = matchedDispatch.length === 0;
       const historyArray = [];
       response.forEach(transax => {
         // logger.info(`Transax: ${JSON.stringify(transax, null, 2)}`);
@@ -213,9 +226,15 @@ const packageHistory = async (req, res) => {
 
         // Adding this statement to make sequential dups work
         if (req.body.packageId.match('[A-Z]{2}6666[0-9]{5}[A-Z]{2}')) {
-          if (req.body.dispatchId === transax.value.dispatchId) {
+          if (
+            !noMatchedDispatch &&
+            req.body.dispatchId === transax.value.dispatchId
+          ) {
             historyArray.push(historyData);
-          } else if (noneArray.includes(transax.value.dispatchId)) {
+          } else if (
+            noMatchedDispatch &&
+            noneArray.includes(transax.value.dispatchId)
+          ) {
             historyArray.push(historyData);
           } else {
             // if dispatchIds do not match and dispatchId is not NONE, then do not add to historyArray
