@@ -1,6 +1,6 @@
 import logger from '../../../logger';
 
-import generatedispatch from '../../../lib/simulate';
+import { generatedispatch } from '../../../lib/simulate';
 
 const { PostalPackage } = require('../../../models/postalPackageData');
 
@@ -131,7 +131,7 @@ const makeSequentialDupsWork = postalData => {
       newMessage.dispatchId = newDispatchId;
       PostalPackage.findOneAndUpdate(
         updateConditions,
-        message,
+        newMessage,
         (errDb, result) => {
           if (errDb) {
             logger.error(
