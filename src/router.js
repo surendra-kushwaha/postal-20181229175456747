@@ -51,7 +51,7 @@ router.post('/update-package-settlement', updatePackageSettlement);
 
 router.post('/update-dispatch-settlement', updateDispatchSettlement);
 
-router.get('/package-history', packageHistory);
+router.post('/package-history', packageHistory);
 
 router.post('/simulate', simulate);
 

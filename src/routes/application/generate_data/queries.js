@@ -2,7 +2,7 @@
 
 import { $Request, $Response } from 'express';
 import logger from '../../../logger';
-import DispatchSimulator from '../../../lib/simulate';
+import { DispatchSimulator } from '../../../lib/simulate';
 import config from '../../../config';
 
 const dispatchsimulator = new DispatchSimulator();

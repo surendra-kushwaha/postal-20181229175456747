@@ -2,7 +2,7 @@
 
 import toBeType from 'jest-tobetype';
 import config from '../../config';
-import DispatchSimulator from '../../lib/simulate';
+import { DispatchSimulator } from '../../lib/simulate';
 
 jest.mock('../../config');
 
@@ -844,7 +844,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(lastUpdated1.toDateString()).toMatch(lastUpdated2.toDateString());
     });
     test('confirm that both messages have the different receptacle and dispatchIds, but EMC occurs on the same day', async () => {
-      expect.assertions(8);
+      expect.assertions(10);
 
       const response = await simulator.simulate(
         'small',
@@ -881,10 +881,12 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(receptacleId1).not.toMatch(receptacleId2);
       expect(dispatchId1).not.toMatch(dispatchId2);
       expect(packageId1).toMatch(packageId2);
-      expect(lastUpdated1).toEqual(lastUpdated2); // may need to clean up date formats here..
+      expect(lastUpdated1.getFullYear()).toEqual(lastUpdated2.getFullYear());
+      expect(lastUpdated1.getMonth()).toEqual(lastUpdated2.getMonth());
+      expect(lastUpdated1.getDate()).toEqual(lastUpdated2.getDate());
     });
     test('confirm that both packages are delivered on the same day', async () => {
-      expect.assertions(5);
+      expect.assertions(7);
 
       const response = await simulator.simulate(
         'small',
@@ -916,7 +918,30 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(receptacleId1).not.toMatch(receptacleId2);
       expect(dispatchId1).not.toMatch(dispatchId2);
       expect(packageId1).toMatch(packageId2);
-      expect(lastUpdated1).toEqual(lastUpdated2); // may need to clean up date formats here..
+      expect(lastUpdated1.getFullYear()).toEqual(lastUpdated2.getFullYear());
+      expect(lastUpdated1.getMonth()).toEqual(lastUpdated2.getMonth());
+      expect(lastUpdated1.getDate()).toEqual(lastUpdated2.getDate());
+    });
+    test('confirm that both packages are delivered at a different time', async () => {
+      expect.assertions(1);
+
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the delivery messages
+      const deliveryScans = response[1].filter(message =>
+        shipmentStatuses[7].includes(message.shipmentStatus),
+      );
+
+      const { lastUpdated: lastUpdated1 } = deliveryScans[0];
+      const { lastUpdated: lastUpdated2 } = deliveryScans[1];
+
+      expect(lastUpdated1.getTime()).not.toEqual(lastUpdated2.getTime());
     });
   });
   describe('tests for sequential duplicates', () => {
@@ -1543,6 +1568,34 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(preDeliveryDifferentIds.length).toBe(0);
       expect(deliveryDifferentIds.length).toBe(0);
     });
+    test('test that the second PREDES scan has a different date', async () => {
+      expect.assertions(1);
+
+      // we have 10 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the PREDES messages
+      const predes = response[1].filter(
+        message => message.shipmentStatus === 'PREDES',
+      );
+
+      const {
+        receptacleId: receptacleId1,
+        lastUpdated: lastUpdated1,
+      } = predes[0];
+      const predes2 = predes.find(
+        message => message.receptacleId !== receptacleId1,
+      );
+      const { lastUpdated: lastUpdated2 } = predes2;
+
+      expect(lastUpdated1).not.toEqual(lastUpdated2);
+    });
     test('test that the packages that did get the second predes scan end up as reconciled', async () => {
       expect.assertions(2);
 
@@ -1878,6 +1931,34 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(edcDifferentIds.length).toBe(5);
       expect(preDeliveryDifferentIds.length).toBe(5);
       expect(deliveryDifferentIds.length).toBe(5);
+    });
+    test('test that the second PREDES scan has a different date', async () => {
+      expect.assertions(1);
+
+      // we have 10 packages being created in our simulation
+      const response = await simulator.simulate(
+        'small',
+        origin,
+        destination,
+        '04/01/2018',
+        '06/30/2018',
+      );
+
+      // get the PREDES messages
+      const predes = response[1].filter(
+        message => message.shipmentStatus === 'PREDES',
+      );
+
+      const {
+        receptacleId: receptacleId1,
+        lastUpdated: lastUpdated1,
+      } = predes[0];
+      const predes2 = predes.find(
+        message => message.receptacleId !== receptacleId1,
+      );
+      const { lastUpdated: lastUpdated2 } = predes2;
+
+      expect(lastUpdated1).not.toEqual(lastUpdated2);
     });
     test('test that all packages end up as reconciled', async () => {
       expect.assertions(2);

@@ -1064,7 +1064,13 @@ class DispatchSimulator {
             );
             if (i === 6) {
               duplicatedata.shipmentStatus = data.shipmentStatus;
-              duplicatedata.lastUpdated = data.lastUpdated;
+              duplicatedata.lastUpdated = new Date(data.lastUpdated);
+              duplicatedata.lastUpdated.setHours(
+                data.lastUpdated.getHours() + 1,
+              );
+              duplicatedata.lastUpdated.setMinutes(
+                data.lastUpdated.getMinutes() + 17,
+              );
             }
             if (
               [
@@ -1082,7 +1088,10 @@ class DispatchSimulator {
               ].includes(data.shipmentStatus)
             ) {
               duplicatedata.shipmentStatus = data.shipmentStatus;
-              duplicatedata.lastUpdated = data.lastUpdated;
+              duplicatedata.lastUpdated = new Date(data.lastUpdated);
+              duplicatedata.lastUpdated.setMinutes(
+                data.lastUpdated.getMinutes() + 56,
+              );
             }
           }
           if (typeofpatch === 'PreDesOnly' && i > '7') {
@@ -1091,20 +1100,6 @@ class DispatchSimulator {
           if (typeofpatch === 'MultiplePreDes' && np === 0 && i > '7') {
             data.shipmentStatus = '';
           }
-          // // TO DELETE: TEMP LOGGER
-          // if (
-          //   typeofpatch === 'ItemsDifRecep' ||
-          //   typeofpatch === 'MultiplePreDes' ||
-          //   typeofpatch === 'XXXXPreDesOnly' ||
-          //   typeofpatch === 'XXXExactDups' ||
-          //   typeofpatch === 'XXXSequentialDups' ||
-          //   typeofpatch === 'XXXParallelDups'
-          // ) {
-          //   // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>data:');
-          //   // logger.debug(data);
-          //   // logger.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>duplicatedata:');
-          //   // logger.debug(duplicatedata);
-          // }
 
           if (!statusfinished && data.shipmentStatus !== '') {
             if (i < 1 || (i === 8 && typeofpatch === 'receivedExcess')) {
@@ -1155,6 +1150,7 @@ class DispatchSimulator {
                 data.dispatchId = dispatchId2.toString();
                 data.receptacleId = receptacleId2.toString();
                 dateend.setDate(dateend.getDate() + 1); // add 1 day
+                dateend.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
                 data.lastUpdated = dateformat(dateend, false);
                 // logger.debug(
                 //   `   i:${i} np:${np}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
@@ -1170,6 +1166,7 @@ class DispatchSimulator {
                 data.dispatchId = dispatchId2.toString();
                 data.receptacleId = receptacleId2.toString();
                 dateend.setDate(dateend.getDate() + 1); // add 1 day
+                dateend.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
                 data.lastUpdated = dateformat(dateend, false);
                 // logger.debug(
                 //   `   i:${i} np:${np}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
@@ -1400,4 +1397,4 @@ class DispatchSimulator {
   };
 }
 
-export default DispatchSimulator;
+export { DispatchSimulator, generatedispatch };

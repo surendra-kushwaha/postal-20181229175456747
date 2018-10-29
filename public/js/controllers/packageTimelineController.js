@@ -41,7 +41,7 @@ mainApp
         }
 
 
-        $http.get('/package-history?packageId=' + sessionStorage.getItem('selectedPackageId'), {
+        $http.post('/package-history', { packageId: sessionStorage.getItem('selectedPackageId'), dispatchId: sessionStorage.getItem('selectedPackageDispatchId') }, {
             headers: {
                 'Content-Type': 'application/json'
             }

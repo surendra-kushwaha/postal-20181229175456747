@@ -1,5 +1,7 @@
 import logger from '../../../logger';
 
+import generatedispatch from '../../../lib/simulate';
+
 const { PostalPackage } = require('../../../models/postalPackageData');
 
 /* const queryObj = {
@@ -109,6 +111,31 @@ const performDispatchCalculations = (dispatches, queryObj) => {
   return resultArray;
 };
 
+const makeSequentialDupsWork = postalData => {
+  const newPostalData = [];
+  postalData.forEach(message => {
+    const newMessage = message;
+    if (
+      message.packageId.match('[A-Z]{2}6666[0-9]{5}[A-Z]{2}') &&
+      noneArray.includes(message.dispatchId)
+    ) {
+      const newDispatchId = generatedispatch(
+        message.origin,
+        message.destination,
+        message.packageType,
+      );
+      const updateConditions = {
+        packageId: message.packageId,
+        dispatchId: message.dispatchId,
+      };
+      newMessage.dispatchId = newDispatchId;
+      PostalPackage.findOneAndUpdate(updateConditions, message);
+    }
+    newPostalData.push(newMessage);
+  });
+  return newPostalData;
+};
+
 // Get dispatch level report
 const report = async (req, res) => {
   const queryObj = {
@@ -124,8 +151,9 @@ const report = async (req, res) => {
     if (err) {
       res.send({ status: 'fail', data: { msg: err } });
     } else {
-      const dispatchIds = createDispatchIdArray(postalData);
-      const dispatches = createArrayOfDispatches(dispatchIds, postalData);
+      const newPostalData = makeSequentialDupsWork(postalData);
+      const dispatchIds = createDispatchIdArray(newPostalData);
+      const dispatches = createArrayOfDispatches(dispatchIds, newPostalData);
       // logger.debug(`Dispatches: ${JSON.stringify(dispatches)}`);
       const reportData = performDispatchCalculations(dispatches, queryObj); // final array to push completed dispatch data
       res.send({ status: 'success', data: reportData });
