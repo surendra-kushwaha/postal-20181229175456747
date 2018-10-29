@@ -129,7 +129,19 @@ const makeSequentialDupsWork = postalData => {
         dispatchId: message.dispatchId,
       };
       newMessage.dispatchId = newDispatchId;
-      PostalPackage.findOneAndUpdate(updateConditions, message);
+      PostalPackage.findOneAndUpdate(
+        updateConditions,
+        message,
+        (errDb, result) => {
+          if (errDb) {
+            logger.error(
+              'There was an error updating sequential dups in database',
+            );
+          } else {
+            logger.debug(`Amended sequential dup: ${result.packageId}`);
+          }
+        },
+      );
     }
     newPostalData.push(newMessage);
   });
