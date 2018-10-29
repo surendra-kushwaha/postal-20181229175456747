@@ -1373,7 +1373,7 @@ class DispatchSimulator {
     }
 
     // need to update settlement status for delivered packages
-    const deliveryPackageIds = delivery.map(message => message.pacakgeId);
+    const deliveryPackageIds = delivery.map(message => message.packageId);
     const deliveryOriginals = delivery.filter(
       (element, index) =>
         deliveryPackageIds.indexOf(element.packageId) === index,
