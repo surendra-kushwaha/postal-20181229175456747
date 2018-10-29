@@ -120,15 +120,16 @@ const makeSequentialDupsWork = postalData => {
       noneArray.includes(message.dispatchId)
     ) {
       const newDispatchId = generatedispatch(
-        message.origin,
-        message.destination,
-        message.packageType,
+        message.originPost,
+        message.destinationPost,
+        message.packageId.substring(0, 1),
       );
       const updateConditions = {
         packageId: message.packageId,
         dispatchId: message.dispatchId,
       };
       newMessage.dispatchId = newDispatchId;
+      newMessage.settlementStatus = 'Reconciled';
       PostalPackage.findOneAndUpdate(
         updateConditions,
         newMessage,
