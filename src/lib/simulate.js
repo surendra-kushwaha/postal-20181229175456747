@@ -1357,11 +1357,17 @@ class DispatchSimulator {
       const duplicates = processStep.filter(
         (element, index) => packageIds.indexOf(element.packageId) !== index,
       );
-      const firstPromiseResults = await updateProcessStep(originals); // eslint-disable-line no-await-in-loop
-      allPromiseResults.push(firstPromiseResults);
-      if (duplicates.length > 0) {
-        const secondPromiseResults = await updateProcessStep(duplicates); // eslint-disable-line no-await-in-loop
-        allPromiseResults.push(secondPromiseResults);
+      try {
+        const firstPromiseResults = await updateProcessStep(originals); // eslint-disable-line no-await-in-loop
+        allPromiseResults.push(firstPromiseResults);
+        if (duplicates.length > 0) {
+          const secondPromiseResults = await updateProcessStep(duplicates); // eslint-disable-line no-await-in-loop
+          allPromiseResults.push(secondPromiseResults);
+        }
+      } catch (err) {
+        logger.error(
+          `There was an error while updating shipment status. ${err}`,
+        );
       }
       logger.info('Completed a process step!');
     }
@@ -1376,13 +1382,19 @@ class DispatchSimulator {
       (element, index) =>
         deliveryPackageIds.indexOf(element.packageId) !== index,
     );
-    const originalDeliveryPromises = await updateDeliverySettlement(
-      deliveryOriginals,
-    );
-    allPromiseResults.push(originalDeliveryPromises);
-    if (deliveryDups.length > 0) {
-      const dupsDeliveryPromises = await updateDeliverySettlement(deliveryDups);
-      allPromiseResults.push(dupsDeliveryPromises);
+    try {
+      const originalDeliveryPromises = await updateDeliverySettlement(
+        deliveryOriginals,
+      );
+      allPromiseResults.push(originalDeliveryPromises);
+      if (deliveryDups.length > 0) {
+        const dupsDeliveryPromises = await updateDeliverySettlement(
+          deliveryDups,
+        );
+        allPromiseResults.push(dupsDeliveryPromises);
+      }
+    } catch (err) {
+      logger.error(`There was an error during updateSettlementStatus. ${err}`);
     }
     return Promise.settle(allPromiseResults);
   };
