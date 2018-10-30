@@ -195,12 +195,34 @@ const packageHistory = async (req, res) => {
     if (!response) {
       res.status(405).send('Package History response came back empty');
     } else {
-      const matchedDispatch = response.find(
-        transax => transax.value.DispatchId === req.body.dispatchId,
-      );
-      const noMatchedDispatch = matchedDispatch === undefined;
+      let transaxArray;
+      // for sequential duplicates we need to separate the package history so we will filter by date
+      if (req.body.packageId.match('[A-Z]{2}6666[0-9]{5}[A-Z]{2}')) {
+        const emas = response.filter(
+          transax => transax.value.ShipmentStatus === 'EMA',
+        );
+        const date1 = new Date(emas[0].value.LastUpdated);
+        const date2 = new Date(emas[1].value.LastUpdated);
+        const laterEMA = date1 > date2 ? date1 : date2;
+        const laterDispatchId = response.find(
+          transax =>
+            new Date(transax.value.LastUpdated) >= laterEMA &&
+            !noneArray.includes(transax.value.DispatchID),
+        ).value.DispatchID;
+        if (laterDispatchId === req.body.dispatchId) {
+          transaxArray = response.filter(
+            transax => new Date(transax.value.LastUpdated) >= laterEMA,
+          );
+        } else {
+          transaxArray = response.filter(
+            transax => new Date(transax.value.LastUpdated) < laterEMA,
+          );
+        }
+      } else {
+        transaxArray = response;
+      }
       const historyArray = [];
-      response.forEach(transax => {
+      transaxArray.forEach(transax => {
         // logger.info(`Transax: ${JSON.stringify(transax, null, 2)}`);
         const historyData = {
           date: transax.value.LastUpdated,
@@ -223,25 +245,7 @@ const packageHistory = async (req, res) => {
           historyData.status = transax.value.ShipmentStatus;
           historyData.statusType = 'Shipment Status';
         }
-
-        // Adding this statement to make sequential dups work
-        if (req.body.packageId.match('[A-Z]{2}6666[0-9]{5}[A-Z]{2}')) {
-          if (
-            !noMatchedDispatch &&
-            req.body.dispatchId === transax.value.dispatchId
-          ) {
-            historyArray.push(historyData);
-          } else if (
-            noMatchedDispatch &&
-            noneArray.includes(transax.value.dispatchId)
-          ) {
-            historyArray.push(historyData);
-          } else {
-            // if dispatchIds do not match and dispatchId is not NONE, then do not add to historyArray
-          }
-        } else {
-          historyArray.push(historyData);
-        }
+        historyArray.push(historyData);
       });
       res.status(200).send(historyArray);
     }
