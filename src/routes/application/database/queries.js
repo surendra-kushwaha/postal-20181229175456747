@@ -129,6 +129,10 @@ const makeSequentialDupsWork = postalData => {
         dispatchId: message.dispatchId,
       };
       newMessage.dispatchId = newDispatchId;
+      newMessage.receptacleId = message.receptacleId.replace(
+        message.dispatchId,
+        newDispatchId,
+      );
       newMessage.settlementStatus = 'Reconciled';
       PostalPackage.findOneAndUpdate(
         updateConditions,

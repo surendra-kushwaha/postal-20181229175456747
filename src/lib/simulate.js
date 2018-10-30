@@ -1143,36 +1143,37 @@ class DispatchSimulator {
 
               // repeat one PREDES STATUS FOR MultiplePreDes Case
               if (i === 7 && np > 0 && typeofpatch === 'MultiplePreDes') {
+                duplicatedata = Object.assign({}, data);
                 if (np === 1) {
                   dispatchId2 = dispatchId.substring(0, 15) + randomNumber(5);
                   receptacleId2 = dispatchId2 + receptacleId.substring(20, 29);
                 }
-                data.dispatchId = dispatchId2.toString();
-                data.receptacleId = receptacleId2.toString();
-                data.lastUpdated = new Date(dateend);
-                data.lastUpdated.setDate(dateend.getDate() + 1); // add 1 day
-                data.lastUpdated.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
-                data.lastUpdated = dateformat(dateend, false);
+                duplicatedata.dispatchId = dispatchId2.toString();
+                duplicatedata.receptacleId = receptacleId2.toString();
+                duplicatedata.lastUpdated = new Date(dateend);
+                duplicatedata.lastUpdated.setDate(dateend.getDate() + 1); // add 1 day
+                duplicatedata.lastUpdated.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
                 // logger.debug(
                 //   `   i:${i} np:${np}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
                 // );
-                EDIUpdatePackage.push(data);
+                EDIUpdatePackage.push(duplicatedata);
 
                 // repeat one PREDES STATUS FOR ItemsDifRecep Case
               } else if (i === 7 && np > 4 && typeofpatch === 'ItemsDifRecep') {
+                duplicatedata = Object.assign({}, data);
                 if (np === 5) {
                   dispatchId2 = dispatchId.substring(0, 15) + randomNumber(5);
                   receptacleId2 = dispatchId2 + receptacleId.substring(20, 29);
                 }
-                data.dispatchId = dispatchId2.toString();
-                data.receptacleId = receptacleId2.toString();
-                data.lastUpdated = new Date(dateend);
-                data.lastUpdated.setDate(dateend.getDate() + 1); // add 1 day
-                data.lastUpdated.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
+                duplicatedata.dispatchId = dispatchId2.toString();
+                duplicatedata.receptacleId = receptacleId2.toString();
+                duplicatedata.lastUpdated = new Date(dateend);
+                duplicatedata.lastUpdated.setDate(dateend.getDate() + 1); // add 1 day
+                duplicatedata.lastUpdated.setMinutes(dateend.getMinutes() + 45); // add 45 minutes
                 // logger.debug(
                 //   `   i:${i} np:${np}  ${data.shipmentStatus} DISPATCHID: ${data.dispatchId} RECEIPTID: ${data.receptacleId}--PACKAGEID:  ${EDIpackageid}--STATUS:  ${countstatus}  ${typeofpatch}`,
                 // );
-                EDIUpdatePackage.push(data);
+                EDIUpdatePackage.push(duplicatedata);
 
                 // Create a duplicate Data for the next cases
               } else if (

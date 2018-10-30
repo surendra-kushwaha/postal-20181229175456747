@@ -1569,7 +1569,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(deliveryDifferentIds.length).toBe(0);
     });
     test('test that the second PREDES scan has a different date', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
 
       // we have 10 packages being created in our simulation
       const response = await simulator.simulate(
@@ -1585,16 +1585,21 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         message => message.shipmentStatus === 'PREDES',
       );
 
-      const {
-        receptacleId: receptacleId1,
-        lastUpdated: lastUpdated1,
-      } = predes[0];
-      const predes2 = predes.find(
-        message => message.receptacleId !== receptacleId1,
-      );
-      const { lastUpdated: lastUpdated2 } = predes2;
+      const indexOfPackage1 = predes.indexOf(
+        predes.find(
+          (pack, index, predesArr) =>
+            pack.packageId === predesArr[index + 1].packageId,
+        ),
+      ); // this will fail if there are no duplicates..
+      const { packageId: packageId1, lastUpdated: lastUpdated1 } = predes[
+        indexOfPackage1
+      ];
+      const { packageId: packageId2, lastUpdated: lastUpdated2 } = predes[
+        indexOfPackage1 + 1
+      ];
 
-      expect(lastUpdated1).not.toEqual(lastUpdated2);
+      expect(packageId1).toEqual(packageId2);
+      expect(lastUpdated1.getTime()).not.toEqual(lastUpdated2.getTime());
     });
     test('test that the packages that did get the second predes scan end up as reconciled', async () => {
       expect.assertions(2);
@@ -1933,7 +1938,7 @@ describe('test the functionality of the simulator for creating the EDI Messages'
       expect(deliveryDifferentIds.length).toBe(5);
     });
     test('test that the second PREDES scan has a different date', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
 
       // we have 10 packages being created in our simulation
       const response = await simulator.simulate(
@@ -1949,16 +1954,21 @@ describe('test the functionality of the simulator for creating the EDI Messages'
         message => message.shipmentStatus === 'PREDES',
       );
 
-      const {
-        receptacleId: receptacleId1,
-        lastUpdated: lastUpdated1,
-      } = predes[0];
-      const predes2 = predes.find(
-        message => message.receptacleId !== receptacleId1,
-      );
-      const { lastUpdated: lastUpdated2 } = predes2;
+      const indexOfPackage1 = predes.indexOf(
+        predes.find(
+          (pack, index, predesArr) =>
+            pack.packageId === predesArr[index + 1].packageId,
+        ),
+      ); // this will fail if there are no duplicates..
+      const { packageId: packageId1, lastUpdated: lastUpdated1 } = predes[
+        indexOfPackage1
+      ];
+      const { packageId: packageId2, lastUpdated: lastUpdated2 } = predes[
+        indexOfPackage1 + 1
+      ];
 
-      expect(lastUpdated1).not.toEqual(lastUpdated2);
+      expect(packageId1).toEqual(packageId2); // double checking we have the right packages
+      expect(lastUpdated1.getTime()).not.toEqual(lastUpdated2.getTime());
     });
     test('test that all packages end up as reconciled', async () => {
       expect.assertions(2);
