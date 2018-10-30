@@ -122,7 +122,7 @@ const makeSequentialDupsWork = postalData => {
       const newDispatchId = generatedispatch(
         message.originPost,
         message.destinationPost,
-        message.packageId.substring(0, 1),
+        message.packageId.substring(0, 2),
       );
       const newReceptacleId = generatereceipt(
         newDispatchId,
