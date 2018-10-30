@@ -1,6 +1,6 @@
 import logger from '../../../logger';
 
-import { generatedispatch } from '../../../lib/simulate';
+import { generatedispatch, generatereceipt } from '../../../lib/simulate';
 
 const { PostalPackage } = require('../../../models/postalPackageData');
 
@@ -124,13 +124,16 @@ const makeSequentialDupsWork = postalData => {
         message.destinationPost,
         message.packageId.substring(0, 1),
       );
+      const newReceptacleId = generatereceipt(
+        newDispatchId,
+        message.weight,
+        '573',
+      );
       const updateConditions = {
         packageId: message.packageId,
         dispatchId: message.dispatchId,
       };
       newMessage.dispatchId = newDispatchId;
-      const newReceptacleId =
-        message.dispatchId + message.receptacleId.substring(20);
       newMessage.receptacleId = newReceptacleId;
       newMessage.settlementStatus = 'Reconciled';
       PostalPackage.findOneAndUpdate(

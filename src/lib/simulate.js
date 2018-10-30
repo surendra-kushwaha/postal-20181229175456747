@@ -1399,4 +1399,4 @@ class DispatchSimulator {
   };
 }
 
-export { DispatchSimulator, generatedispatch };
+export { DispatchSimulator, generatedispatch, generatereceipt };
