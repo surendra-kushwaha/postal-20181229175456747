@@ -56,6 +56,10 @@ module.exports = () => {
       response.data = options.args[0];
     } else if (functionName === 'updateSettlementStatus') {
       response.data = options.args[0];
+    } else if (functionName === 'updateDispatch') {
+      response.data = options.args[0];
+    }else if (functionName === 'updateReceptacle') {
+      response.data = options.args[0];
     }
     callback(err, response);
   }catch(err){

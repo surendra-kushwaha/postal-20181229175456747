@@ -1,11 +1,11 @@
 import logger from '../../../logger';
 import postal from '../../../lib/postal';
+import updateAllPackages from './utilities';
 
 const {
   findOnePackage,
   findPackages,
 } = require('../../../lib/postalPackageDataController');
-const { updateAllPackages } = require('./utilities');
 
 const updateDispatchSettlement = async (req, res) => {
   // logger.trace('Entered updateDispatchSettlement');
@@ -75,7 +75,7 @@ const updateDispatchSettlement = async (req, res) => {
       logger.error(
         'Error updating packages in the dispatch to new Settlement Status',
       );
-      res.sendStaus(400);
+      res.sendStatus(400);
     }
   } catch (err) {
     logger.error(`There was an error updating Settlement Status. ${err}`);
@@ -114,7 +114,8 @@ const updatePackageSettlement = async (req, res) => {
     try {
       const newData = await findOnePackage(updatedPackageId.data);
       logger.debug(`RESPONSE : ${JSON.stringify(newData)}`);
-      //res.status(200).json(newData[0]);
+      // res.status(200).json(newData[0]);
+      res.status(200);
       res.send(newData[0]);
     } catch (err) {
       res.sendStatus(400);

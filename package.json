@@ -30,7 +30,8 @@
         "fabric-ca-client": "1.1.0",
         "fabric-client": "1.1.0",
         "grpc": "1.10.1",
-        "cfenv": "1.0.x"
+        "cfenv": "1.0.x",
+        "lodash": "^4.17.11"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",

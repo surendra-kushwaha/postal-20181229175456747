@@ -3,6 +3,7 @@
 import { $Request, $Response } from 'express';
 import logger from '../../../logger';
 import DispatchSimulator from '../../../lib/simulate';
+import { extractPackageData, updateAllPackages } from './utilities';
 import config from '../../../config';
 
 const dispatchsimulator = new DispatchSimulator();
@@ -14,7 +15,16 @@ const dispatchsimulator = new DispatchSimulator();
  */
 const inputData = async (req: $Request, res: $Response) => {
   logger.info(req.body);
-  res.send(200);
+  try {
+    const packages = extractPackageData(req.body);
+    await updateAllPackages(packages);
+    res.status(200);
+    res.send({ data: 'success' });
+  } catch (err) {
+    logger.error(`There was an error updating Packages. ${err}`);
+    res.status(400);
+    res.send(err);
+  }
 };
 
 const simulate = async (req: $Request, res: $Response) => {

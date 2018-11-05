@@ -51,4 +51,4 @@ const updateAllPackages = (packages: Array, newSettlementStatus: String) => {
   return Promise.settle(promises);
 };
 
-export { updateAllPackages };
+export default updateAllPackages;
