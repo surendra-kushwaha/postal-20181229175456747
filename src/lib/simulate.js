@@ -6,7 +6,7 @@ import postal from './postal';
 
 // define random values
 const PackageType = ['LA', 'CA', 'EX', 'UA', 'RA']; // tracked,parcels,express,untracked,registered
-const Countrys = ['US', 'CN', 'GB', 'DE', 'CA', 'JP', 'FR'];
+const Countrys = ['US', 'CN', 'GB', 'DE', 'CA', 'JP', 'FR', 'AUS'];
 const AirportsUS = ['JFKA'];
 const AirportsCN = ['BJSA'];
 const AirportsUK = ['LONA', 'CVTA'];
@@ -14,6 +14,7 @@ const AirportsDE = ['FRAA'];
 const AirportsCA = ['YTOA'];
 const AirportsJP = ['TYOA'];
 const AirportsFR = ['CDGA'];
+const AirportsAUS = ['SYDA'];
 
 const lostpackagestatus = [1, 2, 4, 6, 9, 10, 12, 14]; // possible status for lost packages
 
@@ -142,6 +143,9 @@ function generatedispatch(origin, destination, packagetype) {
   if (origin === 'FR') {
     originAirport = randomArray(AirportsFR);
   }
+  if (origin === 'AUS') {
+    originAirport = randomArray(AirportsAUS);
+  }
 
   if (destination === 'US') {
     destinationAirport = randomArray(AirportsUS);
@@ -164,7 +168,9 @@ function generatedispatch(origin, destination, packagetype) {
   if (destination === 'FR') {
     destinationAirport = randomArray(AirportsFR);
   }
-
+  if (destination === 'AUS') {
+    destinationAirport = randomArray(AirportsAUS);
+  }
   return `${origin +
     originAirport +
     destination +

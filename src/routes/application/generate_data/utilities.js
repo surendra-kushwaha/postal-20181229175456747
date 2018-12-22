@@ -3,25 +3,9 @@
 import logger from '../../../logger';
 import postal from '../../../lib/postalUpdated';
 
-const _ = require('lodash');
+const config = require('../../../../config/blockchain_creds1.json');
 
-// eslint-disable-next-line func-names
-Promise.settle = function(promises) {
-  return Promise.all(
-    promises.map(p =>
-      // make sure any values or foreign promises are wrapped in a promise
-      Promise.resolve(p).catch(err => {
-        // make sure error is wrapped in Error object so we can reliably detect which promises rejected
-        if (err instanceof Error) {
-          return err;
-        }
-        const errObject = new Error();
-        errObject.rejectErr = err;
-        return errObject;
-      }),
-    ),
-  );
-};
+const _ = require('lodash');
 
 const extractPackageData = req => {
   /*   
@@ -44,16 +28,19 @@ const extractPackageData = req => {
 
   const createPackage = [];
   const updateShipmentStatus = [];
-  const updateDispatch = [];
-  const updateReceptacle = [];
+  const updateSettlementStatus = [];
+  // const updateDispatch = [];
+  const updateReceptacleAndDispatch = [];
+  let payload = {};
   req.forEach(pack => {
-    if (pack.shipmentStatus === 'EMA') {
+    payload = {};
+    if (config.eventCodes.create_package.includes(pack.shipmentStatus)) {
       pack.packageType = pack.packageId.substr(0, 2);
       pack.origin = pack.packageId.slice(-2);
       pack.dispatchId = pack.receptacleId.substr(0, 20);
       pack.weight = pack.netReceptacleWeight;
       pack.dateCreated = new Date(pack.timestamp);
-      pack.lastUpdated = new Date();
+      pack.lastUpdated = new Date(pack.timestamp);
       pack = _.omit(pack, [
         'netReceptacleWeight',
         'grossReceptacleWeight',
@@ -64,58 +51,71 @@ const extractPackageData = req => {
       ]);
       createPackage.push(pack);
     } else if (
-      pack.shipmentStatus === 'EMC' ||
-      pack.shipmentStatus === 'PREDES'
+      config.eventCodes.update_recep_dispatch.includes(pack.shipmentStatus)
     ) {
-      let payload = {
+      payload = {
         packageId: pack.packageId,
         newReceptacleId: pack.receptacleId,
         newReceptacleNetWeight: pack.netReceptacleWeight,
         newReceptacleGrossWeight: pack.grossReceptacleWeight,
-      };
-      updateReceptacle.push(payload);
-      payload = {
-        packageId: pack.packageId,
         newDispatchId: pack.receptacleId.substr(0, 20),
       };
-      updateDispatch.push(payload);
+      updateReceptacleAndDispatch.push(payload);
+      // payload = {
+      //   packageId: pack.packageId,
+      //   newDispatchId: pack.receptacleId.substr(0, 20),
+      // };
+      // updateDispatch.push(payload);
       payload = {
         packageId: pack.packageId,
         newShipmentStatus: pack.shipmentStatus,
-        lastUpdated: new Date(),
+        lastUpdated: new Date(pack.timestamp),
       };
       updateShipmentStatus.push(payload);
     } else {
-      const payload = {
+      payload = {
         packageId: pack.packageId,
         newShipmentStatus: pack.shipmentStatus,
-        lastUpdated: new Date(),
+        lastUpdated: new Date(pack.timestamp),
       };
       updateShipmentStatus.push(payload);
     }
+    if (config.eventCodes.reconciled.includes(pack.shipmentStatus)) {
+      payload = {
+        packageId: pack.packageId,
+        newSettlementStatus: 'Reconciled',
+        lastUpdated: new Date(pack.timestamp),
+      };
+    } else {
+      payload = {
+        packageId: pack.packageId,
+        newSettlementStatus: 'Unreconciled',
+        lastUpdated: new Date(pack.timestamp),
+      };
+    }
+    updateSettlementStatus.push(payload);
   });
   // eslint-disable-next-line no-underscore-dangle
   return _({
-    updateDispatch,
-    updateReceptacle,
+    // updateDispatch,
+    updateReceptacleAndDispatch,
     updateShipmentStatus,
     createPackage,
+    updateSettlementStatus,
   }).omitBy(_.isEmpty).__wrapped__;
 };
 
-const updateAllPackages = payload => {
-  const promises = [];
-
-  _.forOwn(payload, (value, key) => {
+const updateAllPackages = async payload => {
+  _.forOwn(payload, async (value, key) => {
     logger.debug(`Calling ${key} method`);
-    if (key === 'createPackage') promises.push(postal.createPackage(value));
-    else if (key === 'updateReceptacle')
-      promises.push(postal.updateReceptacle(value));
+    if (key === 'createPackage') await postal.createPackage(value);
+    else if (key === 'updateReceptacleAndDispatch')
+      await postal.updateReceptacle(value);
     else if (key === 'updateShipmentStatus')
-      promises.push(postal.updateShipmentStatus(value));
-    else promises.push(postal.updateDispatch(value));
+      await postal.updateShipmentStatus(value);
+    else if (key === 'updateSettlementStatus')
+      await postal.updateSettlementStatus(value);
   });
-  return Promise.settle(promises);
 };
 
 export { extractPackageData, updateAllPackages };

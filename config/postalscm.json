@@ -9,6 +9,11 @@
         "ava"
     ],
     "port": 3001,
-    "last_startup_hash": "7086c0cf829d8a9bafbf46f81621638d6a225053"
+    "last_startup_hash": "7086c0cf829d8a9bafbf46f81621638d6a225053",
+    "eventStatus":{
+        "create_package":["EMA"],
+        "update_recep_dispatch":["EMC","PREDES"],
+        "reconciled":["EMG","EDF","EDG","EDH","EMH","EMI"]
+    }
 }
 

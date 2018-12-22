@@ -15,7 +15,7 @@ module.exports = {
     NoPreDes_rate: 6, // over 100 %
   },
   users: {
-    username: ['US', 'GB', 'CN', 'CA', 'FR', 'DE', 'JP'],
+    username: ['US', 'GB', 'CN', 'CA', 'FR', 'DE', 'JP', 'AUS'],
     password: 'acit@1234',
   },
 };
