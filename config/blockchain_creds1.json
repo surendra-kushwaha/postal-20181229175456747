@@ -28,14 +28,14 @@
                 "org1-peer1": {
                     "x-chaincode": {
                         "postal-scm-ibp": {
-                            "version": "1.0",
+                            "version": "3.0",
                             "path": "ibm-bcs-na565122357124504938dec479f0050a1-postal-scm-ibp-1.0"
                         }
                     }
                 }
             },
             "chaincodes": {
-                "postal-scm-ibp": "1.0"
+                "postal-scm-ibp": "3.0"
             }
         }
     },
