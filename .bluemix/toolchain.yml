@@ -13,20 +13,20 @@ template:
     - marbles-repo
   info:
     git url: >-
-      [https://github.com/IBM-Blockchain/marbles](https://github.com/IBM-Blockchain/marbles)
+      [https://git.ng.bluemix.net/surendra.kushwaha/postal-scm-go](https://git.ng.bluemix.net/surendra.kushwaha/postal-scm-go)
     git branch: >-
-      [master](https://github.com/IBM-Blockchain/marbles/tree/master)
+      [postal-toolchain](https://git.ng.bluemix.net/surendra.kushwaha/postal-scm-go/tree/postal-toolchain)
 toolchain:
-  name: 'marbles-tc-{{timestamp}}'
+  name: 'postal-tc-{{timestamp}}'
   template:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
 services:
-  marbles-repo:
+  postal-repo:
     service_id: githubpublic
     parameters:
-      repo_name: 'marbles-{{timestamp}}'
-      repo_url: 'https://github.com/IBM-Blockchain/marbles'
+      repo_name: 'postal-{{timestamp}}'
+      repo_url: 'https://git.ng.bluemix.net/surendra.kushwaha/postal-scm-go'
       type: clone
       has_issues: false
       enable_traceability: true
@@ -34,14 +34,14 @@ services:
     service_id: pipeline
     parameters:
       services:
-        - marbles-repo
-      name: '{{services.marbles-repo.parameters.repo_name}}'
+        - postal-repo
+      name: '{{services.postal-repo.parameters.repo_name}}'
       ui-pipeline: false
       configuration:
         content:
           $text: pipeline.yml
         env:
-          SAMPLE_REPO: marbles-repo
+          SAMPLE_REPO: postal-repo
           CF_APP_NAME: '{{form.pipeline.parameters.cf-app-name}}'
           CF_SPACE_NAME: '{{form.pipeline.parameters.cf-space}}'
           CF_ORG_NAME: '{{form.pipeline.parameters.cf-organization}}'
@@ -50,17 +50,17 @@ services:
   marbles-app:
     service_id: customtool
     parameters:
-      type: 'Marbles'
+      type: 'Postal'
       lifecyclePhase: 'RUN'
       imageUrl: 'https://github.com/IBM-Blockchain/toolchain-sample-marbles/raw/master/.bluemix/marbles-36.png'
-      documentationUrl: 'https://github.com/IBM-Blockchain/marbles'
+      documentationUrl: 'https://git.ng.bluemix.net/surendra.kushwaha/postal-scm-go/tree/postal-toolchain'
       name: 'Node.js Applicaiton'
       dashboard_url: 'https://{{form.pipeline.parameters.cf-app-name}}.mybluemix.net/login'
-      description: 'This is your Marbles node.js application. You do not need to modify anything.'
+      description: 'This is your Postal node.js application. You do not need to modify anything.'
       additional-properties: 'n/a'
 form:
   pipeline:
     parameters:
-      cf-app-name: '{{services.marbles-repo.parameters.repo_name}}'
+      cf-app-name: '{{services.postal-repo.parameters.repo_name}}'
     schema:
       $ref: deploy.json
