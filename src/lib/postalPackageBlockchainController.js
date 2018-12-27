@@ -3,10 +3,14 @@ import logger from '../logger';
 const wss = {};
 let enrollObj = null;
 
-const helper = require('../../utils/helper.js')(
+/*const helper = require('../../utils/helper.js')(
   process.env.creds_filename,
   logger,
-);
+);*/
+var misc = require('../../utils/misc.js')(logger);												// mis.js has generic (non-blockchain) related functions
+misc.check_creds_for_valid_json();
+var helper = require('../../utils/connection_profile_lib/index.js')(process.env.creds_filename, logger);	// parses our cp file/data
+
 const fcw = require('../../utils/fc_wrangler/index.js')(
   { block_delay: helper.getBlockDelay() },
   logger,
@@ -17,7 +21,7 @@ const ws_server = require('../../utils/websocket_server_side.js')(
   logger,
 );
 
-const opts = helper.makeSharedAccumsLibOptions();
+const opts = helper.makeMarblesLibOptions();
 
 enroll_admin(1, e => {
   if (e == null) {
@@ -46,7 +50,7 @@ const options = {
 };
 
 function setup_postalscm_lib() {
-  const opts = helper.makeSharedAccumsLibOptions();
+  const opts = helper.makeMarblesLibOptions();
   postalscm_lib = require('../../utils/postalscm_cc_lib.js')(
     enrollObj,
     opts,
