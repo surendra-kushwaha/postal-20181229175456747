@@ -1,6 +1,6 @@
 ---
 stages:
-- name: Deploy Postal Application
+- name: Deploy Marbles Application
   inputs:
   - type: git
     branch: master
@@ -13,7 +13,7 @@ stages:
     type: text
 
   jobs:
-  - name: deploy-postal-app
+  - name: deploy-marbles-app
     type: deployer
     target:
       region_id: ${REGION_ID}
@@ -28,14 +28,12 @@ stages:
       export SERVICE_INSTANCE_NAME="ibp-marbles-via-tc" # the cosmetic name of our blockchain service instance
       export VCAP_KEY_NAME="marbles_tc_creds"         # cloud foundry needs a name for the service creds (not important)
       export CHANNEL_ID="defaultchannel"              # the channel marbles should use
-      export CHAINCODE_ID="postal_scm"            # the chaincode id we will install/instantiate
+      export CHAINCODE_ID="marbles_sample"            # the chaincode id we will install/instantiate
       export APP_URL="unknown_yet"                    # we fill this in later
       export MSP_ID="org1"                            # the msp id to use on the network. "org1" is typical
-      #GIT_CC_HASH=$(git ls-tree --abbrev=12 HEAD ./chaincode/src/marbles | cut -d ' ' -f 3 | cut -f 1)
-      #GIT_HASH=$(git rev-parse HEAD)
-      GIT_CC_HASH=$(date +%s)
-      GIT_HASH=$(date +%s)
-	  
+      GIT_CC_HASH=$(git ls-tree --abbrev=12 HEAD ./chaincode/src/marbles | cut -d ' ' -f 3 | cut -f 1)
+      GIT_HASH=$(git rev-parse HEAD)
+
       # detect_exit - will update the IBP service with the error or success of your marbles deployment
        detect_exit()
       {
@@ -54,7 +52,7 @@ stages:
         fi
       }
 
-      # update_status - will update the IBP service with the status of your postal deployment
+      # update_status - will update the IBP service with the status of your marbles deployment
       update_status()
       {
         printf "\nUpdating Sample's Deployment Status - network id: '${NETWORK_ID}', app: '$CF_APP', status: '$COMPLETED_STEP'\n"
@@ -92,7 +90,7 @@ stages:
         export SCRIPT_ERROR="yep"
       fi
       if [ "$CF_APP" == "" ]; then
-        echo "Error - bad script setup - CF_APP was not provided (Postal application name)"
+        echo "Error - bad script setup - CF_APP was not provided (Marbles application name)"
         export SCRIPT_ERROR="yep"
       fi
       if [ "$MSP_ID" == "" ]; then
@@ -103,8 +101,8 @@ stages:
         exit 1
       else
         echo "Using service instance name: '${SERVICE_INSTANCE_NAME}'"
-        echo "Deploying Postal as msp id: '${MSP_ID}'"
-        echo "Deploying Postal commit level: ${GIT_HASH}"
+        echo "Deploying Marbles as msp id: '${MSP_ID}'"
+        echo "Deploying Marbles commit level: ${GIT_HASH}"
         printf "All good\n\n"
       fi
 
@@ -152,9 +150,12 @@ stages:
         -H 'Cache-Control: no-cache' \
         -H 'content-type: multipart/form-data;' \
         -u $API_KEY:$API_SECRET\
-        -F 'files[]=@./chaincode/src/marbles/postal-scm-go.go' \
+        -F 'files[]=@./chaincode/src/marbles/lib.go' \
+        -F 'files[]=@./chaincode/src/marbles/marbles.go' \
+        -F 'files[]=@./chaincode/src/marbles/read_ledger.go' \
+        -F 'files[]=@./chaincode/src/marbles/write_ledger.go' \
         -F chaincode_id=$CHAINCODE_ID \
-        -F chaincode_version=$GIT_CC_HASH \
+        -F chaincode_version=$GIT_HASH \
         --connect-timeout 60 || true)
       printf "\nResp: $INSTALL_RESP\n"
       INSTALLED=$(echo "$INSTALL_RESP" | jq '.message' -r || true)    # parse the install response for the "message" field
@@ -186,7 +187,7 @@ stages:
           -H 'Cache-Control: no-cache' \
           -H 'Content-Type: application/json' \
           -u $API_KEY:$API_SECRET \
-          -d '{"chaincode_id":"'"$CHAINCODE_ID"'", "chaincode_version":"'"$GIT_CC_HASH"'", "chaincode_arguments":"[\"12345\"]"}' \
+          -d '{"chaincode_id":"'"$CHAINCODE_ID"'", "chaincode_version":"'"$GIT_HASH"'", "chaincode_arguments":"[\"12345\"]"}' \
           --connect-timeout 240 || true)
         printf "\nResp: $INSTANTIATE_RESP\n"
         INSTANTIATED=$(echo "$INSTANTIATE_RESP" | jq '.message' -r || true)  # parse the instantiate response for the "message" field
@@ -238,24 +239,24 @@ stages:
       # -----------------------------------------------------------
       # 6. Push application and Bind the service
       # -----------------------------------------------------------
-      printf "\n--- Creating the Postal application ---\n"
+      printf "\n--- Creating the Marbles application ---\n"
       cf push $CF_APP --no-start                              # don't start the app yet, wait for binding
 
       echo "Creating env variables for mables..."
       cf set-env $CF_APP CONNECTION_PROFILE "$CONNECTION_PROFILE" > /dev/null
       cf set-env $CF_APP CHAINCODE_ID $CHAINCODE_ID           # pass these to the app so we know which one to use
-      cf set-env $CF_APP CHAINCODE_VERSION $GIT_CC_HASH
+      cf set-env $CF_APP CHAINCODE_VERSION $GIT_HASH
       cf set-env $CF_APP CHANNEL_ID $CHANNEL_ID
       cf set-env $CF_APP MSP_ID $MSP_ID
       export APP_URL=$(cf app $CF_APP | grep -Po "(?<=routes:)\s*\S*")
 
-      printf "\n--- Binding the IBM Blockchain Platform service to Postal ---\n"
-      cf bind-service $CF_APP "${SERVICE_INSTANCE_NAME}" -c "{\"permissions\":\"read-only\"}"  # bind Postal app to the blockchain service
+      printf "\n--- Binding the IBM Blockchain Platform service to Marbles ---\n"
+      cf bind-service $CF_APP "${SERVICE_INSTANCE_NAME}" -c "{\"permissions\":\"read-only\"}"  # bind marbles app to the blockchain service
 
       # -----------------------------------------------------------
       # Start her up
       # -----------------------------------------------------------
-      printf "\n--- Starting Postal ---\n"
+      printf "\n--- Starting Marbles ---\n"
       cf start $CF_APP
 
       # -----------------------------------------------------------
