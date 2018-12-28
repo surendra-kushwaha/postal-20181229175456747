@@ -14,6 +14,7 @@ const AirportsDE = ['FRAA', 'FRAB'];
 const AirportsCA = ['YTOA', 'YTOB'];
 const AirportsJP = ['TYOA', 'TYOB'];
 const AirportsFR = ['CDGA', 'CDGB'];
+const AirportsAUS = ['SYDA', 'MELBA'];
 
 const lostpackagestatus = [1, 2, 4, 6, 9, 10, 12, 14]; // possible status for lost packages
 
@@ -148,6 +149,9 @@ function getinverseairport(origin, airport) {
   if (origin === 'FR') {
     inverseairport = AirportsFR.filter(city => city !== airport);
   }
+  if (origin === 'AUS') {
+    inverseairport = AirportsAUS.filter(city => city !== airport);
+  }
   return inverseairport;
 }
 
@@ -181,6 +185,9 @@ function generatedispatch(origin, destination, packagetype) {
   if (origin === 'FR') {
     originAirport = randomArray(AirportsFR);
   }
+  if (origin === 'AUS') {
+    originAirport = randomArray(AirportsAUS);
+  }
 
   if (destination === 'US') {
     destinationAirport = randomArray(AirportsUS);
@@ -202,6 +209,9 @@ function generatedispatch(origin, destination, packagetype) {
   }
   if (destination === 'FR') {
     destinationAirport = randomArray(AirportsFR);
+  }
+  if (destination === 'AUS') {
+    destinationAirport = randomArray(AirportsAUS);
   }
 
   return `${origin +
