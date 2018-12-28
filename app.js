@@ -41,7 +41,7 @@ var misc = require('./utils/misc.js')(logger);												// mis.js has generic 
 misc.check_creds_for_valid_json();
 var helper = require(__dirname + '/utils/connection_profile_lib/index.js')(process.env.creds_filename, logger);	// parses our cp file/data
 
-//var helper = require(__dirname + '/utils/helper.js')(process.env.creds_filename, logger);
+///var helper = require(__dirname + '/utils/helper.js')(process.env.creds_filename, logger);
 var fcw = require('./utils/fc_wrangler/index.js')({ block_delay: helper.getBlockDelay() }, logger);
 var ws_server = require('./utils/websocket_server_side.js')({ block_delay: helper.getBlockDelay() }, fcw, logger);
 var opts = helper.makeSharedAccumsLibOptions();
