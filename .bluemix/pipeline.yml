@@ -33,9 +33,9 @@ stages:
       export MSP_ID="org1"                            # the msp id to use on the network. "org1" is typical
       #GIT_CC_HASH=$(git ls-tree --abbrev=12 HEAD ./chaincode/src/marbles | cut -d ' ' -f 3 | cut -f 1)
       #GIT_HASH=$(git rev-parse HEAD)
-	   GIT_CC_HASH=$(date +%s)
-	   GIT_HASH=$(date +%s)
-	   
+      GIT_CC_HASH=$(date +%s)
+      GIT_HASH=$(date +%s)
+	  
       # detect_exit - will update the IBP service with the error or success of your postal deployment
       detect_exit()
       {
