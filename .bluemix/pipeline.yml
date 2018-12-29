@@ -3,7 +3,7 @@ stages:
 - name: Deploy Postal Application
   inputs:
   - type: git
-    branch: master
+    branch: postal-toolchain
     service: ${SAMPLE_REPO}
   triggers:
   - type: commit
@@ -132,10 +132,10 @@ stages:
       #cat ./config/marbles_tc.json -b             # uncomment this if you are okay with your service creds being logged
 
       # MSP_ID (from our env varible) will be used to parse the service credentials to find each field below
-      export API_HOST="$(cat ./config/marbles_tc.json | jq '.'$MSP_ID'.url' -r)"      # url of the blockchain service to use for api requests
-      export API_KEY="$(cat ./config/marbles_tc.json | jq '.'$MSP_ID'.key' -r)"       # key/username to use in our api requests
-      export API_SECRET="$(cat ./config/marbles_tc.json | jq '.'$MSP_ID'.secret' -r)" # secret/password to use in our api requests
-      export NETWORK_ID="$(cat ./config/marbles_tc.json | jq '.'$MSP_ID'.network_id' -r)" # the unique id of our blockchain network
+      export API_HOST="$(cat ./config/postal_tc.json | jq '.'$MSP_ID'.url' -r)"      # url of the blockchain service to use for api requests
+      export API_KEY="$(cat ./config/postal_tc.json | jq '.'$MSP_ID'.key' -r)"       # key/username to use in our api requests
+      export API_SECRET="$(cat ./config/postal_tc.json | jq '.'$MSP_ID'.secret' -r)" # secret/password to use in our api requests
+      export NETWORK_ID="$(cat ./config/postal_tc.json | jq '.'$MSP_ID'.network_id' -r)" # the unique id of our blockchain network
       echo "Using Network ID ${NETWORK_ID}, api host=$API_HOST, api key=$API_KEY"
       export COMPLETED_STEP="1"
       update_status
@@ -248,7 +248,7 @@ stages:
       cf set-env $CF_APP MSP_ID $MSP_ID
       export APP_URL=$(cf app $CF_APP | grep -Po "(?<=routes:)\s*\S*")
 
-      printf "\n--- Binding the IBM Blockchain Platform service to Marbles ---\n"
+      printf "\n--- Binding the IBM Blockchain Platform service to postal ---\n"
       cf bind-service $CF_APP "${SERVICE_INSTANCE_NAME}" -c "{\"permissions\":\"read-only\"}"  # bind marbles app to the blockchain service
 
       # -----------------------------------------------------------
